@@ -72,6 +72,7 @@
     "autoload": {
         "files": [
             "src/mantle/framework/helpers.php",
+            "src/mantle/queue/autoload.php",
             "src/mantle/support/autoload.php",
             "src/mantle/testing/autoload.php"
         ]
