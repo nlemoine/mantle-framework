@@ -92,7 +92,7 @@ class Queue_Manager implements Queue_Manager_Contract {
 			return null;
 		}
 
-		return $this->container['config']['queue.default'] ?? null;
+		return $this->container['config']['queue.default'] ?? 'wordpress';
 	}
 
 	/**

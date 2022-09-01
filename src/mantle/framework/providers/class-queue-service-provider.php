@@ -20,8 +20,12 @@ use Mantle\Queue\Wp_Cron_Provider;
 use Mantle\Queue\Wp_Cron_Scheduler;
 use Mantle\Support\Service_Provider;
 
+use function Mantle\Support\Helpers\tap;
+
 /**
  * Queue Service Provider
+ *
+ * @todo Move to the \Mantle\Queue package.
  */
 class Queue_Service_Provider extends Service_Provider {
 
@@ -33,9 +37,10 @@ class Queue_Service_Provider extends Service_Provider {
 			'queue',
 			function ( $app ) {
 				// Register the Queue Manager with the supported providers when invoked.
-				$manager = new Queue_Manager( $app );
-				$this->register_providers( $manager );
-				return $manager;
+				return tap(
+					new Queue_Manager( $app ),
+					fn ( $manager ) => $this->register_providers( $manager ),
+				);
 			}
 		);
 

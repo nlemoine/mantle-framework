@@ -11,10 +11,12 @@ if ( ! function_exists( 'dispatch' ) ) {
 	/**
 	 * Dispatch a job to the queue.
 	 *
-	 * @param \Mantle\Contracts\Queue\Job $job Job instance.
-	 * @return Pending_Dispatch
+	 * @param \Mantle\Contracts\Queue\Job|\Closure $job Job instance.
+	 * @return Pending_Dispatch|Pending_Closure_Dispatch
 	 */
 	function dispatch( $job ): Pending_Dispatch {
-		return new Pending_Dispatch( $job );
+		return $job instanceof \Closure
+			? new Pending_Closure_Dispatch( Closure_Job::create( $job ) )
+			: new Pending_Dispatch( $job );
 	}
 }

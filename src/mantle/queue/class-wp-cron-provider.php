@@ -8,6 +8,7 @@
 namespace Mantle\Queue;
 
 use InvalidArgumentException;
+use Laravel\SerializableClosure\SerializableClosure;
 use Mantle\Contracts\Queue\Provider;
 use Mantle\Contracts\Queue\Queue_Manager;
 use Mantle\Support\Collection;
@@ -91,6 +92,10 @@ class Wp_Cron_Provider implements Provider {
 			return true;
 		}
 
+		if ( $job instanceof SerializableClosure ) {
+			$job = serialize( $job );
+		}
+
 		$queue  = $job->queue ?? 'default';
 		$insert = \wp_insert_post(
 			[
@@ -148,9 +153,7 @@ class Wp_Cron_Provider implements Provider {
 
 		return collect( $post_ids )
 			->map(
-				function( int $post_id ) {
-					return new Wp_Cron_Job( \get_post_meta( $post_id, '_mantle_queue', true ), $post_id );
-				}
+				fn( int $post_id ) => new Wp_Cron_Job( \get_post_meta( $post_id, '_mantle_queue', true ), $post_id ),
 			);
 	}
 

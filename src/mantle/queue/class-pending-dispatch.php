@@ -25,9 +25,9 @@ class Pending_Dispatch {
 	/**
 	 * Constructor.
 	 *
-	 * @param Job $job Job instance.
+	 * @param Job|Closure_Job $job Job instance.
 	 */
-	public function __construct( Job $job ) {
+	public function __construct( $job ) {
 		$this->job = $job;
 	}
 
@@ -64,7 +64,7 @@ class Pending_Dispatch {
 		}
 
 		// Allow the queue package to be run independent of the application.
-		if ( ! class_exists( \Mantle\Framework\Application::class ) || true ) {
+		if ( ! class_exists( \Mantle\Framework\Application::class ) ) {
 			Container::getInstance()->make( Dispatcher::class )->dispatch( $this->job );
 		} else {
 			app( Dispatcher::class )->dispatch( $this->job );

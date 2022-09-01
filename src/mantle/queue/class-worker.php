@@ -7,6 +7,7 @@
 
 namespace Mantle\Queue;
 
+use Closure;
 use Mantle\Contracts\Events\Dispatcher;
 use Mantle\Contracts\Queue\Queue_Manager;
 use Mantle\Queue\Events\Job_Processed;
@@ -58,15 +59,16 @@ class Worker {
 		$this->events->dispatch( new Run_Start( $provider, $queue, $jobs ) );
 
 		$jobs->each(
-			function( Job $job ) use ( $provider ) {
-				$this->events->dispatch( new Job_Processing( $provider, $job ) );
+			function( $job ) use ( $provider ) {
+				// $this->events->dispatch( new Job_Processing( $provider, $job ) );
 
 				$job->fire();
 
-				$this->events->dispatch( new Job_Processed( $provider, $job ) );
+				// dump('PROVIDER', $provider);
+				// $this->events->dispatch( new Job_Processed( $provider, $job ) );
 			}
 		);
 
-		$this->events->dispatch( new Run_Complete( $provider, $queue, $jobs ) );
+		// $this->events->dispatch( new Run_Complete( $provider, $queue, $jobs ) );
 	}
 }
