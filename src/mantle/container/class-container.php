@@ -664,9 +664,9 @@ class Container implements ArrayAccess, Container_Contract {
 
 		/**
 		 * Next we need to see if a contextual binding might be bound under an alias of the
-		 * given abstract type. 
-		 * 
-		 * To do that, we will need to check if any aliases exist with this type and then 
+		 * given abstract type.
+		 *
+		 * To do that, we will need to check if any aliases exist with this type and then
 		 * spin through them and check each for contextual bindings as well.
 		 */
 		if ( empty( $this->abstract_aliases[ $abstract ] ) ) {

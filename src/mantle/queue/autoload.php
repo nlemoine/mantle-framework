@@ -7,6 +7,8 @@
 
 namespace Mantle\Queue;
 
+use Mantle\Container\Container;
+
 if ( ! function_exists( 'dispatch' ) ) {
 	/**
 	 * Dispatch a job to the queue.
@@ -19,4 +21,17 @@ if ( ! function_exists( 'dispatch' ) ) {
 			? new Pending_Closure_Dispatch( Closure_Job::create( $job ) )
 			: new Pending_Dispatch( $job );
 	}
+}
+
+
+/**
+ * Load the queue outside of the Mantle Framework
+ */
+function isolate() {
+	$container = Container::getInstance();
+
+	$provider = new Queue_Service_Provider( $container );
+
+	$provider->register();
+	$provider->boot();
 }

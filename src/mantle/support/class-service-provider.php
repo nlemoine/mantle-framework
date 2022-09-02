@@ -26,7 +26,7 @@ abstract class Service_Provider implements LoggerAwareInterface {
 	/**
 	 * The application instance.
 	 *
-	 * @var Application|\Mantle\Container\Container
+	 * @var Application|\Mantle\Contracts\Container
 	 */
 	protected $app;
 
@@ -41,7 +41,7 @@ abstract class Service_Provider implements LoggerAwareInterface {
 	/**
 	 * Create a new service provider instance.
 	 *
-	 * @param Application $app Application Instance.
+	 * @param Application|\Mantle\Contracts\Container $app Application Instance.
 	 */
 	public function __construct( Application $app ) {
 		$this->app = $app;
