@@ -28,6 +28,8 @@ class Test_WordPress_Cron_Queue extends Framework_Test_Case {
 		remove_all_filters( Run_Complete::class );
 
 		parent::setUp();
+
+		Provider::on_init();
 	}
 
 	public function test_wordpress_queue_job_from_class_async() {
