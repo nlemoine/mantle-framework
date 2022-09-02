@@ -29,6 +29,13 @@ class Queue_Worker_Job extends \Mantle\Queue\Queue_Worker_Job {
 	protected $queue_post_id;
 
 	/**
+	 * Flag if the job failed.
+	 *
+	 * @var bool
+	 */
+	public bool $failed = false;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param mixed $job Job data.
@@ -41,11 +48,10 @@ class Queue_Worker_Job extends \Mantle\Queue\Queue_Worker_Job {
 
 	/**
 	 * Fire the job.
-	 *
-	 * @todo Add error handling for the queue item.
 	 */
 	public function fire() {
-		if ( $this->job instanceof JobContract ) {
+		// Check if the job has a method called 'handle'.
+		if ( $this->job instanceof JobContract || method_exists( $this->job, 'handle' ) ) {
 			$this->job->handle();
 		} elseif ( is_callable( $this->job ) ) {
 			$callback = $this->job;
@@ -77,17 +83,21 @@ class Queue_Worker_Job extends \Mantle\Queue\Queue_Worker_Job {
 	 *
 	 * @todo Add retrying for queued jobs.
 	 *
-	 * @param Throwable $e Exception thrown
+	 * @param Throwable $e Exception thrown.
 	 * @return void
 	 */
 	public function failed( Throwable $e ) {
-		$post_id = $this->get_post_id();
+		$this->failed = true;
 
-		if ( $post_id ) {
-			update_post_meta( $post_id, '_mantle_queue_error', $e->getMessage() );
+		if ( $this->queue_post_id ) {
+			update_post_meta( $this->queue_post_id, '_mantle_queue_error', $e->getMessage() );
+			wp_update_post(
+				[
+					'ID'          => $this->queue_post_id,
+					'post_status' => 'failed',
+				]
+			);
 		}
-
-		$this->delete();
 	}
 
 	/**

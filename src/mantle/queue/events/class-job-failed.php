@@ -38,9 +38,9 @@ class Job_Failed {
 	/**
 	 * Constructor.
 	 *
-	 * @param Provider  $provider   Queue provider.
-	 * @param mixed     $job        Job object.
-	 * @param Throwable $exception Exception.
+	 * @param Provider  $provider Queue provider.
+	 * @param mixed     $job      Job object.
+	 * @param Throwable $e        Exception.
 	 */
 	public function __construct( Provider $provider, $job, Throwable $e ) {
 		$this->provider  = $provider;

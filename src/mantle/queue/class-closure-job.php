@@ -53,10 +53,12 @@ class Closure_Job implements Can_Queue {
 	}
 
 	/**
-	 * Fire the queue job.
+	 * Handle the queue job.
 	 */
-	public function fire() {
-		dd('FIRE', $this->closure);
+	public function handle() {
+		$callback = $this->closure->getClosure();
+
+		$callback();
 	}
 
 	/**

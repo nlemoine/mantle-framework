@@ -16,6 +16,13 @@ use Throwable;
  */
 abstract class Queue_Worker_Job {
 	/**
+	 * Flag if the job failed.
+	 *
+	 * @var bool
+	 */
+	public bool $failed = false;
+
+	/**
 	 * Fire the queue job.
 	 */
 	abstract public function fire();

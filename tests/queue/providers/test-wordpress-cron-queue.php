@@ -12,6 +12,8 @@ use Mantle\Queue\Providers\WordPress\Scheduler;
 use Mantle\Testing\Concerns\Refresh_Database;
 use RuntimeException;
 
+use function Mantle\Queue\dispatch;
+
 /**
  * WordPress Cron Queue Provider Test
  *
@@ -70,8 +72,69 @@ class Test_WordPress_Cron_Queue extends Framework_Test_Case {
 		$this->assertTrue( $_SERVER['__failed_run'] );
 	}
 
-	// public function test_wordpress_queue_job_from_closure_async() {}
-	// public function test_wordpress_queue_job_from_closure_sync() {}
+	public function test_wordpress_queue_job_from_closure_async() {
+		$_SERVER['__closure_job'] = false;
+
+		dispatch( function() {
+			$_SERVER['__closure_job'] = true;
+		} );
+
+		$this->assertInCronQueue( Scheduler::EVENT, [ 'default' ] );
+
+		// Assert the serialize queue post exists.
+		$this->assertPostExists( [
+			'post_type'    => Provider::OBJECT_NAME,
+			'meta_key'     => '_mantle_queue',
+			'meta_value'   => 'SerializableClosure',
+			'meta_compare' => 'LIKE',
+		] );
+
+		$this->dispatch_queue();
+
+		$this->assertTrue( $_SERVER['__closure_job'] );
+
+		$this->assertPostDoesNotExists( [
+			'post_type'    => Provider::OBJECT_NAME,
+			'meta_key'     => '_mantle_queue',
+			'meta_value'   => 'SerializableClosure',
+			'meta_compare' => 'LIKE',
+		] );
+	}
+
+	public function test_wordpress_queue_job_from_closure_async_failure() {
+		$_SERVER['__closure_job'] = false;
+		$_SERVER['__failed_run']  = false;
+
+		$this->app['events']->listen( Job_Failed::class, fn () => $_SERVER['__failed_run'] = true );
+
+		dispatch( function() {
+			throw new RuntimeException( 'Something went wrong' );
+		} )->catch( fn () => $_SERVER['__failed_run'] = true );
+
+		$this->assertInCronQueue( Scheduler::EVENT, [ 'default' ] );
+
+		// Assert the serialize queue post exists.
+		$this->assertPostExists( [
+			'post_status'  => 'publish',
+			'post_type'    => Provider::OBJECT_NAME,
+			'meta_key'     => '_mantle_queue',
+			'meta_value'   => 'SerializableClosure',
+			'meta_compare' => 'LIKE',
+		] );
+
+		$this->dispatch_queue();
+
+		$this->assertFalse( $_SERVER['__closure_job'] );
+		$this->assertTrue( $_SERVER['__failed_run'] );
+
+		$this->assertPostExists( [
+			'post_status' => 'failed',
+			'post_type'    => Provider::OBJECT_NAME,
+			'meta_key'     => '_mantle_queue',
+			'meta_value'   => 'SerializableClosure',
+			'meta_compare' => 'LIKE',
+		] );
+	}
 
 	public function test_schedule_next_run_after_complete() {
 		// Limit the queue batch size.

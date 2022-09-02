@@ -90,7 +90,7 @@ class Queue_Service_Provider extends Service_Provider {
 			// function( Events\Run_Complete $event ) {
 			function( $event ) {
 				// if (!$event) {
-				// 	dd('EMPTY', array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), 0, 10));
+				// dd('EMPTY', array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), 0, 10));
 				// }
 
 				if ( $event && $event->provider instanceof Providers\WordPress\Provider ) {

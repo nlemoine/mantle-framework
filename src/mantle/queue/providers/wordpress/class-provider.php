@@ -34,6 +34,13 @@ class Provider implements Provider_Contract {
 	public const OBJECT_NAME = 'mantle_queue';
 
 	/**
+	 * Post status for failed jobs.
+	 *
+	 * @var string
+	 */
+	public const POST_STATUS_FAILED = 'failed';
+
+	/**
 	 * Queue of cron jobs to process.
 	 *
 	 * @var array
@@ -56,6 +63,14 @@ class Provider implements Provider_Contract {
 			static::OBJECT_NAME,
 			[
 				'public' => false,
+			]
+		);
+
+		\register_post_status(
+			static::POST_STATUS_FAILED,
+			[
+				'internal' => true,
+				'public'   => false,
 			]
 		);
 
@@ -82,7 +97,7 @@ class Provider implements Provider_Contract {
 	/**
 	 * Push a job to the queue.
 	 *
-	 * @todo Support priority sorting with `menu_order`.
+	 * @throws RuntimeException Thrown on error inserting the job into the database.
 	 *
 	 * @param mixed $job Job instance.
 	 * @return bool
@@ -95,7 +110,7 @@ class Provider implements Provider_Contract {
 		}
 
 		if ( $job instanceof SerializableClosure ) {
-			$job = serialize( $job );
+			$job = serialize( $job ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 		}
 
 		$queue  = $job->queue ?? 'default';
@@ -112,7 +127,6 @@ class Provider implements Provider_Contract {
 
 		if ( is_wp_error( $insert ) ) {
 			throw new RuntimeException( 'Error adding job to queue: ' . $insert->get_error_message() );
-			// return false;
 		}
 
 		wp_set_object_terms( $insert, static::get_queue_term_id( $queue ), static::OBJECT_NAME, false );

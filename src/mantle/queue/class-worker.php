@@ -70,12 +70,16 @@ class Worker {
 
 				try {
 					$job->fire();
+
+					$this->events->dispatch( new Job_Processed( $provider, $job ) );
 				} catch ( Throwable $e ) {
 					$this->handle_job_exception( $provider, $job, $e );
+
 					$this->events->dispatch( new Job_Failed( $provider, $job, $e ) );
 				} finally {
-					$this->events->dispatch( new Job_Processed( $provider, $job ) );
-					$job->delete();
+					if ( ! isset( $job->failed ) || ! $job->failed ) {
+						$job->delete();
+					}
 				}
 			}
 		);
@@ -88,8 +92,8 @@ class Worker {
 	 *
 	 * @todo Add add job retrying.
 	 *
-	 * @param Provider $provider Queue provider.
-	 * @param mixed    $job      Queue job.
+	 * @param Provider  $provider Queue provider.
+	 * @param mixed     $job      Queue job.
 	 * @param Throwable $e       Exception thrown.
 	 * @return void
 	 */
