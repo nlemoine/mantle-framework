@@ -109,8 +109,10 @@ class Test_Worker extends MockeryTestCase {
 		$mock_job = m::mock( Job::class );
 
 		if ( $should_run ) {
-			$mock_job->shouldReceive( 'fire' )->once();
+			$mock_job->shouldReceive( 'fire' )->once()->andReturn( true );
 			$mock_job->shouldReceive( 'delete' )->once();
+			$mock_job->shouldReceive( 'has_failed' )->once()->andReturn( false );
+			$mock_job->shouldNotReceive( 'failed' );
 		}
 
 		$mock_job->shouldReceive( 'get_id' )->andReturn( $id );

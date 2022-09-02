@@ -48,4 +48,13 @@ abstract class Queue_Worker_Job {
 	 * @return void
 	 */
 	abstract public function delete();
+
+	/**
+	 * Check if the job has failed.
+	 *
+	 * @return bool
+	 */
+	public function has_failed(): bool {
+		return $this->failed;
+	}
 }

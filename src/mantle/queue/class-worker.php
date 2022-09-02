@@ -16,6 +16,7 @@ use Mantle\Queue\Events\Job_Processed;
 use Mantle\Queue\Events\Job_Processing;
 use Mantle\Queue\Events\Run_Complete;
 use Mantle\Queue\Events\Run_Start;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -69,7 +70,11 @@ class Worker {
 				$this->events->dispatch( new Job_Processing( $provider, $job ) );
 
 				try {
-					$job->fire();
+					if ( $job instanceof Closure || is_callable( $job ) ) {
+						$job();
+					} else {
+						$job->fire();
+					}
 
 					$this->events->dispatch( new Job_Processed( $provider, $job ) );
 				} catch ( Throwable $e ) {
@@ -77,7 +82,7 @@ class Worker {
 
 					$this->events->dispatch( new Job_Failed( $provider, $job, $e ) );
 				} finally {
-					if ( ! isset( $job->failed ) || ! $job->failed ) {
+					if ( ! $job instanceof Closure && ! $job->has_failed() ) {
 						$job->delete();
 					}
 				}
