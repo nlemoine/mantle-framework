@@ -6,6 +6,7 @@ use Mantle\Contracts\Queue\Can_Queue;
 use Mantle\Contracts\Queue\Job;
 use Mantle\Queue\Dispatchable;
 use Mantle\Queue\Events\Job_Failed;
+use Mantle\Queue\Events\Run_Complete;
 use Mantle\Queue\Queueable;
 use Mantle\Queue\Providers\WordPress\Provider;
 use Mantle\Queue\Providers\WordPress\Scheduler;
@@ -23,11 +24,11 @@ use function Mantle\Queue\dispatch;
 class Test_WordPress_Cron_Queue extends Framework_Test_Case {
 	use Refresh_Database;
 
-	// protected function setUp(): void {
-	// 	parent::setUp();
+	protected function setUp(): void {
+		remove_all_filters( Run_Complete::class );
 
-	// 	Provider::on_init();
-	// }
+		parent::setUp();
+	}
 
 	public function test_wordpress_queue_job_from_class_async() {
 		$_SERVER['__example_job'] = false;
