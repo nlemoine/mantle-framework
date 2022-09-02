@@ -45,7 +45,6 @@ class Queue_Worker_Job extends \Mantle\Queue\Queue_Worker_Job {
 	 * @todo Add error handling for the queue item.
 	 */
 	public function fire() {
-		// dd('FIRE', $this->job);
 		if ( $this->job instanceof JobContract ) {
 			$this->job->handle();
 		} elseif ( is_callable( $this->job ) ) {

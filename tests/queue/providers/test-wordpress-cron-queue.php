@@ -21,11 +21,11 @@ use RuntimeException;
 class Test_WordPress_Cron_Queue extends Framework_Test_Case {
 	use Refresh_Database;
 
-	protected function setUp(): void {
-		parent::setUp();
+	// protected function setUp(): void {
+	// 	parent::setUp();
 
-		// Provider::on_init();
-	}
+	// 	Provider::on_init();
+	// }
 
 	public function test_wordpress_queue_job_from_class_async() {
 		$_SERVER['__example_job'] = false;

@@ -15,6 +15,9 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
 
 use function Mantle\Support\Helpers\collect;
 
+/**
+ * @group queue
+ */
 class Test_Worker extends MockeryTestCase {
 
 	/**

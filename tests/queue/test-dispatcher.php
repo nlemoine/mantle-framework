@@ -10,12 +10,12 @@ use Mantle\Facade\Facade;
 use Mantle\Queue\Queue_Service_Provider;
 use Mantle\Queue\Dispatchable;
 use Mantle\Queue\Dispatcher;
-use Mantle\Queue\Pending_Dispatch;
 use Mantle\Queue\Queue_Manager;
 use Mockery as m;
 
-use function Mantle\Queue\dispatch;
-
+/**
+ * @group queue
+ */
 class Test_Dispatcher extends \Mockery\Adapter\Phpunit\MockeryTestCase {
 	/**
 	 * Provider instance.
