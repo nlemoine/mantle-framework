@@ -56,6 +56,19 @@ class Scheduler {
 	}
 
 	/**
+	 * Unschedule the next run of the cron for a queue.
+	 *
+	 * @param string $queue Queue name.
+	 */
+	public static function unschedule( string $queue = null ): void {
+		if ( ! $queue ) {
+			$queue = 'default';
+		}
+
+		\wp_clear_scheduled_hook( static::EVENT, [ $queue ] );
+	}
+
+	/**
 	 * Schedule the next run of a queue.
 	 *
 	 * Checks if there are items remaining in the queue before running. Uses the
@@ -82,7 +95,10 @@ class Scheduler {
 			]
 		);
 
+		// Ensure the queue job isn't scheduled if there are no items in the queue.
 		if ( empty( $has_remaining ) ) {
+			static::unschedule( $queue );
+
 			return false;
 		}
 

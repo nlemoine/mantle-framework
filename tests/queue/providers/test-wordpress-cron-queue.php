@@ -77,13 +77,19 @@ class Test_WordPress_Cron_Queue extends Framework_Test_Case {
 		// Limit the queue batch size.
 		$this->app['config']->set( 'queue.batch_size', 5 );
 
-		for ( $i = 0; $i < 10; $i++ ) {
+		for ( $i = 0; $i < 8; $i++ ) {
 			Example_Job::dispatch();
 		}
+
+		$this->assertInCronQueue( Scheduler::EVENT, [ 'default' ] );
 
 		$this->dispatch_queue();
 
 		$this->assertInCronQueue( Scheduler::EVENT, [ 'default' ] );
+
+		$this->dispatch_queue();
+
+		$this->assertNotInCronQueue( Scheduler::EVENT, [ 'default' ] );
 	}
 }
 
