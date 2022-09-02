@@ -7,7 +7,7 @@ use Mantle\Contracts\Queue\Can_Queue;
 use Mantle\Contracts\Queue\Job;
 use Mantle\Contracts\Queue\Provider;
 use Mantle\Facade\Facade;
-use Mantle\Framework\Providers\Queue_Service_Provider;
+use Mantle\Queue\Queue_Service_Provider;
 use Mantle\Queue\Dispatchable;
 use Mantle\Queue\Dispatcher;
 use Mantle\Queue\Pending_Dispatch;

@@ -4,7 +4,7 @@ namespace Mantle\Tests\Queue;
 use Mantle\Framework\Application;
 use Mantle\Config\Repository;
 use Mantle\Contracts\Queue\Provider;
-use Mantle\Framework\Providers\Queue_Service_Provider;
+use Mantle\Queue\Queue_Service_Provider;
 use Mantle\Queue\Events;
 use Mantle\Queue\Events\Run_Complete;
 use Mantle\Queue\Events\Run_Start;
@@ -107,6 +107,7 @@ class Test_Worker extends MockeryTestCase {
 
 		if ( $should_run ) {
 			$mock_job->shouldReceive( 'fire' )->once();
+			$mock_job->shouldReceive( 'delete' )->once();
 		}
 
 		$mock_job->shouldReceive( 'get_id' )->andReturn( $id );

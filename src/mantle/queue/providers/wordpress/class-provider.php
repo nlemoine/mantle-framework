@@ -5,13 +5,14 @@
  * @package Mantle
  */
 
-namespace Mantle\Queue;
+namespace Mantle\Queue\Providers\WordPress;
 
 use InvalidArgumentException;
 use Laravel\SerializableClosure\SerializableClosure;
-use Mantle\Contracts\Queue\Provider;
+use Mantle\Contracts\Queue\Provider as Provider_Contract;
 use Mantle\Contracts\Queue\Queue_Manager;
 use Mantle\Support\Collection;
+use RuntimeException;
 
 use function Mantle\Support\Helpers\collect;
 
@@ -24,7 +25,7 @@ use function Mantle\Support\Helpers\collect;
  * @todo Add support for one off cron events that should have their own cron scheduled.
  * @todo Add support for different queue names.
  */
-class Wp_Cron_Provider implements Provider {
+class Provider implements Provider_Contract {
 	/**
 	 * Post/taxonomy name for the internal queue.
 	 *
@@ -51,6 +52,7 @@ class Wp_Cron_Provider implements Provider {
 		);
 
 		\register_taxonomy(
+			static::OBJECT_NAME,
 			static::OBJECT_NAME,
 			[
 				'public' => false,
@@ -109,13 +111,14 @@ class Wp_Cron_Provider implements Provider {
 		);
 
 		if ( is_wp_error( $insert ) ) {
-			return false;
+			throw new RuntimeException( 'Error adding job to queue: ' . $insert->get_error_message() );
+			// return false;
 		}
 
 		wp_set_object_terms( $insert, static::get_queue_term_id( $queue ), static::OBJECT_NAME, false );
 
 		// Ensure that the next cron event is scheduled for this queue.
-		Wp_Cron_Scheduler::schedule( $queue );
+		Scheduler::schedule( $queue );
 
 		return true;
 	}
@@ -153,7 +156,7 @@ class Wp_Cron_Provider implements Provider {
 
 		return collect( $post_ids )
 			->map(
-				fn( int $post_id ) => new Wp_Cron_Job( \get_post_meta( $post_id, '_mantle_queue', true ), $post_id ),
+				fn( int $post_id ) => new Queue_Worker_Job( \get_post_meta( $post_id, '_mantle_queue', true ), $post_id ),
 			);
 	}
 

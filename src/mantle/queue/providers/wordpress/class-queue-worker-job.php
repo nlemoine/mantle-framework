@@ -5,14 +5,15 @@
  * @package Mantle
  */
 
-namespace Mantle\Queue;
+namespace Mantle\Queue\Providers\WordPress;
 
 use Mantle\Contracts\Queue\Job as JobContract;
+use Throwable;
 
 /**
  * WordPress Cron Queue Job
  */
-class Wp_Cron_Job extends Job {
+class Queue_Worker_Job extends \Mantle\Queue\Queue_Worker_Job {
 	/**
 	 * Raw job callback.
 	 *
@@ -70,5 +71,34 @@ class Wp_Cron_Job extends Job {
 	 */
 	public function get_id() {
 		return $this->get_post_id();
+	}
+
+	/**
+	 * Handle a failed queue job.
+	 *
+	 * @todo Add retrying for queued jobs.
+	 *
+	 * @param Throwable $e Exception thrown
+	 * @return void
+	 */
+	public function failed( Throwable $e ) {
+		$post_id = $this->get_post_id();
+
+		if ( $post_id ) {
+			update_post_meta( $post_id, '_mantle_queue_error', $e->getMessage() );
+		}
+
+		$this->delete();
+	}
+
+	/**
+	 * Delete the job from the queue.
+	 */
+	public function delete() {
+		$post_id = $this->get_post_id();
+
+		if ( $post_id && wp_delete_post( $post_id, true ) ) {
+			$this->queue_post_id = null;
+		}
 	}
 }
