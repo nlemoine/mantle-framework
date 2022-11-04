@@ -110,7 +110,7 @@ trait Rsync_Installation {
 	 * @return string
 	 */
 	protected function get_installation_path(): string {
-		return getenv( 'WP_CORE_DIR' ) ?: sys_get_temp_dir() . '/wordpress';
+		return Utils::env( 'WP_TESTS_INSTALL_PATH', '/tmp/wordpress' );
 	}
 
 	/**

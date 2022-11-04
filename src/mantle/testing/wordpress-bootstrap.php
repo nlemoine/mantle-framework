@@ -45,7 +45,7 @@ if ( defined( 'WP_TESTS_CONFIG_FILE_PATH' ) && ! empty( WP_TESTS_CONFIG_FILE_PAT
 	 * CI tests.
 	 */
 
-	defined( 'WP_TESTS_INSTALL_PATH' ) || define( 'WP_TESTS_INSTALL_PATH', '/tmp/wordpress' );
+	defined( 'WP_TESTS_INSTALL_PATH' ) || define( 'WP_TESTS_INSTALL_PATH', Utils::env( 'WP_TESTS_INSTALL_PATH', '/tmp/wordpress' ) );
 
 	$config_file_path = WP_TESTS_INSTALL_PATH . '/wp-tests-config.php';
 
