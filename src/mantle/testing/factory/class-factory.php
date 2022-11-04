@@ -9,6 +9,7 @@ namespace Mantle\Testing\Factory;
 
 use Mantle\Contracts\Database\Core_Object;
 use Mantle\Support\Pipeline;
+use Mantle\Support\Traits\Macroable;
 
 use function Mantle\Support\Helpers\collect;
 use function Mantle\Support\Helpers\tap;
@@ -19,6 +20,8 @@ use function Mantle\Support\Helpers\tap;
  * @template TObject
  */
 abstract class Factory {
+	use Macroable;
+
 	/**
 	 * Flag to return the factory as a model.
 	 *
