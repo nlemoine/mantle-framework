@@ -7,7 +7,6 @@
 
 namespace Mantle\Testing\Concerns;
 
-use Mantle\Console\Command;
 use Mantle\Testing\Test_Command;
 
 /**

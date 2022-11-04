@@ -11,6 +11,11 @@
         "symfony/finder": "^5.3",
         "symfony/string": "^5.3"
     },
+    "autoload": {
+        "files": [
+            "autoload.php"
+        ]
+    },
     "extra": {
         "branch-alias": {
             "dev-main": "0.9-dev"
