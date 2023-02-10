@@ -275,15 +275,17 @@ class Utils {
 			static::info( 'Installing WordPress with SQLite support.' );
 
 			$command = sprintf(
-				'export WP_CORE_DIR=%s && curl -s %s | bash -s %s %s',
+				'export WP_CORE_DIR=%s export MANTLE_CI_TREE=%s && curl -s %s | bash -s %s',
 				$directory,
+				static::shell_safe( static::env( 'MANTLE_CI_TREE', 'HEAD' ) ),
 				sprintf(
+					// 'http://localhost:3030/sqlite/install-wp-tests.sh',
 					'https://raw.githubusercontent.com/alleyinteractive/mantle-ci/%s/sqlite/install-wp-tests.sh',
 					static::env( 'MANTLE_CI_TREE', 'HEAD' ),
 				),
 				static::shell_safe( static::env( 'WP_VERSION', 'latest' ) ),
-				static::shell_safe( static::env( 'WP_SKIP_DB_CREATE', 'false' ) ),
 			);
+			dump($command);
 		} else {
 			$command = sprintf(
 				'export WP_CORE_DIR=%s && curl -s %s | bash -s %s %s %s %s %s %s',
