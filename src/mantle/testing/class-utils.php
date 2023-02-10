@@ -271,17 +271,35 @@ class Utils {
 	 * @param string $directory Directory to install WordPress in.
 	 */
 	public static function install_wordpress( string $directory ): void {
-		$command = sprintf(
-			'export WP_CORE_DIR=%s && curl -s %s | bash -s %s %s %s %s %s %s',
-			$directory,
-			'https://raw.githubusercontent.com/alleyinteractive/mantle-ci/HEAD/install-wp-tests.sh',
-			static::shell_safe( defined( 'DB_NAME' ) ? DB_NAME : static::env( 'WP_DB_NAME', 'wordpress_unit_tests' ) ),
-			static::shell_safe( defined( 'DB_USER' ) ? DB_USER : static::env( 'WP_DB_USER', 'root' ) ),
-			static::shell_safe( defined( 'DB_PASSWORD' ) ? DB_PASSWORD : static::env( 'WP_DB_PASSWORD', 'root' ) ),
-			static::shell_safe( defined( 'DB_HOST' ) ? DB_HOST : static::env( 'WP_DB_HOST', 'localhost' ) ),
-			static::shell_safe( static::env( 'WP_VERSION', 'latest' ) ),
-			static::shell_safe( static::env( 'WP_SKIP_DB_CREATE', 'false' ) ),
-		);
+		if ( static::supports_sqlite() ) {
+			static::info( 'Installing WordPress with SQLite support.' );
+
+			$command = sprintf(
+				'export WP_CORE_DIR=%s && curl -s %s | bash -s %s %s',
+				$directory,
+				sprintf(
+					'https://raw.githubusercontent.com/alleyinteractive/mantle-ci/%s/sqlite/install-wp-tests.sh',
+					static::env( 'MANTLE_CI_TREE', 'HEAD' ),
+				),
+				static::shell_safe( static::env( 'WP_VERSION', 'latest' ) ),
+				static::shell_safe( static::env( 'WP_SKIP_DB_CREATE', 'false' ) ),
+			);
+		} else {
+			$command = sprintf(
+				'export WP_CORE_DIR=%s && curl -s %s | bash -s %s %s %s %s %s %s',
+				$directory,
+				sprintf(
+					'https://raw.githubusercontent.com/alleyinteractive/mantle-ci/%s/install-wp-tests.sh',
+					static::env( 'MANTLE_CI_TREE', 'HEAD' ),
+				),
+				static::shell_safe( defined( 'DB_NAME' ) ? DB_NAME : static::env( 'WP_DB_NAME', 'wordpress_unit_tests' ) ),
+				static::shell_safe( defined( 'DB_USER' ) ? DB_USER : static::env( 'WP_DB_USER', 'root' ) ),
+				static::shell_safe( defined( 'DB_PASSWORD' ) ? DB_PASSWORD : static::env( 'WP_DB_PASSWORD', 'root' ) ),
+				static::shell_safe( defined( 'DB_HOST' ) ? DB_HOST : static::env( 'WP_DB_HOST', 'localhost' ) ),
+				static::shell_safe( static::env( 'WP_VERSION', 'latest' ) ),
+				static::shell_safe( static::env( 'WP_SKIP_DB_CREATE', 'false' ) ),
+			);
+		}
 
 		$output = static::command( $command, $retval );
 
@@ -308,6 +326,25 @@ class Utils {
 				],
 			)
 		);
+	}
+
+	/**
+	 * Check if the system supports SQLite.
+	 *
+	 * @return bool
+	 */
+	public static function supports_sqlite(): bool {
+		if ( empty( static::env( 'MANTLE_USE_SQLITE', false ) ) ) {
+			return false;
+		}
+
+		if ( extension_loaded( 'pdo_sqlite' ) && extension_loaded( 'pdo' ) ) {
+			return true;
+		}
+
+		static::error( 'Unable to use SQLite installation. This system does not have the required extensions.' );
+
+		return false;
 	}
 
 	/**
