@@ -279,13 +279,11 @@ class Utils {
 				$directory,
 				static::shell_safe( static::env( 'MANTLE_CI_TREE', 'HEAD' ) ),
 				sprintf(
-					// 'http://localhost:3030/sqlite/install-wp-tests.sh',
 					'https://raw.githubusercontent.com/alleyinteractive/mantle-ci/%s/sqlite/install-wp-tests.sh',
 					static::env( 'MANTLE_CI_TREE', 'HEAD' ),
 				),
 				static::shell_safe( static::env( 'WP_VERSION', 'latest' ) ),
 			);
-			dump($command);
 		} else {
 			$command = sprintf(
 				'export WP_CORE_DIR=%s && curl -s %s | bash -s %s %s %s %s %s %s',
