@@ -7,8 +7,10 @@
 
 namespace Mantle\Testing;
 
+use BadMethodCallException;
 use Mantle\Container\Container;
 use Mantle\Contracts\Application;
+use Mantle\Contracts\Testing\Makes_Http_Requests as Makes_Http_Requests_Contract;
 use Mantle\Database\Model\Model;
 use Mantle\Facade\Facade;
 use Mantle\Framework\Alias_Loader;
@@ -30,6 +32,7 @@ use Mantle\Testing\Concerns\Refresh_Database;
 use Mantle\Testing\Concerns\WordPress_Authentication;
 use Mantle\Testing\Concerns\WordPress_State;
 use Mantle\Testing\Factory\Factory_Container;
+use Mantle\Testing\Http\Pending_Request;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use WP;
 use WP_Query;
@@ -309,6 +312,15 @@ abstract class Test_Case extends BaseTestCase {
 	}
 
 	/**
+	 * Retrieve the application instance.
+	 *
+	 * @return \Mantle\Contracts\Application
+	 */
+	public function app(): \Mantle\Contracts\Application {
+		return $this->app;
+	}
+
+	/**
 	 * Allow the factory to be checked against.
 	 *
 	 * @param string $name Property name.
@@ -328,5 +340,16 @@ abstract class Test_Case extends BaseTestCase {
 		if ( 'factory' === $name ) {
 			return self::factory();
 		}
+	}
+
+	/**
+	 * Forward any unknown method to the Makes_Http_Request trait.
+	 */
+	public function __call( string $method, array $arguments ) {
+		if ( method_exists( Pending_Request::class, $method ) ) {
+			return $this->pending_request()->{$method}( ...$arguments );
+		}
+
+		throw new BadMethodCallException( "Method {$method} does not exist." );
 	}
 }

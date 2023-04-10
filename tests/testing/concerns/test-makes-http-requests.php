@@ -139,6 +139,16 @@ class Test_Makes_Http_Requests extends Framework_Test_Case {
 			->assertHeader( 'Other-Header', '123' );
 	}
 
+	public function test_json_request() {
+		$this->app['router']->post(
+			'/route-to-json/',
+			fn () => dd(request()),
+		);
+
+		$this->post_json( '/route-to-json/', [ 'foo' => 'bar' ] )
+			->assertOk();
+	}
+
 	public function test_assert_json_structure() {
 		$response = Test_Response::from_base_response(
 			new Response( new JsonSerializableMixedResourcesStub() )

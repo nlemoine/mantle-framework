@@ -214,6 +214,7 @@ class Kernel implements Kernel_Contract, Core_Kernel_Contract {
 			if ( $e instanceof ResourceNotFoundException && $provider->should_pass_through_requests( $request ) ) {
 				return null;
 			}
+			dd($e);
 
 			$this->report_exception( $e );
 
