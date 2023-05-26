@@ -249,4 +249,12 @@ interface Application extends Container {
 	 * @return string
 	 */
 	public function get_cached_events_path(): string;
+
+	/**
+	 * Register a service provider.
+	 *
+	 * @param Service_Provider|class-string<Service_Provider> $provider Provider to register.
+	 * @return static
+	 */
+	public function register( Service_Provider|string $provider ): static;
 }

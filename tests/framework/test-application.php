@@ -114,9 +114,7 @@ class Test_Application extends \Mockery\Adapter\Phpunit\MockeryTestCase {
 		$app = new Application();
 		$app->environment_path( __DIR__ . '/../fixtures/config' );
 		$app->environment_file( 'env-file' );
-
-		// todo: refactor.
-		( new Load_Environment_Variables() )->bootstrap( $app );
+		$app->load_environment_variables();
 
 		$this->assertEquals( 'bar', environment( 'ENV_VAR_FOO' ) );
 		$this->assertEquals( 'bar', $_ENV['ENV_VAR_FOO'] );
@@ -129,8 +127,7 @@ class Test_Application extends \Mockery\Adapter\Phpunit\MockeryTestCase {
 		$app = new Application();
 		$app->environment_path( __DIR__ . '/../fixtures/config' );
 		$app->environment_file( 'fake-file' );
-
-		( new Load_Environment_Variables() )->bootstrap( $app );
+		$app->load_environment_variables();
 	}
 }
 
