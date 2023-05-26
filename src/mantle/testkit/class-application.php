@@ -459,6 +459,17 @@ class Application extends Container implements Application_Contract {
 	}
 
 	/**
+	 * Alias to get_namespace().
+	 *
+	 * @throws RuntimeException Thrown on error determining namespace.
+	 *
+	 * @return string
+	 */
+	public function namespace(): string {
+		return $this->get_namespace();
+	}
+
+	/**
 	 * Check if the application is running in the console (wp-cli).
 	 *
 	 * @return bool

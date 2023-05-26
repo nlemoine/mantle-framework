@@ -127,11 +127,20 @@ interface Application extends Container {
 	/**
 	 * Get the application namespace.
 	 *
-	 * @return string
-	 *
 	 * @throws RuntimeException Thrown on error determining namespace.
+	 *
+	 * @return string
 	 */
 	public function get_namespace(): string;
+
+	/**
+	 * Alias to get_namespace().
+	 *
+	 * @throws RuntimeException Thrown on error determining namespace.
+	 *
+	 * @return string
+	 */
+	public function namespace(): string;
 
 	/**
 	 * Check if the application is running in the console.

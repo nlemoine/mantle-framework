@@ -32,6 +32,10 @@ use function Mantle\Support\Helpers\collect;
  * Mantle Application
  */
 class Application extends Container implements Application_Contract {
+	use Concerns\Loads_Base_Configuration,
+		Concerns\Loads_Environment_Variables,
+		Concerns\Loads_Facades;
+
 	/**
 	 * Base path of the application.
 	 *
@@ -157,6 +161,7 @@ class Application extends Container implements Application_Contract {
 		$this->register_base_bindings();
 		$this->register_base_service_providers();
 		$this->register_core_aliases();
+		$this->register_base_services();
 	}
 
 	/**
@@ -400,6 +405,15 @@ class Application extends Container implements Application_Contract {
 	}
 
 	/**
+	 * Register the base services for the application.
+	 */
+	public function register_base_services() {
+		$this->load_environment_variables();
+		$this->load_base_configuration();
+		$this->load_facades();
+	}
+
+	/**
 	 * Flush the container of all bindings and resolved instances.
 	 */
 	public function flush() {
@@ -601,6 +615,17 @@ class Application extends Container implements Application_Contract {
 		}
 
 		return (string) $this['config']->get( 'app.namespace', 'App' );
+	}
+
+	/**
+	 * Alias to get_namespace().
+	 *
+	 * @throws RuntimeException Thrown on error determining namespace.
+	 *
+	 * @return string
+	 */
+	public function namespace(): string {
+		return $this->get_namespace();
 	}
 
 	/**

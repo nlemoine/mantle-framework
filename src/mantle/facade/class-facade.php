@@ -56,6 +56,15 @@ abstract class Facade {
 	}
 
 	/**
+	 * Get the application instance for the Facade.
+	 *
+	 * @return \Mantle\Contracts\Application|null
+	 */
+	public static function get_facade_application(): ?Application {
+		return static::$app;
+	}
+
+	/**
 	 * Set the application instance for the Facade.
 	 *
 	 * @param \Mantle\Contracts\Application $app Application instance.

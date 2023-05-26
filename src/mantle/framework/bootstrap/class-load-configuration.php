@@ -17,35 +17,19 @@ use Mantle\Support\Helpers;
 use Mantle\Support\Str;
 
 /**
- * Load the Application's Configuration
+ * Load the Application's Configuration from the filesystem.
  */
 class Load_Configuration {
 	/**
 	 * Load the configuration for the application.
 	 *
-	 * @todo Add cached config usage.
-	 *
 	 * @param Application $app Application instance.
 	 */
 	public function bootstrap( Application $app ) {
-		$cached = $app->get_cached_config_path();
+		$config = $app->make( 'config' );
 
-		$items = [];
-
-		// Check if a cached configuration file exists.
-		if ( is_file( $cached ) ) {
-			$items = require $cached;
-
-			$loaded_from_cache = true;
-		}
-
-		$config = new Repository( $items );
-
-		// Set the global config alias.
-		$app->instance( 'config', $config );
-
-		// Load configuration files if the config hasn't been loaded from cache.
-		if ( ! isset( $loaded_from_cache ) ) {
+		// Load the configuration files if not loaded from cache.
+		if ( ! $config->get( 'config.loaded_from_cache' ) ) {
 			$this->load_configuration_files( $app, $config );
 		}
 	}
@@ -55,15 +39,14 @@ class Load_Configuration {
 	 *
 	 * @param Application         $app Application instance.
 	 * @param Repository_Contract $repository Configuration Repository.
-	 *
-	 * @throws Exception Thrown on missing 'app' config file.
+	 * @return void
 	 */
-	protected function load_configuration_files( Application $app, Repository_Contract $repository ) {
+	protected function load_configuration_files( Application $app, Repository_Contract $repository ): void {
 		$files = $this->get_configuration_files( $app );
 
 		// Bail early if 'app' is not found.
 		if ( empty( $files['app'] ) ) {
-			throw new Exception( 'Unable to find the "app" configuration file.' );
+			return;
 		}
 
 		// Filter the environment config files from the root-level ones.

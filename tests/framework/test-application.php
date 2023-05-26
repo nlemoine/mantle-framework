@@ -2,7 +2,6 @@
 namespace Mantle\Tests\Framework;
 
 use Mantle\Application\Application;
-use Mantle\Framework\Bootstrap\Load_Environment_Variables;
 use Mantle\Support\Service_Provider;
 use Mockery as m;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -116,6 +115,7 @@ class Test_Application extends \Mockery\Adapter\Phpunit\MockeryTestCase {
 		$app->environment_path( __DIR__ . '/../fixtures/config' );
 		$app->environment_file( 'env-file' );
 
+		// todo: refactor.
 		( new Load_Environment_Variables() )->bootstrap( $app );
 
 		$this->assertEquals( 'bar', environment( 'ENV_VAR_FOO' ) );
