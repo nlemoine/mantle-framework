@@ -415,6 +415,14 @@ class Application extends Container implements Application_Contract {
 	}
 
 	/**
+	 * Ensure the application is properly booted.
+	 *
+	 * Bootstrap the application if it has not been booted yet with default
+	 *
+	 * @todo
+	 */
+
+	/**
 	 * Determine if the application has booted.
 	 *
 	 * @return bool
@@ -486,7 +494,7 @@ class Application extends Container implements Application_Contract {
 			return $this->environment;
 		}
 
-		return Environment::get( 'ENV', function_exists( 'wp_get_environment_type' ) ? wp_get_environment_type() : '' );
+		return Environment::get( 'APP_ENV', function_exists( 'wp_get_environment_type' ) ? wp_get_environment_type() : '' );
 	}
 
 	/**

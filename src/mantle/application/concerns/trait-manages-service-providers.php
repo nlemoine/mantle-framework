@@ -4,6 +4,7 @@
  */
 namespace Mantle\Application\Concerns;
 
+use InvalidArgumentException;
 use Mantle\Contracts\Support\Isolated_Service_Provider;
 use Mantle\Events\Event_Service_Provider;
 use Mantle\Framework\Manifest\Package_Manifest;
@@ -86,6 +87,8 @@ trait Manages_Service_Providers {
 	/**
 	 * Register a Service Provider
 	 *
+	 * @throws InvalidArgumentException If the provider is not an instance of Service_Provider.
+	 *
 	 * @param Service_Provider|class-string<Service_Provider> $provider Provider instance or class name to register.
 	 * @return Application
 	 */
@@ -101,7 +104,7 @@ trait Manages_Service_Providers {
 		}
 
 		if ( ! ( $provider instanceof Service_Provider ) ) {
-			\wp_die( 'Provider is not instance of Service_Provider: ' . $provider_name ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			throw new InvalidArgumentException( "Provider is not instance of Service_Provider: {$provider_name}" );
 		}
 
 		$provider->register();

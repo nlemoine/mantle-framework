@@ -82,3 +82,9 @@ if ( ! function_exists( 'storage_path' ) ) {
 			return app( 'path.storage' ) . ( $path ? DIRECTORY_SEPARATOR . $path : $path );
 	}
 }
+
+add_action( 'plugins_loaded', function () {
+
+	// Instantiate the application.
+	Application::get_instance();
+}, 1 );
