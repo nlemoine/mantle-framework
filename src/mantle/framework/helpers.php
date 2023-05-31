@@ -14,6 +14,7 @@
 use Mantle\Application\Application;
 use Mantle\Contracts\Http\Routing\Response_Factory;
 use Mantle\Contracts\Http\View\Factory as View_Factory;
+use Mantle\Framework\Boot_Manager;
 use Mantle\Support\Environment;
 use Mantle\Framework\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\Routing\Generator\UrlGenerator;
@@ -31,5 +32,16 @@ if ( ! function_exists( 'report' ) ) {
 		}
 
 		app( ExceptionHandler::class )->report( $exception );
+	}
+}
+
+if ( ! function_exists( 'boot_manager' ) ) {
+	/**
+	 * Retrieve the Boot Manager instance.
+	 *
+	 * @return Boot_Manager
+	 */
+	function boot_manager(): Boot_Manager {
+		return Boot_Manager::get_instance();
 	}
 }

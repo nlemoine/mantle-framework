@@ -404,7 +404,7 @@ class Application extends Container implements Application_Contract {
 	 * Bootstrap classes should implement `Mantle\Contracts\Bootstrapable`.
 	 *
 	 * @param array<mixed, class-string<Bootstrapable>> $bootstrappers Class names of packages to boot.
-	 * @param Kernel_Contract $kernel Kernel instance.
+	 * @param Kernel_Contract                           $kernel Kernel instance.
 	 */
 	public function bootstrap_with( array $bootstrappers, Kernel_Contract $kernel ) {
 		$this->has_been_bootstrapped = true;
@@ -413,14 +413,6 @@ class Application extends Container implements Application_Contract {
 			$this->make( $bootstrapper )->bootstrap( $this, $kernel );
 		}
 	}
-
-	/**
-	 * Ensure the application is properly booted.
-	 *
-	 * Bootstrap the application if it has not been booted yet with default
-	 *
-	 * @todo
-	 */
 
 	/**
 	 * Determine if the application has booted.

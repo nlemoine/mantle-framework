@@ -121,7 +121,18 @@ class Kernel implements Kernel_Contract, Core_Kernel_Contract {
 			}
 		}
 
-		\add_action( 'wp_loaded', [ $this, 'handle_request' ], PHP_INT_MAX );
+		\add_action( 'wp_loaded', fn () => $this->handle_request(), PHP_INT_MAX );
+	}
+
+	/**
+	 * Terminate the kernel.
+	 *
+	 * @param Request $request Request instance.
+	 * @param mixed   $response Response instance.
+	 * @return void
+	 */
+	public function terminate( Request $request, mixed $response ): void {
+		$this->app->terminate();
 	}
 
 	/**
@@ -130,13 +141,15 @@ class Kernel implements Kernel_Contract, Core_Kernel_Contract {
 	 * Send the request through the HTTP Router and optional send the response. Called on
 	 * the 'wp_loaded' filter.
 	 */
-	public function handle_request() {
+	protected function handle_request() {
 		$response = $this->send_request_through_router( $this->request );
 		if ( ! $response ) {
 			return;
 		}
 
 		$response->send();
+
+		$this->terminate( $this->request, $response );
 
 		exit;
 	}

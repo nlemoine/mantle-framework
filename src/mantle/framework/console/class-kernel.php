@@ -89,7 +89,7 @@ class Kernel implements Kernel_Contract {
 		$this->app = $app;
 
 		$this->ensure_environment_is_set();
-		$this->register_wpcli_command();
+		// $this->register_wpcli_command();
 	}
 
 	/**
@@ -306,31 +306,31 @@ class Kernel implements Kernel_Contract {
 	 * Register a proxy WP-CLI command that will proxy back to the Symfony
 	 * application.
 	 */
-	protected function register_wpcli_command() {
-		if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
-			return;
-		}
+	// protected function register_wpcli_command() {
+	// if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
+	// return;
+	// }
 
-		\WP_CLI::add_command(
-			Command::PREFIX,
-			function () {
-				$status = $this->handle(
-					new \Symfony\Component\Console\Input\ArgvInput(
-						collect( (array) ( $_SERVER['argv'] ?? [] ) ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-							// Remove the `wp` prefix from argv and any invalid arguments (such as --url).
-							->filter( fn ( $value, $index ) => 0 !== $index && ! Str::starts_with( $value, '--url=' ) )
-							->all()
-					),
-					new \Symfony\Component\Console\Output\ConsoleOutput(),
-				);
+	// \WP_CLI::add_command(
+	// Command::PREFIX,
+	// function () {
+	// $status = $this->handle(
+	// new \Symfony\Component\Console\Input\ArgvInput(
+	// collect( (array) ( $_SERVER['argv'] ?? [] ) ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	// Remove the `wp` prefix from argv and any invalid arguments (such as --url).
+	// ->filter( fn ( $value, $index ) => 0 !== $index && ! Str::starts_with( $value, '--url=' ) )
+	// ->all()
+	// ),
+	// new \Symfony\Component\Console\Output\ConsoleOutput(),
+	// );
 
-				exit( (int) $status );
-			},
-			[
-				'shortdesc' => __( 'Mantle Framework Command Line Interface', 'mantle' ),
-			]
-		);
-	}
+	// exit( (int) $status );
+	// },
+	// [
+	// 'shortdesc' => __( 'Mantle Framework Command Line Interface', 'mantle' ),
+	// ]
+	// );
+	// }
 
 	/**
 	 * Terminate the kernel.

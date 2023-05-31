@@ -7,17 +7,26 @@
 
 namespace Mantle\Framework;
 
+use Closure;
 use Mantle\Application\Application;
+use Mantle\Console\Command;
 use Mantle\Contracts;
 use Mantle\Contracts\Framework\Boot_Manager as Contract;
+use Mantle\Http\Request;
+use Mantle\Support\Str;
+use Mantle\Support\Traits\Conditionable;
 
 /**
  * Boot Manager
  *
  * Used to instantiate the application and load the framework given the current
- * context.
+ * context. Removes the need for boilerplate code to be included in projects
+ * (ala laravel/laravel) but still allows for the flexibility to do so if they
+ * so choose.
  */
 class Boot_Manager implements Contract {
+	use Conditionable;
+
 	/**
 	 * Current instance of the manager.
 	 *
@@ -40,12 +49,22 @@ class Boot_Manager implements Contract {
 	}
 
 	/**
+	 * Alias to `get_instance()` method.
+	 *
+	 * @param Contracts\Application|null $app Application instance.
+	 * @return Boot_Manager
+	 */
+	public static function instance( ?Contracts\Application $app = null ): Boot_Manager {
+		return static::get_instance( $app );
+	}
+
+	/**
 	 * Set the instance of the manager.
 	 *
-	 * @param Boot_Manager $instance Instance of the manager.
+	 * @param Boot_Manager|null $instance Instance of the manager.
 	 * @return void
 	 */
-	public static function set_instance( Boot_Manager $instance ): void {
+	public static function set_instance( ?Boot_Manager $instance = null ): void {
 		static::$instance = $instance;
 	}
 
@@ -59,14 +78,45 @@ class Boot_Manager implements Contract {
 	}
 
 	/**
+	 * Bind to the container before booting.
+	 *
+	 * @param string              $abstract Abstract to bind.
+	 * @param Closure|string|null $concrete Concrete to bind.
+	 * @return static
+	 */
+	public function bind( string $abstract, Closure|string|null $concrete ): static {
+		if ( is_null( $this->app ) ) {
+			$this->boot_application();
+		}
+
+		$this->app->bind( $abstract, $concrete );
+
+		return $this;
+	}
+
+
+	/**
 	 * Boot the application given the current context.
 	 *
-	 * @return void
+	 * @return static
 	 */
-	public function boot(): void {
+	public function boot(): static {
 		$this->boot_application();
 
-		$this->app['events']->dispatch( 'mantle_boot_manager_booted', $this->app );
+		// Bail if the application is already booted.
+		if ( $this->app->is_booted() ) {
+			return $this;
+		}
+
+		if ( $this->app->is_running_in_console_isolation() ) {
+			$this->boot_console();
+		} elseif ( $this->app->is_running_in_console() ) {
+			$this->boot_console_wp_cli();
+		} else {
+			$this->boot_http();
+		}
+
+		return $this;
 	}
 
 	/**
@@ -77,11 +127,6 @@ class Boot_Manager implements Contract {
 	protected function boot_application(): void {
 		if ( is_null( $this->app ) ) {
 			$this->app = new Application();
-		}
-
-		// Bail if the application is already booted.
-		if ( $this->app->is_booted() ) {
-			return;
 		}
 
 		/**
@@ -105,6 +150,13 @@ class Boot_Manager implements Contract {
 			Contracts\Exceptions\Handler::class,
 			\Mantle\Framework\Exceptions\Handler::class,
 		);
+
+		/**
+		 * Fired after the application is booted.
+		 *
+		 * @param \Mantle\Contracts\Application $app Application instance.
+		 */
+		$this->app['events']->dispatch( 'mantle_boot_manager_booted', $this->app );
 	}
 
 	/**
@@ -112,7 +164,73 @@ class Boot_Manager implements Contract {
 	 *
 	 * @return Contracts\Application|null
 	 */
-	public function application(): ?Contracts\Application {
+	public function get_application(): ?Contracts\Application {
 		return $this->app;
+	}
+
+	/**
+	 * Boot the application in the console context.
+	 *
+	 * @return void
+	 */
+	protected function boot_console(): void {
+		$kernel = $this->app->make( Contracts\Console\Kernel::class );
+
+		$status    = $kernel->handle(
+			$input = new \Symfony\Component\Console\Input\ArgvInput(),
+			new \Symfony\Component\Console\Output\ConsoleOutput(),
+		);
+
+		$kernel->terminate( $input, $status );
+
+		exit( $status );
+	}
+
+	/**
+	 * Boot the application in the WP-CLI context.
+	 *
+	 * @return void
+	 */
+	protected function boot_console_wp_cli(): void {
+		\WP_CLI::add_command(
+			/**
+			 * Command prefix for Mantle WP-CLI commands.
+			 *
+			 * @param string $prefix The command prefix.
+			 * @param \Mantle\Contracts\Application $app The application instance.
+			 */
+			(string) apply_filters( 'mantle_console_command_prefix', Command::PREFIX, $this->app ),
+			function () {
+				$kernel = $this->app->make( Contracts\Console\Kernel::class );
+
+				$status    = $kernel->handle(
+					$input = new \Symfony\Component\Console\Input\ArgvInput(
+						collect( (array) ( $_SERVER['argv'] ?? [] ) ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+							// Remove the `wp` prefix from argv and any invalid arguments (such as --url).
+							->filter( fn ( $value, $index ) => 0 !== $index && ! Str::starts_with( $value, '--url=' ) )
+							->all()
+					),
+					new \Symfony\Component\Console\Output\ConsoleOutput(),
+				);
+
+				$kernel->terminate( $input, $status );
+
+				exit( (int) $status );
+			},
+			[
+				'shortdesc' => __( 'Mantle Framework Command Line Interface', 'mantle' ),
+			]
+		);
+	}
+
+	/**
+	 * Boot the application in the HTTP context.
+	 *
+	 * @return void
+	 */
+	protected function boot_http() {
+		$kernel = $this->app->make( Contracts\Http\Kernel::class );
+
+		$kernel->handle( Request::capture() );
 	}
 }
