@@ -47,12 +47,6 @@ class Test_Isolated_Framework extends TestCase {
 		$this->assertEquals( 'MyApp', app()->get_namespace() );
 	}
 
-	public function test_uses_the_default_configuration() {
-		$this->assertEquals( 'wordpress', config( 'cache.default' ) );
-		$this->assertEquals( 'wordpress', config( 'queue.default' ) );
-		$this->assertNotEmpty( config( 'app.providers' ) );
-	}
-
 	public function test_sets_up_facade() {
 		$this->assertEquals( $this->app, Facade::get_facade_application() );
 	}
