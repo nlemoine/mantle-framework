@@ -83,8 +83,8 @@ if ( ! function_exists( 'storage_path' ) ) {
 	}
 }
 
-add_action( 'plugins_loaded', function () {
+// add_action( 'plugins_loaded', function () {
 
-	// Instantiate the application.
-	Application::get_instance();
-}, 1 );
+// 	// Instantiate the application.
+// 	Application::get_instance();
+// }, 1 );
