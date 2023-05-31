@@ -35,6 +35,13 @@ class Boot_Manager implements Contract {
 	protected static ?Boot_Manager $instance = null;
 
 	/**
+	 * Application base path.
+	 *
+	 * @var string|null
+	 */
+	protected ?string $base_path = null;
+
+	/**
 	 * Retrieve the instance of the manager.
 	 *
 	 * @param Contracts\Application|null $app Application instance.
@@ -126,7 +133,7 @@ class Boot_Manager implements Contract {
 	 */
 	protected function boot_application(): void {
 		if ( is_null( $this->app ) ) {
-			$this->app = new Application();
+			$this->app = new Application( $this->get_base_path() );
 		}
 
 		/**
@@ -166,6 +173,37 @@ class Boot_Manager implements Contract {
 	 */
 	public function get_application(): ?Contracts\Application {
 		return $this->app;
+	}
+
+	/**
+	 * Get the calculated base path for the application.
+	 *
+	 * @todo Calculate a better default path from the plugin file.
+	 *
+	 * @return string|null
+	 */
+	public function get_base_path(): ?string {
+		if ( ! empty( $this->base_path ) ) {
+			return $this->base_path;
+		}
+
+		return match ( true ) {
+			! empty( $_ENV['MANTLE_BASE_PATH'] ) => $_ENV['MANTLE_BASE_PATH'],
+			defined( 'MANTLE_BASE_PATH' ) => MANTLE_BASE_PATH,
+			default => dirname( __DIR__, 3 ),
+		};
+	}
+
+	/**
+	 * Set the base path for the application.
+	 *
+	 * @param string|null $base_path Base path for the application.
+	 * @return static
+	 */
+	public function set_base_path( ?string $base_path = null ): static {
+		$this->base_path = $base_path;
+
+		return $this;
 	}
 
 	/**

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Boot_Manager interface file
+ *
+ * @package Mantle
+ */
 
 namespace Mantle\Contracts\Framework;
 

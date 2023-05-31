@@ -29,6 +29,7 @@ class Test_Boot_Manager extends TestCase {
 
 	public function test_it_can_create_an_instance() {
 		$this->assertInstanceOf( Boot_Manager::class, Boot_Manager::get_instance() );
+		$this->assertNotNUll( Boot_Manager::get_instance()->get_base_path() );
 	}
 
 	public function test_it_can_be_used_by_helper() {

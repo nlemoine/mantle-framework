@@ -7,14 +7,14 @@
 
 namespace Mantle\Framework\Bootstrap;
 
-use Exception;
 use Mantle\Application\Application;
-use Mantle\Config\Repository;
 use Mantle\Contracts\Config\Repository as Repository_Contract;
 use Mantle\Support\Arr;
 use Symfony\Component\Finder\Finder;
 use Mantle\Support\Helpers;
 use Mantle\Support\Str;
+
+use function Mantle\Support\Helpers\collect;
 
 /**
  * Load the Application's Configuration from the filesystem.
@@ -74,20 +74,25 @@ class Load_Configuration {
 	 * @return array
 	 */
 	protected function get_configuration_files( Application $app ): array {
-		$path  = $app->get_config_path();
 		$files = [];
 
 		$finder = Finder::create()
 			->files()
 			->name( '*.php' )
 			->depth( '< 2' ) // Only descend two levels.
-			->in( $path );
+			->in( $this->get_configuration_directories( $app ) );
 
 		foreach ( $finder as $file ) {
 			$name = basename( $file->getRealPath(), '.php' );
 
 			// Get the environment the configuration file is from.
-			$environment = str_replace( Str::trailing_slash( $path ), '', Str::trailing_slash( $file->getPath() ) );
+			$environment = basename( dirname( $file->getRealPath() ) );
+
+			// Ignore the 'config' directory as an environment.
+			if ( in_array( $environment, [ 'config', 'configuration' ], true ) ) {
+				$environment = null;
+			}
+
 			if ( empty( $environment ) ) {
 				$files[ $name ] = $file->getRealPath();
 			} else {
@@ -96,6 +101,37 @@ class Load_Configuration {
 		}
 
 		return $files;
+	}
+
+	/**
+	 * Retrieve the configuration directories to load from.
+	 *
+	 * @param Application $app Application instance.
+	 * @return array<int, string>
+	 */
+	protected function get_configuration_directories( Application $app ): array {
+		/**
+		 * Filter the configuration directories to load from.
+		 *
+		 * @param array<int, string> $paths Configuration directories.
+		 * @param Application        $app Application instance.
+		 */
+		$paths = apply_filters(
+			'mantle_config_paths',
+			[
+				dirname( __DIR__, 4 ) . '/config',
+				$app->get_config_path(),
+			],
+			$app,
+		);
+
+		return collect( $paths )
+			->unique()
+			->filter(
+				fn ( $dir ) => is_dir( $dir ),
+			)
+			->values()
+			->all();
 	}
 
 	/**

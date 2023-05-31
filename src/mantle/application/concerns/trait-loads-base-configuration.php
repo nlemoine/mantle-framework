@@ -32,7 +32,7 @@ trait Loads_Base_Configuration {
 
 			$loaded_from_cache = true;
 		} else {
-			$items = $this->get_default_configuration();
+			$items = [];
 		}
 
 		$config = new Repository( (array) $items );
@@ -44,78 +44,5 @@ trait Loads_Base_Configuration {
 		if ( isset( $loaded_from_cache ) ) {
 			$config->set( 'config.loaded_from_cache', true );
 		}
-	}
-
-	/**
-	 * Retrieve the default configuration for Mantle.
-	 *
-	 * @return array
-	 */
-	protected function get_default_configuration(): array {
-		return [
-			'app'        => [
-				'debug'     => defined( 'WP_DEBUG' ) && WP_DEBUG,
-				'providers' => [
-					// Framework Providers (mirrors config/app.php).
-					Mantle\Filesystem\Filesystem_Service_Provider::class,
-					Mantle\Database\Factory_Service_Provider::class,
-					Mantle\Framework\Providers\Error_Service_Provider::class,
-					Mantle\Database\Model_Service_Provider::class,
-					Mantle\Queue\Queue_Service_Provider::class,
-					Mantle\Query_Monitor\Query_Monitor_Service_Provider::class,
-					Mantle\New_Relic\New_Relic_Service_Provider::class,
-					Mantle\Database\Pagination\Paginator_Service_Provider::class,
-					Mantle\Cache\Cache_Service_Provider::class,
-
-					// Featherkit Providers.
-					Mantle\Application\App_Service_Provider::class,
-					Mantle\Assets\Asset_Service_Provider::class,
-					Mantle\Framework\Providers\Event_Service_Provider::class,
-					Mantle\Framework\Providers\Route_Service_Provider::class,
-				],
-				'namespace' => 'App',
-			],
-			'cache'      => [
-				'default' => 'wordpress',
-				'stores'  => [
-					'wordpress' => [
-						'driver' => 'wordpress',
-					],
-					'array'     => [
-						'driver' => 'array',
-					],
-				],
-			],
-			'filesystem' => [
-				'default' => 'local',
-				'disks'   => [
-					'local' => [
-						'driver' => 'local',
-					],
-				],
-			],
-			'logging'    => [
-				'default'  => 'stack',
-				'channels' => [
-					'stack'     => [
-						'driver'   => 'stack',
-						'channels' => [ 'error_log' ],
-					],
-
-					'error_log' => [
-						'driver' => 'error_log',
-						'level'  => 'error',
-					],
-				],
-			],
-			'queue'      => [
-				'default'    => 'wordpress',
-				'batch_size' => 100,
-				'wordpress'  => [
-					'delay' => 0,
-				],
-			],
-			'view'       => [],
-		];
 	}
 }
