@@ -209,7 +209,7 @@ class Application extends Container implements Application_Contract {
 	 */
 	public function get_bootstrap_path( string $path = '' ): string {
 		if ( $this->bootstrap_path ) {
-			return $this->bootstrap_path . DIRECTORY_SEPARATOR . $path;
+			return $path ? $this->bootstrap_path . DIRECTORY_SEPARATOR . $path : $this->bootstrap_path;
 		}
 
 		if ( function_exists( 'apply_filters' ) ) {
