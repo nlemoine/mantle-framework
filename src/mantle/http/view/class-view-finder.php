@@ -11,6 +11,8 @@ namespace Mantle\Http\View;
 use InvalidArgumentException;
 use Mantle\Support\Str;
 
+use function Mantle\Support\Helpers\event;
+
 /**
  * View Finder
  *
@@ -96,6 +98,13 @@ class View_Finder {
 
 		// Allow mantle-site to load views.
 		$this->add_path( $this->base_path . '/views', 'mantle-site' );
+
+		/**
+		 * Dispatched when the view finder is setting its default paths.
+		 *
+		 * @param View_Finder $view_finder View finder instance.
+		 */
+		event( 'mantle_view_finder_paths', $this );
 	}
 
 	/**
