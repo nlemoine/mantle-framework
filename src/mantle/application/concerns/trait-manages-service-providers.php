@@ -1,7 +1,10 @@
 <?php
 /**
  * Has_Service_Providers trait file.
+ *
+ * @package Mantle
  */
+
 namespace Mantle\Application\Concerns;
 
 use InvalidArgumentException;
@@ -17,6 +20,8 @@ use Mantle\View\View_Service_Provider;
 use function Mantle\Support\Helpers\collect;
 
 /**
+ * Trait to manage service providers for the application.
+ *
  * @mixin \Mantle\Application\Application
  */
 trait Manages_Service_Providers {
@@ -90,7 +95,7 @@ trait Manages_Service_Providers {
 	 * @throws InvalidArgumentException If the provider is not an instance of Service_Provider.
 	 *
 	 * @param Service_Provider|class-string<Service_Provider> $provider Provider instance or class name to register.
-	 * @return Application
+	 * @return static
 	 */
 	public function register( Service_Provider|string $provider ): static {
 		$provider_name = is_string( $provider ) ? $provider : get_class( $provider );

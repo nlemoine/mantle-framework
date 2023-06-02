@@ -31,12 +31,12 @@ return [
 	| Supported Drivers: "local", "ftp", "sftp", "s3"
 	|
 	*/
-	'disks' => [
+	'disks'   => [
 		'local' => [
 			'driver' => 'local',
 		],
 
-		's3' => [
+		's3'    => [
 			'driver'                   => 's3',
 			'key'                      => environment( 'S3_KEY', '' ),
 			'secret'                   => environment( 'S3_SECRET', '' ),

@@ -17,11 +17,11 @@ return [
 	| is shown.
 	|
 	*/
-	'debug' => environment( 'APP_DEBUG', defined( 'WP_DEBUG' ) && WP_DEBUG ),
+	'debug'     => environment( 'APP_DEBUG', defined( 'WP_DEBUG' ) && WP_DEBUG ),
 
 	/*
 	|--------------------------------------------------------------------------
-	| Application Service Providers
+	| Service Providers
 	|--------------------------------------------------------------------------
 	|
 	| Providers listed here will be autoloaded for every request on the application.
@@ -39,12 +39,20 @@ return [
 		Mantle\Database\Pagination\Paginator_Service_Provider::class,
 		Mantle\Cache\Cache_Service_Provider::class,
 
-		// Application Providers.
-		// todo: revisit after refactoring for isolation.
-		// App\Providers\App_Service_Provider::class,
-		// App\Providers\Asset_Service_Provider::class,
-		// App\Providers\Event_Service_Provider::class,
-		// App\Providers\Route_Service_Provider::class,
+		/*
+		|--------------------------------------------------------------------------
+		| Application Providers
+		|--------------------------------------------------------------------------
+		|
+		| These are the providers that power your application. The above ones are
+		| core to Mantle. The following are designed to be implemented and extended
+		| by your application.
+		|
+		*/
+		Mantle\Application\App_Service_Provider::class,
+		Mantle\Assets\Asset_Service_Provider::class,
+		Mantle\Events\Event_Service_Provider::class,
+		Mantle\Framework\Providers\Route_Service_Provider::class,
 	],
 
 	/*

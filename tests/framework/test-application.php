@@ -8,19 +8,28 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Test_Application extends \Mockery\Adapter\Phpunit\MockeryTestCase {
+	protected function tearDown(): void {
+		parent::tearDown();
+
+		unset( $_ENV['APP_ENV'] );
+	}
+
 	public function test_environment() {
+		$_ENV['APP_ENV'] = 'test-env';
+
 		$app = new Application();
 
-		$_ENV['ENV'] = 'test-env';
 		$this->assertEquals( 'test-env', $app->environment() );
 
-		$_ENV['ENV'] = 'another-test-env';
+		$_ENV['APP_ENV'] = 'another-test-env';
+
 		$this->assertEquals( 'another-test-env', $app->environment() );
 	}
 
 	public function test_is_environment() {
-		$_ENV['ENV'] = 'test-env';
-		$app         = new Application();
+		$_ENV['APP_ENV'] = 'test-env';
+
+		$app = new Application();
 
 		$this->assertTrue( $app->is_environment( 'test-env', 'another-thing' ) );
 		$this->assertTrue( $app->is_environment( 'test-env' ) );
@@ -29,6 +38,7 @@ class Test_Application extends \Mockery\Adapter\Phpunit\MockeryTestCase {
 
 	public function test_abort_404() {
 		$app = new Application();
+
 		$this->expectException( NotFoundHttpException::class );
 		$this->expectExceptionMessage( 'Not found message' );
 
@@ -37,6 +47,7 @@ class Test_Application extends \Mockery\Adapter\Phpunit\MockeryTestCase {
 
 	public function test_abort_500() {
 		$app = new Application();
+
 		$this->expectException( HttpException::class );
 		$this->expectExceptionMessage( 'Something went wrong' );
 

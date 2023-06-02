@@ -5,6 +5,7 @@ namespace Mantle\Tests\Framework;
 use Mantle\Application\Application;
 use Mantle\Framework\Boot_Manager;
 use Mantle\Http\Request;
+use Mantle\Http\Response;
 use Mantle\Testing\Concerns\Interacts_With_Hooks;
 use PHPUnit\Framework\TestCase;
 
@@ -29,7 +30,13 @@ class Test_Boot_Manager extends TestCase {
 
 	public function test_it_can_create_an_instance() {
 		$this->assertInstanceOf( Boot_Manager::class, Boot_Manager::get_instance() );
-		$this->assertNotNUll( Boot_Manager::get_instance()->get_base_path() );
+		$this->assertNotNull( Boot_Manager::get_instance()->get_base_path() );
+	}
+
+	public function test_it_set_basepath_from_env() {
+		$_ENV['MANTLE_BASE_PATH'] = '/foo/bar';
+
+		$this->assertSame( '/foo/bar', Boot_Manager::get_instance()->get_base_path() );
 	}
 
 	public function test_it_can_be_used_by_helper() {
@@ -64,6 +71,11 @@ class Test_Boot_Manager extends TestCase {
 		$this->expectApplied( 'mantle_boot_manager_before_boot' )->once();
 		$this->expectApplied( 'mantle_boot_manager_booted' )->once();
 
+		// Path filters.
+		$this->expectApplied( 'mantle_bootstrap_path' )->once()->andReturnString();
+		$this->expectApplied( 'mantle_cache_path' )->andReturnString();
+		$this->expectApplied( 'mantle_storage_path' )->once()->andReturnString();
+
 		$manager = new Boot_Manager();
 
 		$manager->boot();
@@ -81,6 +93,35 @@ class Test_Boot_Manager extends TestCase {
 		$this->assertNotEmpty(
 			$app->make( \Mantle\Contracts\Exceptions\Handler::class ),
 		);
+
+		$this->assertTrue( $app->has_been_bootstrapped() );
+	}
+
+	public function test_it_can_setup_routing() {
+		add_filter( 'wp_using_themes', fn () => true, 99 );
+
+		$manager = new Boot_Manager();
+
+		$manager->boot();
+
+		$app = $manager->get_application();
+
+		$this->assertTrue( $app->bound( 'router' ) );
+
+		// Register the route.
+		$app->make( 'router' )->get( '/example-router', fn () => 'Hello World' );
+
+		$request = Request::create( '/example-router' );
+
+		$app->instance( 'request', $request );
+
+		$kernel = $app->make( \Mantle\Contracts\Http\Kernel::class );
+
+		// Make the request through the kernel.
+		$response = $kernel->send_request_through_router( $request );
+
+		$this->assertInstanceof( Response::class, $response );
+		$this->assertSame( 'Hello World', $response->getContent() );
 	}
 }
 

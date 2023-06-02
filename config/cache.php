@@ -26,7 +26,7 @@ return [
 	| Cache stores can use supported drivers in any combination.
 	|
 	*/
-	'stores' => [
+	'stores'  => [
 		'wordpress' => [
 			'driver' => 'wordpress',
 		],

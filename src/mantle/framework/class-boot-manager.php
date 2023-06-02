@@ -189,7 +189,7 @@ class Boot_Manager implements Contract {
 
 		return match ( true ) {
 			! empty( $_ENV['MANTLE_BASE_PATH'] ) => $_ENV['MANTLE_BASE_PATH'],
-			defined( 'MANTLE_BASE_PATH' ) => MANTLE_BASE_PATH,
+			defined( 'MANTLE_BASE_PATH' ) => constant( 'MANTLE_BASE_PATH' ),
 			default => dirname( __DIR__, 3 ),
 		};
 	}
@@ -221,7 +221,7 @@ class Boot_Manager implements Contract {
 
 		$kernel->terminate( $input, $status );
 
-		exit( $status );
+		exit( (int) $status );
 	}
 
 	/**

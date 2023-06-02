@@ -15,7 +15,7 @@ return [
 	| The default log channel that is used when calling the `Log` class.
 	|
 	*/
-	'default' => environment( 'LOG_CHANNEL', 'stack' ),
+	'default'  => environment( 'LOG_CHANNEL', 'stack' ),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -27,7 +27,7 @@ return [
 	|
 	*/
 	'channels' => [
-		'stack' => [
+		'stack'     => [
 			'driver'   => 'stack',
 			'channels' => [ 'error_log' ],
 		],
@@ -47,7 +47,7 @@ return [
 		 *
 		 * @link https://github.com/alleyinteractive/logger/
 		 */
-		'logger' => [
+		'logger'    => [
 			'driver' => 'ai_logger',
 			'level'  => 'info',
 		],
@@ -57,7 +57,7 @@ return [
 		 *
 		 * @link https://api.slack.com/messaging/webhooks#create_a_webhook
 		 */
-		'slack' => [
+		'slack'     => [
 			'driver'   => 'slack',
 			'url'      => environment( 'SLACK_URL', '' ),
 			'username' => environment( 'SLACK_USERNAME', 'Mantle Log' ),
@@ -74,7 +74,7 @@ return [
 		| instance via the 'handler' attribute.
 		|
 		*/
-		'custom' => [
+		'custom'    => [
 			'driver'  => 'custom',
 			'handler' => 'Example\Class\Name',
 		],

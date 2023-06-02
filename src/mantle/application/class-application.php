@@ -45,86 +45,86 @@ class Application extends Container implements Application_Contract {
 	/**
 	 * Bootstrap path of the application.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
-	protected $bootstrap_path;
+	protected ?string $bootstrap_path = null;
 
 	/**
 	 * Storage path of the application.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
-	protected $storage_path;
+	protected ?string $storage_path = null;
 
 	/**
 	 * Root URL of the application.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
-	protected $root_url;
+	protected ?string $root_url = null;
 
 	/**
 	 * Indicates if the application has been bootstrapped before.
 	 *
 	 * @var bool
 	 */
-	protected $has_been_bootstrapped = false;
+	protected bool $has_been_bootstrapped = false;
 
 	/**
 	 * Indicates if the application has "booted".
 	 *
 	 * @var bool
 	 */
-	protected $booted = false;
+	protected bool $booted = false;
 
 	/**
 	 * The array of booting callbacks.
 	 *
 	 * @var callable[]
 	 */
-	protected $booting_callbacks = [];
+	protected array $booting_callbacks = [];
 
 	/**
 	 * The array of booted callbacks.
 	 *
 	 * @var callable[]
 	 */
-	protected $booted_callbacks = [];
+	protected array $booted_callbacks = [];
 
 	/**
 	 * The array of terminating callbacks.
 	 *
 	 * @var callable[]
 	 */
-	protected $terminating_callbacks = [];
+	protected array $terminating_callbacks = [];
 
 	/**
 	 * Environment file name.
 	 *
 	 * @var string
 	 */
-	protected $environment_file = '.env';
+	protected string $environment_file = '.env';
 
 	/**
 	 * The custom environment path defined by the developer.
 	 *
 	 * @var string
 	 */
-	protected $environment_path;
+	protected ?string $environment_path = null;
 
 	/**
 	 * Storage of the overridden environment name.
 	 *
 	 * @var string
 	 */
-	protected $environment;
+	protected ?string $environment;
 
 	/**
 	 * Indicates if the application is running in the console.
 	 *
 	 * @var bool
 	 */
-	protected $is_running_in_console;
+	protected ?bool $is_running_in_console = null;
 
 	/**
 	 * Constructor.
@@ -172,7 +172,7 @@ class Application extends Container implements Application_Contract {
 	 * @return string
 	 */
 	public function get_base_path( string $path = '' ): string {
-		return $this->base_path . ( $path ? '/' . $path : '' );
+		return $this->base_path . ( $path ? DIRECTORY_SEPARATOR . $path : '' );
 	}
 
 	/**
@@ -208,7 +208,19 @@ class Application extends Container implements Application_Contract {
 	 * @return string
 	 */
 	public function get_bootstrap_path( string $path = '' ): string {
-		return ( $this->bootstrap_path ?: $this->base_path . DIRECTORY_SEPARATOR . 'bootstrap' ) . $path;
+		if ( $this->bootstrap_path ) {
+			return $this->bootstrap_path . DIRECTORY_SEPARATOR . $path;
+		}
+
+		/**
+		 * Filter the path to the bootstrap folder.
+		 *
+		 * @param string $cache_path Path to the bootstrap folder.
+		 * @param Application $app Application instance.
+		 */
+		$this->bootstrap_path = apply_filters( 'mantle_bootstrap_path', $this->get_base_path( 'bootstrap' ), $this );
+
+		return $this->bootstrap_path . DIRECTORY_SEPARATOR . $path;
 	}
 
 	/**
@@ -218,15 +230,31 @@ class Application extends Container implements Application_Contract {
 	 * @return string
 	 */
 	public function get_storage_path( string $path = '' ): string {
-		return ( $this->storage_path ?: $this->base_path . DIRECTORY_SEPARATOR . 'storage' ) . $path;
+		if ( $this->storage_path ) {
+			return $this->storage_path . DIRECTORY_SEPARATOR . $path;
+		}
+
+		/**
+		 * Filter the path to the storage folder.
+		 *
+		 * @param string $cache_path Path to the cache folder.
+		 * @param Application $app Application instance.
+		 */
+		$this->storage_path = apply_filters( 'mantle_storage_path', $this->get_base_path( 'storage' ), $this );
+
+		return $this->storage_path . DIRECTORY_SEPARATOR . $path;
 	}
 
 	/**
 	 * Set the root URL of the application.
 	 *
-	 * @param string $url Root URL to set.
+	 * @param string|null $url Root URL to set, or null to use the default.
 	 */
-	public function set_root_url( string $url ) {
+	public function set_root_url( ?string $url = null ) {
+		if ( ! $url ) {
+			$url = function_exists( 'home_url' ) ? \home_url() : '/';
+		}
+
 		$this->root_url = $url;
 	}
 
@@ -245,10 +273,19 @@ class Application extends Container implements Application_Contract {
 	 * Get the cache folder root
 	 * Folder that stores all compiled server-side assets for the application.
 	 *
+	 * @param string|null $path Path to append.
 	 * @return string
 	 */
-	public function get_cache_path(): string {
-		return $this->get_bootstrap_path( '/cache' );
+	public function get_cache_path( ?string $path = null ): string {
+		/**
+		 * Filter the path to the cache folder.
+		 *
+		 * @param string $cache_path Path to the cache folder.
+		 * @param Application $app Application instance.
+		 */
+		$cache_path = (string) apply_filters( 'mantle_cache_path', $this->get_bootstrap_path( 'cache' ), $this );
+
+		return $path ? $cache_path . DIRECTORY_SEPARATOR . $path : $cache_path;
 	}
 
 	/**
@@ -259,7 +296,7 @@ class Application extends Container implements Application_Contract {
 	 * @return string
 	 */
 	public function get_cached_packages_path(): string {
-		return $this->get_cache_path() . '/packages.php';
+		return $this->get_cache_path( 'packages.php' );
 	}
 
 	/**
@@ -269,7 +306,7 @@ class Application extends Container implements Application_Contract {
 	 * @return string
 	 */
 	public function get_cached_models_path(): string {
-		return $this->get_cache_path() . '/models.php';
+		return $this->get_cache_path( 'models.php' );
 	}
 
 	/**
@@ -314,7 +351,7 @@ class Application extends Container implements Application_Contract {
 	 * @return string
 	 */
 	public function get_config_path(): string {
-		return $this->base_path . '/config';
+		return $this->get_base_path( 'config' );
 	}
 
 	/**
@@ -401,7 +438,7 @@ class Application extends Container implements Application_Contract {
 	/**
 	 * Run the given array of bootstrap classes.
 	 *
-	 * Bootstrap classes should implement `Mantle\Contracts\Bootstrapable`.
+	 * Bootstrap classes should implement {@see \Mantle\Contracts\Bootstrapable}.
 	 *
 	 * @param array<mixed, class-string<Bootstrapable>> $bootstrappers Class names of packages to boot.
 	 * @param Kernel_Contract                           $kernel Kernel instance.

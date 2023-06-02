@@ -15,7 +15,7 @@ return [
 	| Define the queue provider used in the application.
 	|
 	*/
-	'default' => environment( 'QUEUE_CONNECTION', 'wordpress' ),
+	'default'    => environment( 'QUEUE_CONNECTION', 'wordpress' ),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -35,7 +35,7 @@ return [
 	| Control the configuration for the queue providers.
 	|
 	*/
-	'wordpress' => [
+	'wordpress'  => [
 		// Delay between queue runs in seconds.
 		'delay' => environment( 'QUEUE_DELAY', 0 ),
 	],
