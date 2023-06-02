@@ -60,8 +60,9 @@ class Load_Configuration {
 		// Load the root-level config.
 		$this->load_configuration_to_repository( $root_config_files, $repository );
 
-		// Load the environment-specific configurations if one exists.
 		$env = $app->environment();
+
+		// Load the environment-specific configurations if one exists.
 		if ( ! empty( $environment_config[ $env ] ) ) {
 			$this->load_configuration_to_repository( $environment_config[ $env ], $repository, true );
 		}
@@ -116,13 +117,15 @@ class Load_Configuration {
 		 * @param array<int, string> $paths Configuration directories.
 		 * @param Application        $app Application instance.
 		 */
-		$paths = apply_filters(
+		$paths = $app['events']->dispatch(
 			'mantle_config_paths',
 			[
-				dirname( __DIR__, 4 ) . '/config',
-				$app->get_config_path(),
+				[
+					dirname( __DIR__, 4 ) . '/config',
+					$app->get_config_path(),
+				],
+				$app,
 			],
-			$app,
 		);
 
 		return collect( $paths )

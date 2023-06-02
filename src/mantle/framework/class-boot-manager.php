@@ -136,12 +136,14 @@ class Boot_Manager implements Contract {
 			$this->app = new Application( $this->get_base_path() );
 		}
 
-		/**
-		 * Fired before the application is booted.
-		 *
-		 * @param \Mantle\Contracts\Application $app Application instance.
-		 */
-		do_action( 'mantle_boot_manager_before_boot', $this->app );
+		if ( function_exists( 'do_action' ) ) {
+			/**
+			 * Fired before the application is booted.
+			 *
+			 * @param \Mantle\Contracts\Application $app Application instance.
+			 */
+			do_action( 'mantle_boot_manager_before_boot', $this->app );
+		}
 
 		$this->app->singleton_if(
 			Contracts\Console\Kernel::class,

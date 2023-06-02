@@ -71,16 +71,18 @@ class Lightweight_Event_Dispatcher extends Dispatcher {
 		[ $event, $payload ] = $this->parse_event_and_payload( $event, $payload );
 
 		if ( empty( $this->listeners[ $event ] ) ) {
-			return;
+			return $payload;
 		}
 
 		ksort( $this->listeners[ $event ] );
 
 		foreach ( $this->listeners[ $event ] as $listeners ) {
 			foreach ( $listeners as $listener ) {
-				$listener( $payload );
+				$payload = $listener( $payload );
 			}
 		}
+
+		return $payload;
 	}
 
 	/**

@@ -121,7 +121,11 @@ class Kernel implements Kernel_Contract, Core_Kernel_Contract {
 			}
 		}
 
-		\add_action( 'wp_loaded', fn () => $this->handle_request(), PHP_INT_MAX );
+		if ( did_action( 'parse_request' ) ) {
+			$this->handle_request();
+		} else {
+			\add_action( 'parse_request', fn () => $this->handle_request() );
+		}
 	}
 
 	/**
@@ -143,6 +147,7 @@ class Kernel implements Kernel_Contract, Core_Kernel_Contract {
 	 */
 	protected function handle_request() {
 		$response = $this->send_request_through_router( $this->request );
+
 		if ( ! $response ) {
 			return;
 		}

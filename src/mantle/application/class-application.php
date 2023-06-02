@@ -212,13 +212,17 @@ class Application extends Container implements Application_Contract {
 			return $this->bootstrap_path . DIRECTORY_SEPARATOR . $path;
 		}
 
-		/**
-		 * Filter the path to the bootstrap folder.
-		 *
-		 * @param string $cache_path Path to the bootstrap folder.
-		 * @param Application $app Application instance.
-		 */
-		$this->bootstrap_path = apply_filters( 'mantle_bootstrap_path', $this->get_base_path( 'bootstrap' ), $this );
+		if ( function_exists( 'apply_filters' ) ) {
+			/**
+			 * Filter the path to the bootstrap folder.
+			 *
+			 * @param string $cache_path Path to the bootstrap folder.
+			 * @param Application $app Application instance.
+			 */
+			$this->bootstrap_path = apply_filters( 'mantle_bootstrap_path', $this->get_base_path( 'bootstrap' ), $this );
+		} else {
+			$this->bootstrap_path = $this->get_base_path( 'bootstrap' );
+		}
 
 		return $this->bootstrap_path . DIRECTORY_SEPARATOR . $path;
 	}
@@ -234,13 +238,17 @@ class Application extends Container implements Application_Contract {
 			return $this->storage_path . DIRECTORY_SEPARATOR . $path;
 		}
 
-		/**
-		 * Filter the path to the storage folder.
-		 *
-		 * @param string $cache_path Path to the cache folder.
-		 * @param Application $app Application instance.
-		 */
-		$this->storage_path = apply_filters( 'mantle_storage_path', $this->get_base_path( 'storage' ), $this );
+		if ( function_exists( 'apply_filters' ) ) {
+			/**
+			 * Filter the path to the storage folder.
+			 *
+			 * @param string $cache_path Path to the cache folder.
+			 * @param Application $app Application instance.
+			 */
+			$this->storage_path = apply_filters( 'mantle_storage_path', $this->get_base_path( 'storage' ), $this );
+		} else {
+			$this->storage_path = $this->get_base_path( 'storage' );
+		}
 
 		return $this->storage_path . DIRECTORY_SEPARATOR . $path;
 	}
@@ -277,13 +285,17 @@ class Application extends Container implements Application_Contract {
 	 * @return string
 	 */
 	public function get_cache_path( ?string $path = null ): string {
-		/**
-		 * Filter the path to the cache folder.
-		 *
-		 * @param string $cache_path Path to the cache folder.
-		 * @param Application $app Application instance.
-		 */
-		$cache_path = (string) apply_filters( 'mantle_cache_path', $this->get_bootstrap_path( 'cache' ), $this );
+		if ( function_exists( 'apply_filters' ) ) {
+			/**
+			 * Filter the path to the cache folder.
+			 *
+			 * @param string $cache_path Path to the cache folder.
+			 * @param Application $app Application instance.
+			 */
+			$cache_path = (string) apply_filters( 'mantle_cache_path', $this->get_bootstrap_path( 'cache' ), $this );
+		} else {
+			$cache_path = $this->get_bootstrap_path( 'cache' );
+		}
 
 		return $path ? $cache_path . DIRECTORY_SEPARATOR . $path : $cache_path;
 	}
