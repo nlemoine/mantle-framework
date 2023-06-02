@@ -1,6 +1,6 @@
 <?php
 /**
- * Boot_Manager interface file
+ * Bootloader interface file
  *
  * @package Mantle
  */
@@ -10,11 +10,11 @@ namespace Mantle\Contracts\Framework;
 use Closure;
 
 /**
- * Boot Manager
+ * Bootloader Contract
  *
  * Used to instantiate the application and load the framework.
  */
-interface Boot_Manager {
+interface Bootloader {
 	/**
 	 * Boot the application given the current context.
 	 *

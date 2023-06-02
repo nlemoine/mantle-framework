@@ -3,19 +3,19 @@
 namespace Mantle\Tests\Framework;
 
 use Mantle\Application\Application;
-use Mantle\Framework\Boot_Manager;
+use Mantle\Framework\Bootloader;
 use Mantle\Http\Request;
 use Mantle\Http\Response;
 use Mantle\Testing\Concerns\Interacts_With_Hooks;
 use PHPUnit\Framework\TestCase;
 
-class Test_Boot_Manager extends TestCase {
+class Test_Bootloader extends TestCase {
 	use Interacts_With_Hooks;
 
 	public function setUp(): void {
 		parent::setUp();
 
-		Boot_Manager::set_instance( null );
+		Bootloader::set_instance( null );
 
 		$this->interacts_with_hooks_set_up();
 	}
@@ -23,34 +23,34 @@ class Test_Boot_Manager extends TestCase {
 	public function tearDown(): void {
 		$this->interacts_with_hooks_tear_down();
 
-		Boot_Manager::set_instance( null );
+		Bootloader::set_instance( null );
 
 		parent::tearDown();
 	}
 
 	public function test_it_can_create_an_instance() {
-		$this->assertInstanceOf( Boot_Manager::class, Boot_Manager::get_instance() );
-		$this->assertNotNull( Boot_Manager::get_instance()->get_base_path() );
+		$this->assertInstanceOf( Bootloader::class, Bootloader::get_instance() );
+		$this->assertNotNull( Bootloader::get_instance()->get_base_path() );
 	}
 
 	public function test_it_set_basepath_from_env() {
 		$_ENV['MANTLE_BASE_PATH'] = '/foo/bar';
 
-		$this->assertSame( '/foo/bar', Boot_Manager::get_instance()->get_base_path() );
+		$this->assertSame( '/foo/bar', Bootloader::get_instance()->get_base_path() );
 	}
 
 	public function test_it_can_be_used_by_helper() {
-		$this->assertInstanceOf( Boot_Manager::class, boot_manager() );
+		$this->assertInstanceOf( Bootloader::class, bootloader() );
 	}
 
 	public function test_it_will_set_instance_on_construct() {
-		$manager = new Boot_Manager();
+		$manager = new Bootloader();
 
-		$this->assertSame( $manager, Boot_Manager::get_instance() );
+		$this->assertSame( $manager, Bootloader::get_instance() );
 	}
 
 	public function test_it_can_bind_custom_kernel() {
-		Boot_Manager::instance( $app = new Application() )
+		Bootloader::instance( $app = new Application() )
 			->bind( \Mantle\Contracts\Http\Kernel::class, Testable_Http_Kernel::class )
 			->boot();
 
@@ -68,15 +68,15 @@ class Test_Boot_Manager extends TestCase {
 	}
 
 	public function test_it_can_boot_application() {
-		$this->expectApplied( 'mantle_boot_manager_before_boot' )->once();
-		$this->expectApplied( 'mantle_boot_manager_booted' )->once();
+		$this->expectApplied( 'mantle_bootloader_before_boot' )->once();
+		$this->expectApplied( 'mantle_bootloader_booted' )->once();
 
 		// Path filters.
 		$this->expectApplied( 'mantle_bootstrap_path' )->once()->andReturnString();
 		$this->expectApplied( 'mantle_cache_path' )->andReturnString();
 		$this->expectApplied( 'mantle_storage_path' )->once()->andReturnString();
 
-		$manager = new Boot_Manager();
+		$manager = new Bootloader();
 
 		$manager->boot();
 
@@ -100,7 +100,7 @@ class Test_Boot_Manager extends TestCase {
 	public function test_it_can_setup_routing() {
 		add_filter( 'wp_using_themes', fn () => true, 99 );
 
-		$manager = new Boot_Manager();
+		$manager = new Bootloader();
 
 		$manager->boot();
 

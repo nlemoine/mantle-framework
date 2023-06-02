@@ -125,7 +125,7 @@ abstract class Facade {
 		$instance = static::get_facade_root();
 
 		if ( ! $instance ) {
-			throw new RuntimeException( 'A facade root has not been set.' );
+			throw new RuntimeException( 'A facade root has not been set. Have you booted the application? Try using bootloader()->boot()?' );
 		}
 
 		return $instance->$method( ...$args );

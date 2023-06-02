@@ -1,6 +1,6 @@
 <?php
 /**
- * Boot_Manager class file
+ * Bootloader class file
  *
  * @package Mantle
  */
@@ -11,7 +11,7 @@ use Closure;
 use Mantle\Application\Application;
 use Mantle\Console\Command;
 use Mantle\Contracts;
-use Mantle\Contracts\Framework\Boot_Manager as Contract;
+use Mantle\Contracts\Framework\Bootloader as Contract;
 use Mantle\Http\Request;
 use Mantle\Support\Str;
 use Mantle\Support\Traits\Conditionable;
@@ -24,15 +24,15 @@ use Mantle\Support\Traits\Conditionable;
  * (ala laravel/laravel) but still allows for the flexibility to do so if they
  * so choose.
  */
-class Boot_Manager implements Contract {
+class Bootloader implements Contract {
 	use Conditionable;
 
 	/**
 	 * Current instance of the manager.
 	 *
-	 * @var Boot_Manager|null
+	 * @var Bootloader|null
 	 */
-	protected static ?Boot_Manager $instance = null;
+	protected static ?Bootloader $instance = null;
 
 	/**
 	 * Application base path.
@@ -45,9 +45,9 @@ class Boot_Manager implements Contract {
 	 * Retrieve the instance of the manager.
 	 *
 	 * @param Contracts\Application|null $app Application instance.
-	 * @return Boot_Manager
+	 * @return Bootloader
 	 */
-	public static function get_instance( ?Contracts\Application $app = null ): Boot_Manager {
+	public static function get_instance( ?Contracts\Application $app = null ): Bootloader {
 		if ( is_null( static::$instance ) ) {
 			static::$instance = new static( $app );
 		}
@@ -59,19 +59,19 @@ class Boot_Manager implements Contract {
 	 * Alias to `get_instance()` method.
 	 *
 	 * @param Contracts\Application|null $app Application instance.
-	 * @return Boot_Manager
+	 * @return Bootloader
 	 */
-	public static function instance( ?Contracts\Application $app = null ): Boot_Manager {
+	public static function instance( ?Contracts\Application $app = null ): Bootloader {
 		return static::get_instance( $app );
 	}
 
 	/**
 	 * Set the instance of the manager.
 	 *
-	 * @param Boot_Manager|null $instance Instance of the manager.
+	 * @param Bootloader|null $instance Instance of the manager.
 	 * @return void
 	 */
-	public static function set_instance( ?Boot_Manager $instance = null ): void {
+	public static function set_instance( ?Bootloader $instance = null ): void {
 		static::$instance = $instance;
 	}
 
@@ -100,7 +100,6 @@ class Boot_Manager implements Contract {
 
 		return $this;
 	}
-
 
 	/**
 	 * Boot the application given the current context.
@@ -142,7 +141,7 @@ class Boot_Manager implements Contract {
 			 *
 			 * @param \Mantle\Contracts\Application $app Application instance.
 			 */
-			do_action( 'mantle_boot_manager_before_boot', $this->app );
+			do_action( 'mantle_bootloader_before_boot', $this->app );
 		}
 
 		$this->app->singleton_if(
@@ -165,7 +164,7 @@ class Boot_Manager implements Contract {
 		 *
 		 * @param \Mantle\Contracts\Application $app Application instance.
 		 */
-		$this->app['events']->dispatch( 'mantle_boot_manager_booted', $this->app );
+		$this->app['events']->dispatch( 'mantle_bootloader_booted', $this->app );
 	}
 
 	/**
