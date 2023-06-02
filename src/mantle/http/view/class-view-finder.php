@@ -89,8 +89,10 @@ class View_Finder {
 	 * Set the default paths to load from for WordPress sites.
 	 */
 	public function set_default_paths() {
-		$this->add_path( get_stylesheet_directory(), 'stylesheet-path' );
-		$this->add_path( get_template_directory(), 'template-path' );
+		if ( function_exists( 'get_stylesheet_directory' ) ) {
+			$this->add_path( get_stylesheet_directory(), 'stylesheet-path' );
+			$this->add_path( get_template_directory(), 'template-path' );
+		}
 
 		if ( defined( 'ABSPATH' ) && defined( 'WPINC' ) ) {
 			$this->add_path( ABSPATH . WPINC . '/theme-compat', 'theme-compat' );
@@ -121,7 +123,7 @@ class View_Finder {
 			throw new InvalidArgumentException( 'Alias cannot contain invalid characters.' );
 		}
 
-		$path = \untrailingslashit( $path );
+		$path = Str::untrailing_slash( $path );
 
 		if ( $alias ) {
 			$this->paths[ $alias ] = $path;

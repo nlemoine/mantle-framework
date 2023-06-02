@@ -9,6 +9,7 @@ namespace Mantle\Framework\Bootstrap;
 
 use Mantle\Application\Application;
 use Mantle\Contracts\Config\Repository as Repository_Contract;
+use Mantle\Filesystem\Filesystem;
 use Mantle\Support\Arr;
 use Symfony\Component\Finder\Finder;
 use Mantle\Support\Helpers;
@@ -131,7 +132,7 @@ class Load_Configuration {
 		return collect( $paths )
 			->unique()
 			->filter(
-				fn ( $dir ) => is_dir( $dir ),
+				fn ( $dir ) => is_string( $dir ) && is_dir( $dir ),
 			)
 			->values()
 			->all();
@@ -145,8 +146,10 @@ class Load_Configuration {
 	 * @param bool                $merge Flag to merge the configuration instead of overwriting.
 	 */
 	protected function load_configuration_to_repository( array $files, Repository_Contract $repository, bool $merge = false ) {
+		$filesystem = new Filesystem();
+
 		foreach ( $files as $key => $root_config_file ) {
-			$config = require $root_config_file;
+			$config = $filesystem->get_require( $root_config_file );
 
 			if ( ! $merge || ! $repository->has( $key ) ) {
 				$repository->set( $key, $config );

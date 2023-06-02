@@ -44,10 +44,22 @@ class View_Cache_Command extends Command {
 	protected BladeCompiler $blade;
 
 	/**
+	 * View finder.
+	 *
+	 * @var View_Finder
+	 */
+	protected View_Finder $finder;
+
+	/**
 	 * Constructor.
 	 */
-	public function __construct( protected View_Finder $finder ) {
+	public function __construct() {
 		parent::__construct();
+
+		// Hide the command in isolation mode.
+		if ( app()->is_running_in_console_isolation() ) {
+			$this->setHidden( true );
+		}
 	}
 
 	/**
