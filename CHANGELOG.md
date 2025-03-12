@@ -5,25 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## v1.5.4 - 2025-03-12
 
 ### Added
 
+- Added a unit testing factory for Byline Manager profiles and Co-Authors-Plus guest authors.
 - Added a `Option` and `Object_Metadata` support classes as well as `option()`,
   `post_meta()`, `term_meta()`, `user_meta()`, and `comment_meta()` helpers to
   retrieve options and object metadata in a type-safe manner.
 - Added a `Option` support class and `option()` helper to retrieve options in a type-safe manner.
 - Added `fail()` method to commands to allow for a command to fail with a message.
-
-### Fixed
-
-- Fixed command testing to proper handle failed commands.
-
-## v1.5.4 - 2025-03-06
-
-### Added
-
-- Added a unit testing factory for Byline Manager profiles and Co-Authors-Plus guest authors.
 
 ### Changed
 
@@ -36,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix the `Post::for()`/`Term::for()` methods to properly set the post
   type/taxonomy for the model when creating a new instance. Previously, the
   model would always be created with the default post type/taxonomy.
+- Fixed command testing to proper handle failed commands.
 
 ## v1.5.3 - 2025-03-04
 
