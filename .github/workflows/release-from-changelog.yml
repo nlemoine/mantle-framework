@@ -1,0 +1,42 @@
+name: Release from Changelog
+
+on:
+  push:
+    branches:
+      - main  # Adjust if using a different default branch
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract latest version from CHANGELOG.md
+        id: get_version
+        run: |
+          VERSION=$(grep -oP '(?<=## )\d+\.\d+\.\d+' CHANGELOG.md | head -1)
+          echo "Latest version found: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_ENV
+
+      - name: Get latest GitHub release
+        id: latest_release
+        run: |
+          LATEST_RELEASE=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' || echo "")
+          echo "Latest GitHub release: $LATEST_RELEASE"
+          echo "latest_release=$LATEST_RELEASE" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
+      - name: Create new GitHub release if version is new
+        if: env.version != env.latest_release && env.version != '' && env.latest_release != 'Unreleased'
+        run: |
+          echo "Would be creating release $version"
+          echo "Would be using the following changelog:"
+          awk '/^## '"$version"'/{flag=1;next}/^## /{flag=0}flag' CHANGELOG.md
+          # gh release create "$version" --title "Release $version" --notes "$(awk '/^## '"$version"'/{flag=1;next}/^## /{flag=0}flag' CHANGELOG.md)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
