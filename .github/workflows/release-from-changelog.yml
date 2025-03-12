@@ -47,7 +47,7 @@ jobs:
             echo "Invalid version: $version"
             exit 1
           fi
-
+          gh auth status
           gh release create "$version" --title "$version" --notes-file RELEASE_NOTES.md
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
