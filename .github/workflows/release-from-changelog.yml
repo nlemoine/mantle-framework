@@ -3,7 +3,7 @@ name: Release from Changelog
 on:
   push:
     branches:
-      - production
+      - '*.x'
 
 permissions:
   contents: write
