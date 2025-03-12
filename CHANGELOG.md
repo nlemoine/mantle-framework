@@ -5,22 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.5.5 - 2025-03-12
+
+No changes, just a re-release to fix a bad tag.
+
 ## v1.5.4 - 2025-03-12
 
 ### Added
 
 - Added a unit testing factory for Byline Manager profiles and Co-Authors-Plus guest authors.
-- Added a `Option` and `Object_Metadata` support classes as well as `option()`,
-  `post_meta()`, `term_meta()`, `user_meta()`, and `comment_meta()` helpers to
-  retrieve options and object metadata in a type-safe manner.
+- Added a `Option` and `Object_Metadata` support classes as well as `option()`, `post_meta()`, `term_meta()`, `user_meta()`, and `comment_meta()` helpers to retrieve options and object metadata in a type-safe manner.
 - Added a `Option` support class and `option()` helper to retrieve options in a type-safe manner.
 - Added `fail()` method to commands to allow for a command to fail with a message.
 - Added `with_debug()` and `with_multisite()` methods to the installation manager.
 
 ### Changed
 
-- Passing a `\Stringable` as a model attribute will now be cast to a string
-  before being set on the model.
+- Passing a `\Stringable` as a model attribute will now be cast to a string before being set on the model.
 
 ### Fixed
 

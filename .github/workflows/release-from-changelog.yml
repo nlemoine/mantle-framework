@@ -5,6 +5,9 @@ on:
     branches:
       - '*.x'
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -26,7 +29,7 @@ jobs:
           echo "Latest GitHub release: $LATEST_RELEASE"
           echo "latest_release=$LATEST_RELEASE" >> $GITHUB_ENV
         env:
-          GITHUB_TOKEN: ${{ secrets.ALLEY_CI_KEY }}
+          GITHUB_TOKEN: ${{ secrets.ALLEY_CI_CHANGELOG_KEY }}
 
       - name: Extract release notes
         id: extract_notes
@@ -47,4 +50,4 @@ jobs:
           gh auth status
           gh release create "$version" --title "$version" --notes-file RELEASE_NOTES.md
         env:
-          GITHUB_TOKEN: ${{ secrets.ALLEY_CI_KEY }}
+          GITHUB_TOKEN: ${{ secrets.ALLEY_CI_CHANGELOG_KEY }}
