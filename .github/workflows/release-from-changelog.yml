@@ -3,7 +3,7 @@ name: Release from Changelog
 on:
   push:
     branches:
-      - main  # Adjust if using a different default branch
+      - production
 
 permissions:
   contents: write
