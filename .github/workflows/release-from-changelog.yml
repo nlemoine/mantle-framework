@@ -20,7 +20,7 @@ jobs:
         run: |
           VERSION=$(grep -oP '(?<=## v)\d+\.\d+\.\d+' CHANGELOG.md | head -1)
           echo "Latest version found: $VERSION"
-          echo "version=$VERSION" >> $GITHUB_ENV
+          echo "version=v$VERSION" >> $GITHUB_ENV
 
       - name: Get latest GitHub release
         id: latest_release
@@ -31,12 +31,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
+      - name: Extract release notes
+        id: extract_notes
+        run: |
+          sed -n '/^## '"$version"'/,/^## /p' CHANGELOG.md | sed '1d;$d' > RELEASE_NOTES.md
+          echo "Release notes:"
+          cat RELEASE_NOTES.md
+        shell: bash
+
       - name: Create new GitHub release if version is new
         if: env.version != env.latest_release && env.version != '' && env.latest_release != 'Unreleased'
         run: |
           echo "Would be creating release $version"
           echo "Would be using the following changelog:"
-          awk '/^## '"$version"'/{flag=1;next}/^## /{flag=0}flag' CHANGELOG.md
-          # gh release create "v$version" --title "v$version" --notes "$(awk '/^## '"$version"'/{flag=1;next}/^## /{flag=0}flag' CHANGELOG.md)"
+          cat RELEASE_NOTES.md
+          # gh release create "$version" --title "$version" --notes-file RELEASE_NOTES.md
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
