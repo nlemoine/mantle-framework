@@ -18,14 +18,14 @@ jobs:
       - name: Extract latest version from CHANGELOG.md
         id: get_version
         run: |
-          VERSION=$(grep -oP '(?<=## )\d+\.\d+\.\d+' CHANGELOG.md | head -1)
+          VERSION=$(grep -oP '(?<=## v)\d+\.\d+\.\d+' CHANGELOG.md | head -1)
           echo "Latest version found: $VERSION"
           echo "version=$VERSION" >> $GITHUB_ENV
 
       - name: Get latest GitHub release
         id: latest_release
         run: |
-          LATEST_RELEASE=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' || echo "")
+          LATEST_RELEASE=$(gh release list --limit 1 --exclude-drafts --json tagName --jq '.[0].tagName' || echo "")
           echo "Latest GitHub release: $LATEST_RELEASE"
           echo "latest_release=$LATEST_RELEASE" >> $GITHUB_ENV
         env:
@@ -37,6 +37,6 @@ jobs:
           echo "Would be creating release $version"
           echo "Would be using the following changelog:"
           awk '/^## '"$version"'/{flag=1;next}/^## /{flag=0}flag' CHANGELOG.md
-          # gh release create "$version" --title "Release $version" --notes "$(awk '/^## '"$version"'/{flag=1;next}/^## /{flag=0}flag' CHANGELOG.md)"
+          # gh release create "v$version" --title "v$version" --notes "$(awk '/^## '"$version"'/{flag=1;next}/^## /{flag=0}flag' CHANGELOG.md)"
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
