@@ -5,12 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## v1.5.8
 
 ### Added
 
 - Added a `HTML` class to help with HTML querying, assertions, and manipulation.
 - Added `factory()` method to database seeder.
+
+### Changed
+
+- Renamed the base test cases for `mantle-framework/testing` and
+- `mantle-framework/testkit` to `TestCase` (previously
+  was `Test_Case`). A shim is provided for backwards compatibility. The old
+  class names are not yet deprecated.
 
 ## v1.5.7
 
