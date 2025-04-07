@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Renamed the base test cases for `mantle-framework/testing` and
-- `mantle-framework/testkit` to `TestCase` (previously
+  `mantle-framework/testkit` to `TestCase` (previously
   was `Test_Case`). A shim is provided for backwards compatibility. The old
   class names are not yet deprecated.
 
