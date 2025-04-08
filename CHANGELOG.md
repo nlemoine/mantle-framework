@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## v1.6.0
 
 ### Added
 
@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Mantle\Support\Attributes\Hookable\Allow_Legacy_Duplicate_Registration`
   attribute can be used on the class to allow for duplicate registration of the
   methods.
+- Additional typings added to internal framework class methods parameters and return types.
 
 ## v1.5.8
 

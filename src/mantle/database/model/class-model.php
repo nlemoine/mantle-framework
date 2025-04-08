@@ -113,19 +113,17 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	 * Find a model by Object ID.
 	 *
 	 * @param object|string|int $object Object to retrieve.
-	 * @return static|null
 	 */
-	abstract public static function find( $object );
+	abstract public static function find( mixed $object ): ?static;
 
 	/**
 	 * Find a model or throw an exception.
 	 *
 	 * @param object|string|int $object Object to retrieve.
-	 * @return static
 	 *
 	 * @throws Model_Not_Found_Exception Thrown on missing resource.
 	 */
-	public static function find_or_fail( $object ) {
+	public static function find_or_fail( mixed $object ): static {
 		$find = static::find( $object );
 		if ( $find ) {
 			return $find;

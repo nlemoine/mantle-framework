@@ -112,7 +112,7 @@ trait Enumerates_Values {
 	 * @param  iterable<array-key, TWrapValue>|TWrapValue $value
 	 * @return static<array-key, TWrapValue>
 	 */
-	public static function wrap( $value ) {
+	public static function wrap( $value ): static {
 		return $value instanceof Enumerable
 			? new static( $value )
 			: new static( Arr::wrap( $value ) );
@@ -208,7 +208,7 @@ trait Enumerates_Values {
 	 * Execute a callback over each item.
 	 *
 	 * @param  callable(TValue, TKey): mixed $callback
-	 * @return $this
+	 * @return static
 	 */
 	public function each( callable $callback ) {
 		foreach ( $this as $key => $item ) {
@@ -274,10 +274,8 @@ trait Enumerates_Values {
 
 	/**
 	 * Determine if the collection is not empty.
-	 *
-	 * @return bool
 	 */
-	public function is_not_empty() {
+	public function is_not_empty(): bool {
 		return ! $this->is_empty();
 	}
 
@@ -447,7 +445,7 @@ trait Enumerates_Values {
 	 *
 	 * @param  (callable( $this): TWhenEmptyReturnType)  $callback The callback to apply.
 	 * @param  (callable( $this): TWhenEmptyReturnType)|null  $default The callback to apply if the collection is not empty.
-	 * @return $this|TWhenEmptyReturnType
+	 * @return static|TWhenEmptyReturnType
 	 */
 	public function when_empty( callable $callback, ?callable $default = null ) {
 		return $this->when( $this->is_empty(), $callback, $default );
@@ -460,7 +458,7 @@ trait Enumerates_Values {
 	 *
 	 * @param  callable(  $this): TWhenNotEmptyReturnType  $callback The callback to apply.
 	 * @param  (callable( $this): TWhenNotEmptyReturnType)|null  $default The callback to apply if the collection is empty.
-	 * @return $this|TWhenNotEmptyReturnType
+	 * @return static|TWhenNotEmptyReturnType
 	 */
 	public function when_not_empty( callable $callback, ?callable $default = null ) {
 		return $this->when( $this->is_not_empty(), $callback, $default );
@@ -473,7 +471,7 @@ trait Enumerates_Values {
 	 *
 	 * @param  callable(  $this): TUnlessEmptyReturnType  $callback The callback to apply.
 	 * @param  (callable( $this): TUnlessEmptyReturnType)|null  $default The callback to apply if the collection is empty.
-	 * @return $this|TUnlessEmptyReturnType
+	 * @return static|TUnlessEmptyReturnType
 	 */
 	public function unless_empty( callable $callback, ?callable $default = null ) {
 		return $this->when_not_empty( $callback, $default );
@@ -486,7 +484,7 @@ trait Enumerates_Values {
 	 *
 	 * @param  callable(  $this): TUnlessNotEmptyReturnType  $callback The callback to apply.
 	 * @param  (callable( $this): TUnlessNotEmptyReturnType)|null  $default The callback to apply if the collection is not empty.
-	 * @return $this|TUnlessNotEmptyReturnType
+	 * @return static|TUnlessNotEmptyReturnType
 	 */
 	public function unless_not_empty( callable $callback, ?callable $default = null ) {
 		return $this->when_empty( $callback, $default );
@@ -643,7 +641,7 @@ trait Enumerates_Values {
 	 * Pass the collection to the given callback and then return it.
 	 *
 	 * @param  callable( $this): mixed  $callback The callback to pass the collection to.
-	 * @return $this
+	 * @return static
 	 */
 	public function tap( callable $callback ) {
 		$callback( clone $this );

@@ -74,9 +74,8 @@ class Pluralizer {
 	 * Determine if the given value is uncountable.
 	 *
 	 * @param  string $value
-	 * @return bool
 	 */
-	protected static function uncountable( $value ) {
+	protected static function uncountable( $value ): bool {
 		return in_array( strtolower( $value ), static::$uncountable, true );
 	}
 
@@ -85,9 +84,8 @@ class Pluralizer {
 	 *
 	 * @param  string $value
 	 * @param  string $comparison
-	 * @return string
 	 */
-	protected static function match_case( string $value, string $comparison ) {
+	protected static function match_case( string $value, string $comparison ): string {
 		$functions = [ 'mb_strtolower', 'mb_strtoupper', 'ucfirst', 'ucwords' ];
 
 		foreach ( $functions as $function ) {

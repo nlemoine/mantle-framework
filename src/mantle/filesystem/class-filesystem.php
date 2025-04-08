@@ -27,9 +27,8 @@ class Filesystem {
 	 * Determine if a file or directory exists.
 	 *
 	 * @param  string $path
-	 * @return bool
 	 */
-	public function exists( $path ) {
+	public function exists( $path ): bool {
 		return file_exists( $path );
 	}
 
@@ -37,9 +36,8 @@ class Filesystem {
 	 * Determine if a file or directory is missing.
 	 *
 	 * @param  string $path
-	 * @return bool
 	 */
-	public function missing( $path ) {
+	public function missing( $path ): bool {
 		return ! $this->exists( $path );
 	}
 
@@ -248,9 +246,8 @@ class Filesystem {
 	 *
 	 * @param  string $path
 	 * @param  string $target
-	 * @return bool
 	 */
-	public function move( $path, $target ) {
+	public function move( $path, $target ): bool {
 		return rename( $path, $target );
 	}
 
@@ -259,9 +256,8 @@ class Filesystem {
 	 *
 	 * @param  string $path
 	 * @param  string $target
-	 * @return bool
 	 */
-	public function copy( $path, $target ) {
+	public function copy( $path, $target ): bool {
 		return copy( $path, $target );
 	}
 
@@ -281,9 +277,8 @@ class Filesystem {
 	 * Extract the file name from a file path.
 	 *
 	 * @param  string $path
-	 * @return string
 	 */
-	public function name( $path ) {
+	public function name( $path ): string {
 		return pathinfo( $path, PATHINFO_FILENAME );
 	}
 
@@ -291,9 +286,8 @@ class Filesystem {
 	 * Extract the trailing name component from a file path.
 	 *
 	 * @param  string $path
-	 * @return string
 	 */
-	public function basename( $path ) {
+	public function basename( $path ): string {
 		return pathinfo( $path, PATHINFO_BASENAME );
 	}
 
@@ -301,9 +295,8 @@ class Filesystem {
 	 * Extract the parent directory from a file path.
 	 *
 	 * @param  string $path
-	 * @return string
 	 */
-	public function dirname( $path ) {
+	public function dirname( $path ): string {
 		return pathinfo( $path, PATHINFO_DIRNAME );
 	}
 
@@ -311,9 +304,8 @@ class Filesystem {
 	 * Extract the file extension from a file path.
 	 *
 	 * @param  string $path
-	 * @return string
 	 */
-	public function extension( $path ) {
+	public function extension( $path ): string {
 		return pathinfo( $path, PATHINFO_EXTENSION );
 	}
 
@@ -396,9 +388,8 @@ class Filesystem {
 	 * Determine if the given path is a directory.
 	 *
 	 * @param  string $directory
-	 * @return bool
 	 */
-	public function is_directory( $directory ) {
+	public function is_directory( $directory ): bool {
 		return is_dir( $directory );
 	}
 
@@ -406,9 +397,8 @@ class Filesystem {
 	 * Determine if the given path is readable.
 	 *
 	 * @param  string $path
-	 * @return bool
 	 */
-	public function is_readable( $path ) {
+	public function is_readable( $path ): bool {
 		return is_readable( $path );
 	}
 
@@ -416,9 +406,8 @@ class Filesystem {
 	 * Determine if the given path is writable.
 	 *
 	 * @param  string $path
-	 * @return bool
 	 */
-	public function is_writable( $path ) {
+	public function is_writable( $path ): bool {
 		return is_writable( $path );
 	}
 
@@ -426,9 +415,8 @@ class Filesystem {
 	 * Determine if the given path is a file.
 	 *
 	 * @param  string $file
-	 * @return bool
 	 */
-	public function is_file( $file ) {
+	public function is_file( $file ): bool {
 		return is_file( $file );
 	}
 
@@ -505,9 +493,8 @@ class Filesystem {
 	 * @param  string $path
 	 * @param  int    $mode
 	 * @param  bool   $recursive
-	 * @return bool
 	 */
-	public function make_directory( string $path, int $mode = 0755, bool $recursive = false ) {
+	public function make_directory( string $path, int $mode = 0755, bool $recursive = false ): bool {
 		return mkdir( $path, $mode, $recursive );
 	}
 

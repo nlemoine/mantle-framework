@@ -22,11 +22,10 @@ class Parser {
 	 * Parse the given console command definition into an array.
 	 *
 	 * @param  string $expression
-	 * @return array
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public static function parse( $expression ) {
+	public static function parse( $expression ): array {
 		$name = static::name( $expression );
 
 		if ( preg_match_all( '/\{\s*(.*?)\s*\}/', $expression, $matches ) && count( $matches[1] ) ) {
@@ -40,11 +39,10 @@ class Parser {
 	 * Extract the name of the command from the expression.
 	 *
 	 * @param  string $expression
-	 * @return string
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected static function name( $expression ) {
+	protected static function name( $expression ): string {
 		if ( ! preg_match( '/[^\s]+/', $expression, $matches ) ) {
 			throw new InvalidArgumentException( 'Unable to determine command name from signature.' );
 		}
@@ -56,9 +54,8 @@ class Parser {
 	 * Extract all of the parameters from the tokens.
 	 *
 	 * @param  array $tokens
-	 * @return array
 	 */
-	protected static function parameters( array $tokens ) {
+	protected static function parameters( array $tokens ): array {
 		$arguments = [];
 
 		$options = [];
@@ -78,9 +75,8 @@ class Parser {
 	 * Parse an argument expression.
 	 *
 	 * @param  string $token
-	 * @return \Symfony\Component\Console\Input\InputArgument
 	 */
-	protected static function parse_argument( $token ) {
+	protected static function parse_argument( $token ): \Symfony\Component\Console\Input\InputArgument {
 		[$token, $description] = static::extract_description( $token );
 
 		switch ( true ) {
@@ -103,9 +99,8 @@ class Parser {
 	 * Parse an option expression.
 	 *
 	 * @param  string $token
-	 * @return \Symfony\Component\Console\Input\InputOption
 	 */
-	protected static function parse_option( $token ) {
+	protected static function parse_option( $token ): \Symfony\Component\Console\Input\InputOption {
 		[$token, $description] = static::extract_description( $token );
 
 		$matches = preg_split( '/\s*\|\s*/', (string) $token, 2 );
