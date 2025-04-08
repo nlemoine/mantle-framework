@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Add support for PHPUnit 12. Note: PHPUnit 12 drops all support for docblock
+  annotations. To easily upgrade your project to use attributes, try
+  [Rector](https://getrector.com/documentation).
+
 ### Changed
 
 - When using the `Hookable` trait, any `action__{method}`/`on_{method}` will be
