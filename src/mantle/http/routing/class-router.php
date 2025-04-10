@@ -93,7 +93,7 @@ class Router implements Router_Contract {
 	 * @param mixed  $action Callback action.
 	 * @return Route
 	 */
-	public function get( string $uri, $action = '' ) {
+	public function get( string $uri, $action = '' ): ?Route {
 		return $this->add_route( [ 'GET', 'HEAD' ], $uri, $action );
 	}
 
@@ -104,7 +104,7 @@ class Router implements Router_Contract {
 	 * @param mixed  $action Callback action.
 	 * @return Route
 	 */
-	public function post( string $uri, $action = '' ) {
+	public function post( string $uri, $action = '' ): ?Route {
 		return $this->add_route( [ 'POST' ], $uri, $action );
 	}
 
@@ -115,7 +115,7 @@ class Router implements Router_Contract {
 	 * @param mixed  $action Callback action.
 	 * @return Route
 	 */
-	public function put( string $uri, $action = '' ) {
+	public function put( string $uri, $action = '' ): ?Route {
 		return $this->add_route( [ 'PUT' ], $uri, $action );
 	}
 
@@ -126,7 +126,7 @@ class Router implements Router_Contract {
 	 * @param mixed  $action Callback action.
 	 * @return Route
 	 */
-	public function delete( string $uri, $action = '' ) {
+	public function delete( string $uri, $action = '' ): ?Route {
 		return $this->add_route( [ 'DELETE' ], $uri, $action );
 	}
 
@@ -137,7 +137,7 @@ class Router implements Router_Contract {
 	 * @param mixed  $action Callback action.
 	 * @return Route
 	 */
-	public function patch( string $uri, $action = '' ) {
+	public function patch( string $uri, $action = '' ): ?Route {
 		return $this->add_route( [ 'PATCH' ], $uri, $action );
 	}
 
@@ -148,7 +148,7 @@ class Router implements Router_Contract {
 	 * @param mixed  $action Callback action.
 	 * @return Route
 	 */
-	public function options( string $uri, $action = '' ) {
+	public function options( string $uri, $action = '' ): ?Route {
 		return $this->add_route( [ 'OPTIONS' ], $uri, $action );
 	}
 
@@ -314,7 +314,7 @@ class Router implements Router_Contract {
 			->send( $this->container['request'] )
 			->through( $middleware )
 			->then(
-				function ( Request $request ) use ( $route ) {
+				function ( Request $request ) use ( $route ): ?\Symfony\Component\HttpFoundation\Response {
 					// Refresh the request object in the container with modifications from the middleware.
 					$this->container['request'] = $request;
 
@@ -340,10 +340,8 @@ class Router implements Router_Contract {
 
 	/**
 	 * Get all of the defined middleware short-hand names.
-	 *
-	 * @return array
 	 */
-	public function get_middleware() {
+	public function get_middleware(): array {
 		return $this->middleware;
 	}
 
@@ -361,10 +359,8 @@ class Router implements Router_Contract {
 
 	/**
 	 * Get all of the defined middleware groups.
-	 *
-	 * @return array
 	 */
-	public function get_middleware_groups() {
+	public function get_middleware_groups(): array {
 		return $this->middleware_groups;
 	}
 
@@ -514,9 +510,8 @@ class Router implements Router_Contract {
 	 * @param  string  $key Route key.
 	 * @param  string  $value Value.
 	 * @param  Request $request Request object.
-	 * @return mixed
 	 */
-	protected function perform_binding( string $key, $value, Request $request ) {
+	protected function perform_binding( string $key, $value, Request $request ): mixed {
 		return call_user_func( $this->binders[ $key ], $value, $request );
 	}
 
@@ -540,7 +535,7 @@ class Router implements Router_Contract {
 	 *                                         the register_rest_route() call. Not used if $callback
 	 *                                         is a closure.
 	 */
-	public function rest_api( string $namespace, callable|string $callback, callable|array|string $args = [] ): \Mantle\Http\Routing\Rest_Route_Registrar {
+	public function rest_api( string $namespace, callable|string $callback, callable|array|string $args = [] ): Rest_Route_Registrar {
 		$registrar = new Rest_Route_Registrar( $this, $namespace );
 
 		if ( is_callable( $callback ) ) {

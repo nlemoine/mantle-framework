@@ -149,10 +149,8 @@ class Handler implements Contract {
 
 	/**
 	 * Get the default context variables for logging.
-	 *
-	 * @return array
 	 */
-	protected function context() {
+	protected function context(): array {
 		try {
 			return array_filter(
 				[
@@ -170,7 +168,6 @@ class Handler implements Contract {
 	 *
 	 * @param Request   $request Request object.
 	 * @param Throwable $e Exception thrown.
-	 * @return SymfonyResponse
 	 */
 	public function render( $request, Throwable $e ) {
 		// Check if the exception has a render method and use that.
@@ -181,8 +178,8 @@ class Handler implements Contract {
 		$e = $this->prepare_exception( $e );
 
 		return $request->expects_json()
-			? $this->prepare_json_response( $request, $e )
-			: $this->prepare_http_response( $request, $e );
+		? $this->prepare_json_response( $request, $e )
+		: $this->prepare_http_response( $request, $e );
 	}
 
 	/**

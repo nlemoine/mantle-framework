@@ -25,20 +25,6 @@ use Mantle\Contracts\Exceptions\Handler as Exception_Handler;
  */
 class Kernel implements Kernel_Contract, Core_Kernel_Contract {
 	/**
-	 * The application implementation.
-	 *
-	 * @var Application
-	 */
-	protected $app;
-
-	/**
-	 * Router instance.
-	 *
-	 * @var Router
-	 */
-	protected $router;
-
-	/**
 	 * Request instance.
 	 *
 	 * @var Request
@@ -93,10 +79,7 @@ class Kernel implements Kernel_Contract, Core_Kernel_Contract {
 	 * @param Application $app Application instance.
 	 * @param Router      $router Router instance.
 	 */
-	public function __construct( Application $app, Router $router ) {
-		$this->app    = $app;
-		$this->router = $router;
-
+	public function __construct( protected Application $app, protected Router $router ) {
 		$this->sync_middleware_to_router();
 	}
 
@@ -125,9 +108,9 @@ class Kernel implements Kernel_Contract, Core_Kernel_Contract {
 			if ( $response instanceof Response ) {
 				$response->send();
 				exit;
-			} else {
-				\wp_die( 'Error booting HTTP Kernel: ' . $e->getMessage() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
+
+			\wp_die( 'Error booting HTTP Kernel: ' . $e->getMessage() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		if ( did_action( 'parse_request' ) ) {

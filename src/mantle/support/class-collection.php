@@ -113,9 +113,8 @@ class Collection implements ArrayAccess, Enumerable {
 	 * Get the average value of a given key.
 	 *
 	 * @param  (callable(TValue): float|int)|string|null $callback
-	 * @return float|int|null
 	 */
-	public function avg( $callback = null ) {
+	public function avg( $callback = null ): int|float|null {
 		$callback = $this->value_retriever( $callback );
 
 		$items = $this->map(
@@ -914,7 +913,7 @@ class Collection implements ArrayAccess, Enumerable {
 	 *
 	 * @return static<int, TValue>|TValue|null
 	 */
-	public function pop() {
+	public function pop(): mixed {
 		return array_pop( $this->items );
 	}
 
@@ -1078,7 +1077,7 @@ class Collection implements ArrayAccess, Enumerable {
 	 *
 	 * @return TValue|null
 	 */
-	public function shift() {
+	public function shift(): mixed {
 		return array_shift( $this->items );
 	}
 

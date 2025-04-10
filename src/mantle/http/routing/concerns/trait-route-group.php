@@ -165,9 +165,9 @@ trait Route_Group {
 
 		if ( $prepend_existing_prefix ) {
 			return isset( $new['prefix'] ) ? trim( (string) $old, '/' ) . '/' . trim( (string) $new['prefix'], '/' ) : $old;
-		} else {
-			return isset( $new['prefix'] ) ? trim( (string) $new['prefix'], '/' ) . '/' . trim( (string) $old, '/' ) : $old;
 		}
+
+		return isset( $new['prefix'] ) ? trim( (string) $new['prefix'], '/' ) . '/' . trim( (string) $old, '/' ) : $old;
 	}
 
 	/**
@@ -175,9 +175,8 @@ trait Route_Group {
 	 *
 	 * @param  array $new
 	 * @param  array $old
-	 * @return array
 	 */
-	protected static function format_where( $new, $old ) {
+	protected static function format_where( $new, $old ): array {
 		return array_merge(
 			$old['where'] ?? [],
 			$new['where'] ?? []

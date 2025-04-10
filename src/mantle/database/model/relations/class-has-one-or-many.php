@@ -35,20 +35,6 @@ abstract class Has_One_Or_Many extends Relation {
 	public const DELIMITER = '__-__';
 
 	/**
-	 * Local key.
-	 *
-	 * @var string
-	 */
-	protected $local_key;
-
-	/**
-	 * Foreign key.
-	 *
-	 * @var string
-	 */
-	protected $foreign_key;
-
-	/**
 	 * Create a new has one or many relationship instance.
 	 *
 	 * @param Builder $query Query builder object.
@@ -56,10 +42,7 @@ abstract class Has_One_Or_Many extends Relation {
 	 * @param string  $foreign_key Foreign key.
 	 * @param string  $local_key Local key.
 	 */
-	public function __construct( Builder $query, Model $parent, string $foreign_key, ?string $local_key = null ) {
-		$this->foreign_key = $foreign_key;
-		$this->local_key   = $local_key;
-
+	public function __construct( Builder $query, Model $parent, protected string $foreign_key, protected ?string $local_key = null ) {
 		parent::__construct( $query, $parent );
 	}
 
@@ -306,10 +289,12 @@ abstract class Has_One_Or_Many extends Relation {
 			}
 
 			return $dictionary;
-		} elseif ( $this->is_term_post_relationship() ) {
-			// Term post relationships also always rely on the underlying term.
-			$dictionary = [];
+		}
 
+		// Post term relationships always rely on the underlying term.
+		if ( $this->is_term_post_relationship() ) {
+			// Term post relationships also always rely on the underlying term.
+			$dictionary    = [];
 			$post_term_ids = [];
 
 			foreach ( $results as $result ) {

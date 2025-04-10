@@ -13,6 +13,8 @@ use Mantle\Support\Reflector;
 use ReflectionFunction;
 use ReflectionMethod;
 
+use function Mantle\Support\Helpers\value;
+
 /**
  * Container Bound Method
  */
@@ -83,7 +85,7 @@ class Bound_Method {
 	 */
 	protected static function call_bound_method( $container, $callback, $default ) {
 		if ( ! is_array( $callback ) ) {
-			return Util::unwrap_if_closure( $default );
+			return value( $default );
 		}
 
 		// Here we need to turn the array callable into a Class@method string we can use to
@@ -95,7 +97,7 @@ class Bound_Method {
 			return $container->call_method_binding( $method, $callback[0] );
 		}
 
-		return Util::unwrap_if_closure( $default );
+		return value( $default );
 	}
 
 	/**
@@ -114,11 +116,10 @@ class Bound_Method {
 	 * @param  Container       $container Container instance.
 	 * @param  callable|string $callback Callback function.
 	 * @param  array           $parameters Parameters to pass.
-	 * @return array
 	 *
 	 * @throws \ReflectionException Throw on invalid arguments.
 	 */
-	protected static function get_method_dependencies( $container, $callback, array $parameters = [] ) {
+	protected static function get_method_dependencies( $container, $callback, array $parameters = [] ): array {
 		$dependencies = [];
 
 		foreach ( static::get_call_reflector( $callback )->getParameters() as $parameter ) {
@@ -132,11 +133,9 @@ class Bound_Method {
 	 * Get the proper reflection instance for the given callback.
 	 *
 	 * @param  callable|string $callback Callback to get from.
-	 * @return \ReflectionFunctionAbstract
-	 *
 	 * @throws \ReflectionException Throw on invalid arguments.
 	 */
-	protected static function get_call_reflector( $callback ) {
+	protected static function get_call_reflector( $callback ): \ReflectionMethod|\ReflectionFunction {
 		if ( is_string( $callback ) && strpos( $callback, '::' ) !== false ) {
 			$callback = explode( '::', $callback );
 		} elseif ( is_object( $callback ) && ! $callback instanceof Closure ) {

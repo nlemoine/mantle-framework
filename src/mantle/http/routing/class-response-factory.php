@@ -21,29 +21,12 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class Response_Factory implements Factory_Contract {
 	/**
-	 * The redirector instance.
-	 *
-	 * @var Redirector
-	 */
-	protected $redirector;
-
-	/**
-	 * The view factory instance.
-	 *
-	 * @var View_Factory
-	 */
-	protected $view;
-
-	/**
 	 * Create a new response factory instance.
 	 *
 	 * @param Redirector   $redirector Redirector instance.
 	 * @param View_Factory $view View factory.
 	 */
-	public function __construct( Redirector $redirector, View_Factory $view ) {
-		$this->redirector = $redirector;
-		$this->view       = $view;
-	}
+	public function __construct( protected Redirector $redirector, protected View_Factory $view ) {}
 
 	/**
 	 * Create a new response instance.
@@ -61,9 +44,8 @@ class Response_Factory implements Factory_Contract {
 	 *
 	 * @param  int   $status
 	 * @param  array $headers
-	 * @return Response
 	 */
-	public function no_content( $status = 204, array $headers = [] ) {
+	public function no_content( $status = 204, array $headers = [] ): \Mantle\Http\Response {
 		return $this->make( '', $status, $headers );
 	}
 
@@ -75,9 +57,8 @@ class Response_Factory implements Factory_Contract {
 	 * @param  array  $data Data to pass to the view.
 	 * @param  int    $status HTTP status code.
 	 * @param  array  $headers Additional headers.
-	 * @return Response
 	 */
-	public function view( string $slug, $name = null, $data = [], $status = 200, array $headers = [] ) {
+	public function view( string $slug, $name = null, $data = [], $status = 200, array $headers = [] ): \Mantle\Http\Response {
 		return $this->make(
 			$this->view->make( $slug, $name, $data ),
 			$status,
@@ -103,9 +84,8 @@ class Response_Factory implements Factory_Contract {
 	 * @param  mixed  $data
 	 * @param  int    $status
 	 * @param  array  $headers
-	 * @return JsonResponse
 	 */
-	public function jsonp( $callback, $data = [], $status = 200, array $headers = [] ) {
+	public function jsonp( $callback, $data = [], $status = 200, array $headers = [] ): \Symfony\Component\HttpFoundation\JsonResponse {
 		return $this->json( $data, $status, $headers )->setCallback( $callback );
 	}
 

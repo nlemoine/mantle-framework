@@ -55,7 +55,7 @@ class Request extends SymfonyRequest implements ArrayAccess, Arrayable {
 	 *
 	 * @return static
 	 */
-	public static function capture() {
+	public static function capture(): \Symfony\Component\HttpFoundation\Request {
 		return static::createFromGlobals();
 	}
 
@@ -203,10 +203,8 @@ class Request extends SymfonyRequest implements ArrayAccess, Arrayable {
 
 	/**
 	 * Determine if the request is the result of an AJAX call.
-	 *
-	 * @return bool
 	 */
-	public function ajax() {
+	public function ajax(): bool {
 		return $this->isXmlHttpRequest();
 	}
 
@@ -227,37 +225,29 @@ class Request extends SymfonyRequest implements ArrayAccess, Arrayable {
 
 	/**
 	 * Determine if the request is over HTTPS.
-	 *
-	 * @return bool
 	 */
-	public function secure() {
+	public function secure(): bool {
 		return $this->isSecure();
 	}
 
 	/**
 	 * Get the client IP address.
-	 *
-	 * @return string|null
 	 */
-	public function ip() {
+	public function ip(): ?string {
 		return $this->getClientIp();
 	}
 
 	/**
 	 * Get the client IP addresses.
-	 *
-	 * @return array
 	 */
-	public function ips() {
+	public function ips(): array {
 		return $this->getClientIps();
 	}
 
 	/**
 	 * Get the client user agent.
-	 *
-	 * @return string|null
 	 */
-	public function user_agent() {
+	public function user_agent(): ?string {
 		return $this->headers->get( 'User-Agent' );
 	}
 
@@ -343,7 +333,7 @@ class Request extends SymfonyRequest implements ArrayAccess, Arrayable {
 	 * @param  \Symfony\Component\HttpFoundation\ParameterBag $json
 	 * @return static
 	 */
-	public function set_json( $json ) {
+	public function set_json( ?\Symfony\Component\HttpFoundation\ParameterBag $json ) {
 		$this->json = $json;
 
 		return $this;
@@ -351,10 +341,8 @@ class Request extends SymfonyRequest implements ArrayAccess, Arrayable {
 
 	/**
 	 * Get all of the input and files for the request.
-	 *
-	 * @return array
 	 */
-	public function to_array() {
+	public function to_array(): array {
 		return $this->all();
 	}
 

@@ -13,6 +13,7 @@ use Mantle\Container\Container;
 use Mantle\Database\Factory;
 use Mantle\Database\Model;
 use Mantle\Support\Str;
+use Mantle\Support\Stringable;
 
 use function Mantle\Support\Helpers\collect;
 use function Mantle\Support\Helpers\str;
@@ -80,7 +81,7 @@ trait Resolves_Factories {
 	 * @return class-string<\Mantle\Database\Factory\Factory>
 	 */
 	public static function resolve_custom_factory_name( string $model_name ): string {
-		$resolver = static::$factory_name_resolver ?? function ( string $model_name ) {
+		$resolver = static::$factory_name_resolver ?? function ( string $model_name ): Stringable {
 			$app_namespace = static::app_namespace();
 
 			return Str::of( $model_name )
@@ -127,7 +128,9 @@ trait Resolves_Factories {
 		// Handle one-off models.
 		if ( in_array( Model\Site::class, [ $model_name, $parent_class ], true ) ) {
 			return Factory\Blog_Factory::class;
-		} elseif ( in_array( Model\Attachment::class, [ $model_name, $parent_class ], true ) ) {
+		}
+
+		if ( in_array( Model\Attachment::class, [ $model_name, $parent_class ], true ) ) {
 			return Factory\Attachment_Factory::class;
 		}
 

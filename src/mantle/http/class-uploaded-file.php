@@ -148,11 +148,9 @@ class Uploaded_File extends SymfonyUploadedFile {
 	/**
 	 * Get the contents of the uploaded file.
 	 *
-	 * @return bool|string
-	 *
 	 * @throws FileNotFoundException When file not found.
 	 */
-	public function get() {
+	public function get(): string|false {
 		if ( ! $this->isValid() ) {
 			throw new FileNotFoundException( "File does not exist at path {$this->getPathname()}." );
 		}
@@ -165,7 +163,7 @@ class Uploaded_File extends SymfonyUploadedFile {
 	 *
 	 * @return string
 	 */
-	public function clientExtension() {
+	public function clientExtension(): ?string {
 		return $this->guessClientExtension();
 	}
 

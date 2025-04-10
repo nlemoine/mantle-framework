@@ -127,7 +127,7 @@ class Byline_Manager_Factory extends Factory {
 			->send( [] )
 			->through( $factory->middleware->all() )
 			->then(
-				function ( array $args ) {
+				function ( array $args ): ?Post {
 					if ( ! empty( $args['user_id'] ) ) {
 						$profile = self::get_byline_manager_profile_by_user_id( $args['user_id'], create: true );
 
@@ -136,25 +136,23 @@ class Byline_Manager_Factory extends Factory {
 						}
 
 						return Post::for( self::POST_TYPE )->find( $profile->post->ID );
-					} else {
-						// Inherit the display name as the post title.
-						if ( ! empty( $args['display_name'] ) ) {
-							$args['post_title'] = $args['display_name'];
-						} elseif ( empty( $args['post_title'] ) ) {
-							$args['post_title'] = $this->faker->firstName() . ' ' . $this->faker->lastName();
-						}
-
-						$profile = Profile::create( $args );
-
-						if ( is_wp_error( $profile ) ) {
-							throw new Model_Exception( 'Error creating profile: ' . $profile->get_error_message() );
-						}
-
-						[ $first, $last ] = explode( ' ', (string) $profile->post->post_title );
-
-						update_post_meta( $profile->post->ID, 'first_name', $first );
-						update_post_meta( $profile->post->ID, 'last_name', $last );
 					}
+
+					// Inherit the display name as the post title.
+					if ( ! empty( $args['display_name'] ) ) {
+						$args['post_title'] = $args['display_name'];
+					} elseif ( empty( $args['post_title'] ) ) {
+						$args['post_title'] = $this->faker->firstName() . ' ' . $this->faker->lastName();
+					}
+
+					$profile = Profile::create( $args );
+					if ( is_wp_error( $profile ) ) {
+						throw new Model_Exception( 'Error creating profile: ' . $profile->get_error_message() );
+					}
+
+					[ $first, $last ] = explode( ' ', (string) $profile->post->post_title );
+					update_post_meta( $profile->post->ID, 'first_name', $first );
+					update_post_meta( $profile->post->ID, 'last_name', $last );
 
 					return Post::for( self::POST_TYPE )->find( $profile->post->ID );
 				}

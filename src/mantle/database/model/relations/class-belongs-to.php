@@ -32,20 +32,6 @@ use function Mantle\Support\Helpers\collect;
  */
 class Belongs_To extends Relation {
 	/**
-	 * Local key.
-	 *
-	 * @var string
-	 */
-	protected $local_key;
-
-	/**
-	 * Foreign key.
-	 *
-	 * @var string
-	 */
-	protected $foreign_key;
-
-	/**
 	 * Create a new has one or many relationship instance.
 	 *
 	 * @param Builder $query Query builder object.
@@ -53,10 +39,7 @@ class Belongs_To extends Relation {
 	 * @param string  $foreign_key Foreign key.
 	 * @param string  $local_key Local key.
 	 */
-	public function __construct( Builder $query, Model $parent, string $foreign_key, ?string $local_key = null ) {
-		$this->foreign_key = $foreign_key;
-		$this->local_key   = $local_key;
-
+	public function __construct( Builder $query, Model $parent, protected string $foreign_key, protected ?string $local_key = null ) {
 		parent::__construct( $query, $parent );
 	}
 
@@ -80,7 +63,9 @@ class Belongs_To extends Relation {
 			}
 
 			return;
-		} elseif ( $this->parent instanceof Model_Meta ) {
+		}
+
+		if ( $this->parent instanceof Model_Meta ) {
 			$meta_value = $this->parent->get_meta( $this->local_key );
 
 			if ( empty( $meta_value ) ) {
@@ -106,21 +91,16 @@ class Belongs_To extends Relation {
 	public function add_eager_constraints( Collection $models ): void {
 		if ( $this->uses_terms ) {
 			throw new RuntimeException( 'Eager loading relationships with terms is not supported yet.' );
-		} else {
-			$append = $this->should_append();
-
-			$meta_values = $models
-				->map(
-					fn ( $model ) => $model->get_meta( $this->local_key, ! $append )
-				)
-				->filter();
-
-			if ( $append ) {
-				$meta_values = $meta_values->collapse();
-			}
-
-			$this->query->whereIn( $this->foreign_key, $meta_values->unique()->all() );
 		}
+
+		$append      = $this->should_append();
+		$meta_values = $models->map( fn ( $model ) => $model->get_meta( $this->local_key, ! $append ) )->filter();
+
+		if ( $append ) {
+			$meta_values = $meta_values->collapse();
+		}
+
+		$this->query->whereIn( $this->foreign_key, $meta_values->unique()->all() );
 	}
 
 	/**
@@ -171,11 +151,12 @@ class Belongs_To extends Relation {
 
 		if ( $this->uses_terms ) {
 			$set = wp_set_post_terms( $this->parent->id(), [ $this->get_term_for_relationship( $model ) ], static::RELATION_TAXONOMY, $append );
-
 			if ( is_wp_error( $set ) ) {
-				throw new Model_Exception( "Error associating term relationship for [{$this->parent->id()}]: [{$set->get_error_message()}]" );
-			} elseif ( false === $set ) {
-				throw new Model_Exception( "Unknown error associating term relationship for [{$this->parent->id()}]" );
+							throw new Model_Exception( "Error associating term relationship for [{$this->parent->id()}]: [{$set->get_error_message()}]" );
+			}
+
+			if ( false === $set ) {
+																throw new Model_Exception( "Unknown error associating term relationship for [{$this->parent->id()}]" );
 			}
 		} elseif ( $append ) {
 			$this->parent->add_meta( $this->local_key, $model->id() );

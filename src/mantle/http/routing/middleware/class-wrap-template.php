@@ -22,19 +22,11 @@ use Symfony\Component\HttpFoundation\Response as Symfony_Response;
  */
 class Wrap_Template {
 	/**
-	 * Application instance.
-	 *
-	 * @var Application
-	 */
-	protected $app;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param Application $app Application instance.
 	 */
-	public function __construct( Application $app ) {
-		$this->app = $app;
+	public function __construct( protected Application $app ) {
 	}
 
 	/**
@@ -87,9 +79,8 @@ class Wrap_Template {
 	 * template is not specified.
 	 *
 	 * @param Symfony_Response $response Response object.
-	 * @return Symfony_Response
 	 */
-	protected function wrap_fallback( Symfony_Response $response ) {
+	protected function wrap_fallback( Symfony_Response $response ): Symfony_Response {
 		ob_start();
 		\get_header();
 		// Assumed to be sanitized.

@@ -9,6 +9,7 @@ namespace Mantle\Support;
 
 use Mantle\Console\Application as Console_Application;
 use Mantle\Console\Command;
+use Mantle\Container\Container;
 use Mantle\Contracts\Application;
 use Mantle\Support\Traits\Hookable;
 use Psr\Log\{LoggerAwareInterface, LoggerAwareTrait};
@@ -34,10 +35,8 @@ abstract class Service_Provider implements LoggerAwareInterface {
 
 	/**
 	 * The application instance.
-	 *
-	 * @var Application|\Mantle\Container\Container
 	 */
-	protected $app;
+	protected Application|Container $app;
 
 	/**
 	 * Commands to register.
@@ -202,13 +201,11 @@ abstract class Service_Provider implements LoggerAwareInterface {
 			}
 		}
 
-		// If both are passed, find the intersection.
-		if ( $providers && $tags ) {
-			return $provider_paths->intersect_by_keys( $tag_paths )->all();
-		} elseif ( $providers ) {
-			return $provider_paths->all();
-		} elseif ( $tags ) {
-			return $tag_paths->all();
-		}
+		return match ( true ) {
+			! empty( $providers ) && ! empty( $tags ) => $provider_paths->intersect_by_keys( $tag_paths )->all(),
+			! empty( $providers ) => $provider_paths->all(),
+			! empty( $tags ) => $tag_paths->all(),
+			default => [],
+		};
 	}
 }

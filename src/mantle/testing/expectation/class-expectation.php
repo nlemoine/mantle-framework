@@ -18,10 +18,8 @@ use SebastianBergmann\Exporter\Exporter;
 class Expectation {
 	/**
 	 * Arguments for the hook.
-	 *
-	 * @var mixed
 	 */
-	protected $args;
+	protected mixed $args = null;
 
 	/**
 	 * Number of times for the hook to execute.
@@ -38,14 +36,14 @@ class Expectation {
 	/**
 	 * Record of the start value of the hook
 	 *
-	 * @var array
+	 * @var array<array<mixed>>
 	 */
 	protected $record_start = [];
 
 	/**
 	 * Record of the return value for a hook.
 	 *
-	 * @var array
+	 * @var array<array<mixed>>
 	 */
 	protected $record_stop = [];
 
@@ -89,9 +87,8 @@ class Expectation {
 	 * Record the start of a hook being applied.
 	 *
 	 * @param array ...$args Hook arguments.
-	 * @return mixed
 	 */
-	public function record_start( ...$args ) {
+	public function record_start( ...$args ): mixed {
 		$this->record_start[] = $args;
 
 		return array_shift( $args );
@@ -101,9 +98,8 @@ class Expectation {
 	 * Record the stop of a hook being applied.
 	 *
 	 * @param array ...$args Hook arguments.
-	 * @return mixed
 	 */
-	public function record_stop( ...$args ) {
+	public function record_stop( ...$args ): mixed {
 		$this->record_stop[] = $args;
 
 		return array_shift( $args );
@@ -246,7 +242,7 @@ class Expectation {
 	 */
 	public function andReturn( mixed ...$values ): static {
 		return $this->returnComparison(
-			function ( $value ) use ( $values ) {
+			function ( $value ) use ( $values ): bool {
 				foreach ( $values as $expected ) {
 					if ( is_callable( $expected ) ) {
 						return (bool) $expected( $value );

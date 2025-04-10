@@ -41,19 +41,11 @@ class Events_Manifest {
 	protected $vendor_path;
 
 	/**
-	 * Package Manifest file path.
-	 *
-	 * @var string
-	 */
-	protected $manifest_path;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param string $manifest_path Path to the package manifest file.
 	 */
-	public function __construct( string $manifest_path ) {
-		$this->manifest_path = $manifest_path;
+	public function __construct( protected string $manifest_path ) {
 	}
 
 	/**
@@ -61,7 +53,7 @@ class Events_Manifest {
 	 *
 	 * @return string[]
 	 */
-	public function events() {
+	public function events(): array {
 		return $this->get_manifest();
 	}
 

@@ -63,7 +63,7 @@ class Str {
 	 *
 	 * @param  string $string
 	 */
-	public static function of( $string ): \Mantle\Support\Stringable {
+	public static function of( $string ): Stringable {
 		return new Stringable( $string );
 	}
 
@@ -207,7 +207,7 @@ class Str {
 	 * @param  int    $index
 	 * @return string|false
 	 */
-	public static function char_at( $subject, $index ) {
+	public static function char_at( string $subject, int $index ): false|string {
 		$length = mb_strlen( $subject );
 
 		if ( $index < 0 ? $index < -$length : $index > $length - 1 ) {
@@ -348,16 +348,12 @@ class Str {
 	 * @param  string|iterable<string> $pattern
 	 * @param  string                  $value
 	 */
-	public static function is( $pattern, $value ): bool {
-		$value = (string) $value;
-
+	public static function is( string|iterable $pattern, ?string $value ): bool {
 		if ( ! is_iterable( $pattern ) ) {
 			$pattern = [ $pattern ];
 		}
 
 		foreach ( $pattern as $pattern ) {
-			$pattern = (string) $pattern;
-
 			// If the given value is an exact match we can of course return true right
 			// from the beginning. Otherwise, we will translate asterisks and do an
 			// actual pattern match against the two strings to see if they match.
@@ -365,6 +361,7 @@ class Str {
 				return true;
 			}
 
+			$pattern = (string) $pattern;
 			$pattern = preg_quote( $pattern, '#' );
 
 			// Asterisks are translated into zero-or-more regular expression wildcards
@@ -372,7 +369,7 @@ class Str {
 			// pattern such as "library/*", making any string check convenient.
 			$pattern = str_replace( '\*', '.*', $pattern );
 
-			if ( preg_match( '#^' . $pattern . '\z#u', $value ) === 1 ) {
+			if ( preg_match( '#^' . $pattern . '\z#u', (string) $value ) === 1 ) {
 				return true;
 			}
 		}
@@ -384,9 +381,8 @@ class Str {
 	 * Determine if a given string is 7 bit ASCII.
 	 *
 	 * @param  string $value
-	 * @return bool
 	 */
-	public static function is_ascii( $value ) {
+	public static function is_ascii( $value ): bool {
 		return ASCII::is_ascii( (string) $value );
 	}
 
@@ -424,7 +420,7 @@ class Str {
 	}
 
 	/**
-	 * Convert a string to kebab case.
+	 * Convert a string to kebab case (hyphen case).
 	 *
 	 * @param  string $value
 	 * @return string
@@ -595,9 +591,8 @@ class Str {
 	 *
 	 * @param  string $pattern
 	 * @param  string $subject
-	 * @return \Mantle\Support\Collection
 	 */
-	public static function match_all( $pattern, $subject ) {
+	public static function match_all( $pattern, $subject ): Collection {
 		preg_match_all( $pattern, $subject, $matches );
 
 		if ( empty( $matches[0] ) ) {
@@ -693,122 +688,121 @@ class Str {
 	 * @param  bool $numbers
 	 * @param  bool $symbols
 	 * @param  bool $spaces
-	 * @return string
 	 */
-	public static function password( $length = 32, $letters = true, $numbers = true, $symbols = true, $spaces = false ) {
+	public static function password( $length = 32, $letters = true, $numbers = true, $symbols = true, $spaces = false ): string {
 		return ( new Collection() )
-				->when(
-					$letters,
-					fn ( $c ) => $c->merge(
-						[
-							'a',
-							'b',
-							'c',
-							'd',
-							'e',
-							'f',
-							'g',
-							'h',
-							'i',
-							'j',
-							'k',
-							'l',
-							'm',
-							'n',
-							'o',
-							'p',
-							'q',
-							'r',
-							's',
-							't',
-							'u',
-							'v',
-							'w',
-							'x',
-							'y',
-							'z',
-							'A',
-							'B',
-							'C',
-							'D',
-							'E',
-							'F',
-							'G',
-							'H',
-							'I',
-							'J',
-							'K',
-							'L',
-							'M',
-							'N',
-							'O',
-							'P',
-							'Q',
-							'R',
-							'S',
-							'T',
-							'U',
-							'V',
-							'W',
-							'X',
-							'Y',
-							'Z',
-						]
-					)
-				)
-				->when(
-					$numbers,
-					fn ( $c ) => $c->merge(
-						[
-							'0',
-							'1',
-							'2',
-							'3',
-							'4',
-							'5',
-							'6',
-							'7',
-							'8',
-							'9',
-						]
-					)
-				)
-				->when(
-					$symbols,
-					fn ( $c ) => $c->merge(
-						[
-							'~',
-							'!',
-							'#',
-							'$',
-							'%',
-							'^',
-							'&',
-							'*',
-							'(',
-							')',
-							'-',
-							'_',
-							'.',
-							',',
-							'<',
-							'>',
-							'?',
-							'/',
-							'\\',
-							'{',
-							'}',
-							'[',
-							']',
-							'|',
-							':',
-							';',
-						]
-					)
-				)
-				->when( $spaces, fn ( $c ) => $c->merge( [ ' ' ] ) )
-				->pipe( fn ( $c ) => Collection::times( $length, fn () => $c[ random_int( 0, $c->count() - 1 ) ] ) ) // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable, Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
-				->implode( '' );
+		->when(
+			$letters,
+			fn ( $c ) => $c->merge(
+				[
+					'a',
+					'b',
+					'c',
+					'd',
+					'e',
+					'f',
+					'g',
+					'h',
+					'i',
+					'j',
+					'k',
+					'l',
+					'm',
+					'n',
+					'o',
+					'p',
+					'q',
+					'r',
+					's',
+					't',
+					'u',
+					'v',
+					'w',
+					'x',
+					'y',
+					'z',
+					'A',
+					'B',
+					'C',
+					'D',
+					'E',
+					'F',
+					'G',
+					'H',
+					'I',
+					'J',
+					'K',
+					'L',
+					'M',
+					'N',
+					'O',
+					'P',
+					'Q',
+					'R',
+					'S',
+					'T',
+					'U',
+					'V',
+					'W',
+					'X',
+					'Y',
+					'Z',
+				]
+			)
+		)
+		->when(
+			$numbers,
+			fn ( $c ) => $c->merge(
+				[
+					'0',
+					'1',
+					'2',
+					'3',
+					'4',
+					'5',
+					'6',
+					'7',
+					'8',
+					'9',
+				]
+			)
+		)
+		->when(
+			$symbols,
+			fn ( $c ) => $c->merge(
+				[
+					'~',
+					'!',
+					'#',
+					'$',
+					'%',
+					'^',
+					'&',
+					'*',
+					'(',
+					')',
+					'-',
+					'_',
+					'.',
+					',',
+					'<',
+					'>',
+					'?',
+					'/',
+					'\\',
+					'{',
+					'}',
+					'[',
+					']',
+					'|',
+					':',
+					';',
+				]
+			)
+		)
+		->when( $spaces, fn ( $c ) => $c->merge( [ ' ' ] ) )
+		->pipe( fn ( $c ) => Collection::times( $length, fn () => $c[ random_int( 0, $c->count() - 1 ) ] ) ) // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UndefinedVariable, Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
+		->implode( '' );
 	}
 
 	/**
@@ -818,7 +812,7 @@ class Str {
 	 * @return string
 	 */
 	public static function random( $length = 16 ) {
-		return ( static::$random_string_factory ?? function ( $length ) {
+		return ( static::$random_string_factory ?? function ( $length ): string {
 			$string = '';
 
 			while ( ( $len = strlen( $string ) ) < $length ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition, Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition, Squiz.PHP.DisallowSizeFunctionsInLoops.Found
@@ -928,7 +922,7 @@ class Str {
 	 * @param  bool                    $case_sensitive
 	 * @return string
 	 */
-	public static function replace( $search, $replace, $subject, bool $case_sensitive = true ) {
+	public static function replace( $search, $replace, $subject, bool $case_sensitive = true ): string|array {
 		if ( $search instanceof Traversable ) {
 			$search = collect( $search )->all();
 		}
@@ -1000,7 +994,7 @@ class Str {
 	 * @param  bool                    $case_sensitive
 	 * @return string
 	 */
-	public static function remove( $search, $subject, bool $case_sensitive = true ) {
+	public static function remove( $search, $subject, bool $case_sensitive = true ): string|array {
 		if ( $search instanceof Traversable ) {
 			$search = collect( $search )->all();
 		}
@@ -1137,7 +1131,7 @@ class Str {
 	 * @param  string $value
 	 * @return string
 	 */
-	public static function squish( $value ) {
+	public static function squish( $value ): ?string {
 		return preg_replace( '~(\s|\x{3164}|\x{1160})+~u', ' ', (string) preg_replace( '~^[\s\x{FEFF}]+|[\s\x{FEFF}]+$~u', '', $value ) );
 	}
 
@@ -1228,7 +1222,7 @@ class Str {
 	 * @param  int|int[]|null  $length
 	 * @return string|string[]
 	 */
-	public static function substr_replace( $string, $replace, $offset = 0, $length = null ) {
+	public static function substr_replace( $string, $replace, $offset = 0, $length = null ): array|string {
 		if ( is_null( $length ) ) {
 			$length = strlen( $string );
 		}
