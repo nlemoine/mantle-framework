@@ -28,7 +28,7 @@ class Lightweight_Event_Dispatcher extends Dispatcher {
 	/**
 	 * Register an event listener with the dispatcher.
 	 *
-	 * @param  string|array    $events
+	 * @param  string|string[] $events
 	 * @param  \Closure|string $listener
 	 * @param  int             $priority
 	 */
@@ -63,9 +63,8 @@ class Lightweight_Event_Dispatcher extends Dispatcher {
 	 *
 	 * @param  string|object $event Event name.
 	 * @param  mixed         $payload Event payload.
-	 * @return mixed
 	 */
-	public function dispatch( $event, $payload = [] ) {
+	public function dispatch( string|object $event, mixed $payload = [] ): mixed {
 		$filterable_value = is_array( $payload ) ? Arr::first( $payload ) : $payload;
 
 		[ $event, $payload ] = $this->parse_event_and_payload( $event, $payload );

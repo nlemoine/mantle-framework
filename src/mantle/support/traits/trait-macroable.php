@@ -19,7 +19,7 @@ trait Macroable {
 	/**
 	 * The registered string macros.
 	 *
-	 * @var array
+	 * @var array<mixed>
 	 */
 	protected static $macros = [];
 
@@ -65,16 +65,15 @@ trait Macroable {
 	}
 
 	/**
-	 * Dynamically handle calls to the class.
-	 *
-	 * @param string $method
-	 * @param array  $parameters
-	 *
-	 * @return mixed
-	 *
-	 * @throws \BadMethodCallException
-	 */
-	public static function __callStatic( $method, $parameters ) {
+				 * Dynamically handle calls to the class.
+				 *
+				 * @param string $method
+				 * @param array<mixed>  $parameters
+				 *
+				 *
+				 * @throws \BadMethodCallException
+				 */
+				public static function __callStatic( string $method, array $parameters ): mixed {
 		if ( ! static::has_macro( $method ) ) {
 			throw new BadMethodCallException( sprintf(
 				'Method %s::%s does not exist.', static::class, $method
@@ -91,16 +90,15 @@ trait Macroable {
 	}
 
 	/**
-	 * Dynamically handle calls to the class.
-	 *
-	 * @param string $method
-	 * @param array  $parameters
-	 *
-	 * @return mixed
-	 *
-	 * @throws \BadMethodCallException
-	 */
-	public function __call( $method, $parameters ) {
+				 * Dynamically handle calls to the class.
+				 *
+				 * @param string $method
+				 * @param array<mixed>  $parameters
+				 *
+				 *
+				 * @throws \BadMethodCallException
+				 */
+				public function __call( string $method, array $parameters ): mixed {
 		if ( ! static::has_macro( $method ) ) {
 			throw new BadMethodCallException( sprintf(
 				'Method %s::%s does not exist.', static::class, $method

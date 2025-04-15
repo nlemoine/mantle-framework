@@ -25,18 +25,22 @@ abstract class Service_Provider implements LoggerAwareInterface {
 
 	/**
 	 * The paths that should be published.
+	 *
+	 * @var array<class-string<Service_Provider>, string[]>
 	 */
 	public static array $publishes = [];
 
 	/**
 	 * The paths that should be published by group.
+	 *
+	 * @var array<string, string[]>
 	 */
 	public static array $publish_tags = [];
 
 	/**
 	 * The application instance.
 	 */
-	protected Application|Container $app;
+	protected Application $app;
 
 	/**
 	 * Commands to register.
@@ -57,11 +61,15 @@ abstract class Service_Provider implements LoggerAwareInterface {
 
 	/**
 	 * Register the service provider.
+	 *
+	 * @phpstan-ignore missingType.return
 	 */
 	public function register() {}
 
 	/**
 	 * Boot the service provider.
+	 *
+	 * @phpstan-ignore missingType.return
 	 */
 	public function boot() {}
 
@@ -82,7 +90,7 @@ abstract class Service_Provider implements LoggerAwareInterface {
 	 *
 	 * @param Command[]|string[]|Command|string $command Command instance or class name to register.
 	 */
-	public function add_command( $command ): Service_Provider {
+	public function add_command( array|string|Command|\Symfony\Component\Console\Command\Command $command ): Service_Provider {
 		Console_Application::starting(
 			fn ( Console_Application $console ) => $console->resolve_commands( $command )
 		);

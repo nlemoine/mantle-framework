@@ -22,6 +22,7 @@ class Parser {
 	 * Parse the given console command definition into an array.
 	 *
 	 * @param  string $expression
+	 * @return array<mixed>
 	 *
 	 * @throws \InvalidArgumentException
 	 */
@@ -29,7 +30,7 @@ class Parser {
 		$name = static::name( $expression );
 
 		if ( preg_match_all( '/\{\s*(.*?)\s*\}/', $expression, $matches ) && count( $matches[1] ) ) {
-			return array_merge( [ $name ], static::parameters( $matches[1] ) );
+			return array_merge( [ $name ], static::parameters( $matches[1] ) ); // @phpstan-ignore-line argument.type
 		}
 
 		return [ $name, [], [] ];
@@ -53,7 +54,8 @@ class Parser {
 	/**
 	 * Extract all of the parameters from the tokens.
 	 *
-	 * @param  array $tokens
+	 * @param  array<string, string> $tokens
+	 * @return array<mixed>
 	 */
 	protected static function parameters( array $tokens ): array {
 		$arguments = [];
@@ -142,7 +144,7 @@ class Parser {
 	 * Parse the token into its token and description segments.
 	 *
 	 * @param  string $token
-	 * @return array
+	 * @return array<string>
 	 */
 	protected static function extract_description( $token ) {
 		$parts = preg_split( '/\s+:\s+/', trim( $token ), 2 );

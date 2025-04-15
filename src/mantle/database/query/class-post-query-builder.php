@@ -32,7 +32,9 @@ use function Mantle\Support\Helpers\collect;
  * @method \Mantle\Database\Query\Post_Query_Builder<TModel> whereType( string $type )
  */
 class Post_Query_Builder extends Builder {
+	/** @use Queries_Dates<TModel> */
 	use Queries_Dates;
+	/** @use Queries_Relationships<TModel> */
 	use Queries_Relationships;
 
 	/**
@@ -84,7 +86,9 @@ class Post_Query_Builder extends Builder {
 	];
 
 	/**
-	 * Tax Query.
+	 * Tax Query
+	 *
+	 * @var array<string, string|array<mixed>>
 	 */
 	protected array $tax_query = [];
 
@@ -220,14 +224,14 @@ class Post_Query_Builder extends Builder {
 	/**
 	 * Include a taxonomy query.
 	 *
-	 * @param array|string|Term|\WP_Term|int $term Term ID/array of IDs.
-	 * @param string                         $taxonomy Taxonomy name.
+	 * @param array<string|int>|string|Term|\WP_Term|int $term Term ID/array of IDs.
+	 * @param string|null                         $taxonomy Taxonomy name.
 	 * @param string                         $operator Operator to use, defaults to 'IN'.
 	 * @param string                         $field Field to use for the query, defaults to term ID.
 	 *
 	 * @throws Query_Exception Unknown term to query against.
 	 */
-	public function whereTerm( $term, $taxonomy = null, string $operator = 'IN', string $field = 'term_id' ): static {
+	public function whereTerm( array|int|string|Term|WP_Term $term, ?string $taxonomy = null, string $operator = 'IN', string $field = 'term_id' ): static {
 		if ( $term instanceof Term ) {
 			$taxonomy = $term->taxonomy();
 			$term     = $term->id();
@@ -273,25 +277,25 @@ class Post_Query_Builder extends Builder {
 	/**
 	 * Include a taxonomy query with the relation set to 'AND'.
 	 *
-	 * @param array|string $term Term ID/array of IDs.
-	 * @param string       $taxonomy Taxonomy name.
+	 * @param array<string|int>|string|Term|\WP_Term|int $term Term ID/array of IDs.
+	 * @param string|null       $taxonomy Taxonomy name.
 	 * @param string       $operator Operator to use, defaults to 'IN'.
 	 */
-	public function andWhereTerm( ...$args ): static {
+	public function andWhereTerm( array|int|string|Term|WP_Term $term, ?string $taxonomy = null, string $operator = 'IN' ): static {
 		$this->tax_query['relation'] = 'AND';
-		return $this->whereTerm( ...$args );
+		return $this->whereTerm( $term, $taxonomy, $operator );
 	}
 
 	/**
 	 * Include a taxonomy query with the relation set to 'OR'.
 	 *
-	 * @param array|string $term Term ID/array of IDs.
-	 * @param string       $taxonomy Taxonomy name.
+	 * @param array<string|int>|string|Term|\WP_Term|int $term Term ID/array of IDs.
+	 * @param string|null       $taxonomy Taxonomy name.
 	 * @param string       $operator Operator to use, defaults to 'IN'.
 	 */
-	public function orWhereTerm( ...$args ): static {
+	public function orWhereTerm( array|int|string|Term|WP_Term $term, ?string $taxonomy = null, string $operator = 'IN' ): static {
 		$this->tax_query['relation'] = 'OR';
-		return $this->whereTerm( ...$args );
+		return $this->whereTerm( $term, $taxonomy, $operator );
 	}
 
 	/**

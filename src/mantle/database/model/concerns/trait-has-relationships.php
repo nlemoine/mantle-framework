@@ -19,23 +19,28 @@ use Mantle\Database\Model\Term;
 
 /**
  * Model Relationships
+ *
+ * @template TModel of \Mantle\Database\Model\Model
  */
 trait Has_Relationships {
 	/**
 	 * The loaded relationships for the model.
 	 *
-	 * @var array
+	 * @var array<string, Relation<TModel, \Mantle\Database\Model\Model>>
 	 */
 	protected $relations = [];
 
 	/**
 	 * Define a Has One Relationship
 	 *
-	 * @param string $related Related model name.
-	 * @param string $foreign_key Foreign key.
-	 * @param string $local_key Local key.
+	 * @template TRelated of \Mantle\Database\Model\Model
+	 *
+	 * @param class-string<TRelated> $related Related model name.
+	 * @param string                 $foreign_key Foreign key.
+	 * @param string                 $local_key Local key.
+	 * @return Has_One<TModel, TRelated>
 	 */
-	public function has_one( string $related, ?string $foreign_key = null, ?string $local_key = null ): Relation {
+	public function has_one( string $related, ?string $foreign_key = null, ?string $local_key = null ): Has_One {
 		$instance      = new $related();
 		$foreign_key ??= $this->get_foreign_key();
 		$local_key   ??= $this->get_key_name();
@@ -46,9 +51,12 @@ trait Has_Relationships {
 	/**
 	 * Define a Has Many Relationship
 	 *
-	 * @param string $related Related model name.
-	 * @param string $foreign_key Foreign key.
-	 * @param string $local_key Local key.
+	 * @template TRelated of \Mantle\Database\Model\Model
+	 *
+	 * @param class-string<TRelated> $related Related model name.
+	 * @param string                 $foreign_key Foreign key.
+	 * @param string                 $local_key Local key.
+	 * @return Has_Many<TModel, TRelated>
 	 */
 	public function has_many( string $related, ?string $foreign_key = null, ?string $local_key = null ): Has_Many {
 		$instance      = new $related();
@@ -64,9 +72,12 @@ trait Has_Relationships {
 	 * Defines a relationship between two models with the reference stored on the remote
 	 * model's meta.
 	 *
-	 * @param string $related Related model name.
-	 * @param string $foreign_key Foreign key.
-	 * @param string $local_key Local key.
+	 * @template TRelated of \Mantle\Database\Model\Model
+	 *
+	 * @param class-string<TRelated> $related Related model name.
+	 * @param string                 $foreign_key Foreign key.
+	 * @param string                 $local_key Local key.
+	 * @return Belongs_To<TModel, TRelated>
 	 *
 	 * @throws InvalidArgumentException Used on the definition of a post and term relationship.
 	 */
@@ -92,9 +103,12 @@ trait Has_Relationships {
 	 * Defines a relationship between two models with the reference stored on the remote
 	 * object's meta.
 	 *
-	 * @param string $related Related model name.
-	 * @param string $foreign_key Foreign key.
-	 * @param string $local_key Local key.
+	 * @template TRelated of \Mantle\Database\Model\Model
+	 *
+	 * @param class-string<TRelated> $related Related model name.
+	 * @param string                 $foreign_key Foreign key.
+	 * @param string                 $local_key Local key.
+	 * @return Has_One_Or_Many<TModel, TRelated>
 	 *
 	 * @throws InvalidArgumentException Used on the definition of a post and term relationship.
 	 */
@@ -118,6 +132,7 @@ trait Has_Relationships {
 	 * Get a relationship for the model.
 	 *
 	 * @param string $relation Relation name.
+	 * @return Relation<TModel, \Mantle\Database\Model\Model>|null
 	 */
 	public function get_relation( string $relation ): ?Relation {
 		return $this->relations[ $relation ] ?? null;
@@ -128,9 +143,8 @@ trait Has_Relationships {
 	 *
 	 * @param string $relation Relation name.
 	 * @param mixed  $value Value to set.
-	 * @return static
 	 */
-	public function set_relation( string $relation, $value ) {
+	public function set_relation( string $relation, $value ): static {
 		$this->relations[ $relation ] = $value;
 
 		return $this;
@@ -149,9 +163,8 @@ trait Has_Relationships {
 	 * Unset a relationship for the model.
 	 *
 	 * @param string $relation Relation name.
-	 * @return static
 	 */
-	public function unset_relation( string $relation ) {
+	public function unset_relation( string $relation ): static {
 		unset( $this->relations[ $relation ] );
 		return $this;
 	}

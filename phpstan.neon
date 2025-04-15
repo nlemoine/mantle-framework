@@ -2,8 +2,8 @@ includes:
 	- phpstan-baseline.neon
 
 parameters:
-	# Level 9 is the highest level
-	level: 5
+	# Goal of max.
+	level: 6
 
 	paths:
 		- src/mantle
@@ -24,9 +24,42 @@ parameters:
 			paths:
 				- src/mantle/support
 				- src/mantle/testing
+		-
+			identifier: missingType.generics
+			paths:
+				- src/mantle/contracts
+		-
+			identifier: missingType.iterableValue
+			paths:
+				- src/mantle/contracts
+				- src/mantle/facade
+				- src/mantle/filesystem/class-filesystem.php
+				- src/mantle/filesystem/class-filesystem-adapter.php
+				- src/mantle/testing
+				- src/mantle/testkit
+		-
+			identifier: missingType.return
+			paths:
+				- src/mantle/contracts
+				- src/mantle/testing/concerns/trait-core-shim.php
+		-
+			identifier: missingType.parameter
+			paths:
+				- **/autoload.php
+				- src/mantle/filesystem/class-filesystem-adapter.php
+		-
+			message: "#implements generic interface ArrayAccess but does not specify its types#"
+			paths:
+				- src/mantle/testing
 		- "#Unsafe usage of new static#"
 		- "#PHPDoc tag @param references unknown parameter#"
+		- "#interface ArrayAccess but does not specify#"
+		- "#ReflectionClass does not specify its types#"
+		- "#ReflectionAttribute does not specify its types#"
+		- "#ReflectionAttribute but does not specify its types#"
 		- "#@return is not subtype of template type TKey#"
+		- "#WP_REST_Request does not specify its types#"
+		- "#WP_REST_Request but does not specify its types#"
 
 	scanFiles:
 		- %rootDir%/../../php-stubs/wp-cli-stubs/wp-cli-stubs.php
@@ -35,9 +68,13 @@ parameters:
 		- tests/fixtures/phpstan
 
 	excludePaths:
-		- src/mantle/database/factory
 		- src/mantle/blocks
+		- src/mantle/database/factory
+		- src/mantle/framework/console/class-hook-usage-command.php
 		- src/mantle/query-monitor
+		- src/mantle/queue/providers/wordpress/admin/class-queue-jobs-table.php
+		- src/mantle/queue/providers/wordpress/admin/class-service-provider.php
+		- src/mantle/support/interface-enumerable.php
 		- src/mantle/testing/class-mock-action.php
 		- src/mantle/testing/install-wordpress.php
 		- src/mantle/testing/preload.php

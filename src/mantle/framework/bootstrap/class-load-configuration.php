@@ -9,7 +9,9 @@ namespace Mantle\Framework\Bootstrap;
 
 use InvalidArgumentException;
 use Mantle\Contracts\Application;
+use Mantle\Contracts\Bootstrapable;
 use Mantle\Contracts\Config\Repository as Repository_Contract;
+use Mantle\Contracts\Kernel;
 use Mantle\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
@@ -18,7 +20,7 @@ use function Mantle\Support\Helpers\collect;
 /**
  * Load the Application's Configuration from the filesystem.
  */
-class Load_Configuration {
+class Load_Configuration implements Bootstrapable {
 	/**
 	 * Additional configuration to register from the bootloader.
 	 *
@@ -39,8 +41,9 @@ class Load_Configuration {
 	 * Load the configuration for the application.
 	 *
 	 * @param Application $app Application instance.
+	 * @param Kernel|null $kernel Kernel instance.
 	 */
-	public function bootstrap( Application $app ): void {
+	public function bootstrap( Application $app, ?Kernel $kernel ): void {
 		$config = $app->make( 'config' );
 
 		// Load the configuration files if not already loaded from cache.
@@ -62,7 +65,7 @@ class Load_Configuration {
 	 * @param array<string, string[]> $files Files to load.
 	 * @param Repository_Contract     $repository Repository to load to.
 	 */
-	protected function load_configuration_to_repository( array $files, Repository_Contract $repository ) {
+	protected function load_configuration_to_repository( array $files, Repository_Contract $repository ): void {
 		$filesystem = new Filesystem();
 
 		foreach ( $files as $key => $config_files ) {
@@ -245,9 +248,10 @@ class Load_Configuration {
 	 * @throws InvalidArgumentException If the mergeable option is not an array.
 	 * @see Load_Configuration::get_mergeable_options()
 	 *
-	 * @param string $config_name Configuration name.
-	 * @param array  $config_a    First configuration.
-	 * @param array  $config_b    Second configuration.
+	 * @param string       $config_name Configuration name.
+	 * @param array<mixed> $config_a    First configuration.
+	 * @param array<mixed> $config_b    Second configuration.
+	 * @return array<mixed>
 	 */
 	protected function merge_configuration( string $config_name, array $config_a, array $config_b ): array {
 		$new_config = array_merge( $config_a, $config_b );

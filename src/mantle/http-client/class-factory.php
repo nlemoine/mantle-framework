@@ -36,11 +36,11 @@ class Factory {
 	/**
 	 * Forward the call to a new pending request.
 	 *
-	 * @param string $method Method name.
-	 * @param array  $parameters Method parameters.
+	 * @param string       $method Method name.
+	 * @param array<mixed> $parameters Method parameters.
 	 * @return Response|Pending_Request|mixed
 	 */
-	public function __call( string $method, array $parameters ) {
+	public function __call( string $method, array $parameters ): mixed {
 		if ( static::has_macro( $method ) ) {
 			return $this->macro_call( $method, $parameters );
 		}
@@ -51,11 +51,11 @@ class Factory {
 	/**
 	 * Forward a static call to a new pending request.
 	 *
-	 * @param string $method Method name.
-	 * @param array  $parameters Method parameters.
+	 * @param string       $method Method name.
+	 * @param array<mixed> $parameters Method parameters.
 	 * @return Response|Pending_Request|Pool|mixed
 	 */
-	public static function __callStatic( string $method, array $parameters ) {
+	public static function __callStatic( string $method, array $parameters ): mixed {
 		if ( static::has_macro( $method ) ) {
 			return ( new static() )->macro_call( $method, $parameters );
 		}

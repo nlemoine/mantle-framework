@@ -21,6 +21,13 @@ use Mantle\Support\Arr;
  */
 trait Has_Global_Scopes {
 	/**
+	 * The array of global scopes on the model.
+	 *
+	 * @var array<string, array<string, Scope|\Closure>>
+	 */
+	protected static $global_scopes = [];
+
+	/**
 	 * Register a new global scope on the model.
 	 *
 	 * @throws InvalidArgumentException Thrown on invalid global scope.
@@ -62,7 +69,7 @@ trait Has_Global_Scopes {
 	 * @param Scope|string $scope Scope name/instance.
 	 * @return Scope|\Closure|null Scope object.
 	 */
-	public static function get_global_scope( $scope ) {
+	public static function get_global_scope( $scope ): mixed {
 		if ( is_string( $scope ) ) {
 			return Arr::get( static::$global_scopes, static::class . '.' . $scope );
 		}
@@ -75,6 +82,8 @@ trait Has_Global_Scopes {
 
 	/**
 	 * Get the global scopes for this class instance.
+	 *
+	 * @return array<string, Scope|\Closure> Array of global scopes.
 	 */
 	public function get_global_scopes(): array {
 		return Arr::get( static::$global_scopes, static::class, [] );

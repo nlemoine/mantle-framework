@@ -25,9 +25,12 @@ use function Mantle\Support\Helpers\tap;
 /**
  * Database Model
  *
- * @template TModelObject of object
+ * @template TModelObject of object = object
  *
- * @method static \Mantle\Support\Collection all()
+ * @implements Arrayable<string, mixed>
+ * @implements ArrayAccess<string, mixed>
+ *
+ * @method static \Mantle\Support\Collection<int, static> all()
  * @method static static first()
  * @method static static first_or_fail()
  * @method static void delete(bool $force)
@@ -41,33 +44,28 @@ use function Mantle\Support\Helpers\tap;
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable, Url_Routable {
 	use Forward_Calls;
 	use Concerns\Has_Aliases;
+	/** @use Concerns\Has_Attributes<static> */
 	use Concerns\Has_Attributes;
 	use Concerns\Has_Events;
 	/** @use Concerns\Has_Factory<TModelObject> */
 	use Concerns\Has_Factory;
 	use Concerns\Has_Global_Scopes;
+	/** @use Concerns\Has_Relationships<static> */
 	use Concerns\Has_Relationships;
 
 	/**
 	 * The array of booted models.
 	 *
-	 * @var array
+	 * @var array<class-string>
 	 */
 	protected static $booted = [];
 
 	/**
 	 * The array of trait initializers that will be called on each new instance.
 	 *
-	 * @var array
+	 * @var array<array<string>>
 	 */
 	protected static $trait_initializers = [];
-
-	/**
-	 * The array of global scopes on the model.
-	 *
-	 * @var array
-	 */
-	protected static $global_scopes = [];
 
 	/**
 	 * An object's registerable name (post type, taxonomy, etc.).
@@ -151,11 +149,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	/**
 	 * Apply the given named scope if possible.
 	 *
-	 * @param string $scope Scope name.
-	 * @param array  $parameters Scope parameters.
-	 * @return mixed
+	 * @param string               $scope Scope name.
+	 * @param array<string, mixed> $parameters Scope parameters.
 	 */
-	public function call_named_scope( string $scope, array $parameters = [] ) {
+	public function call_named_scope( string $scope, array $parameters = [] ): mixed {
 		return $this->{ 'scope' . ucfirst( $scope ) }( ...$parameters );
 	}
 
@@ -195,8 +192,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	/**
 	 * Create an instance of a model from another.
 	 *
-	 * @param Model $instance Instance to clone.
-	 * @return static
+	 * @template TInstanceModelObject of Model
+	 *
+	 * @param Model<TInstanceModelObject> $instance Instance to clone.
+	 * @return static<TInstanceModelObject>
 	 */
 	public static function instance( Model $instance ) {
 		return tap(
@@ -208,7 +207,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	/**
 	 * Create a new instance of the model from an existing record in the database.
 	 *
-	 * @param array $attributes Attributes to set.
+	 * @param array<string, mixed> $attributes Attributes to set.
 	 * @return static
 	 */
 	public static function new_from_existing( array $attributes ) {
@@ -236,7 +235,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	/**
 	 * Fill the model with an array of attributes.
 	 *
-	 * @param array $attributes Attributes to set.
+	 * @param array<string, mixed> $attributes Attributes to set.
 	 */
 	public function fill( array $attributes ): static {
 		foreach ( $attributes as $key => $value ) {
@@ -282,7 +281,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	/**
 	 * Boot all of the bootable traits on the model.
 	 */
-	protected static function boot_traits() {
+	protected static function boot_traits(): void {
 		$class  = static::class;
 		$booted = [];
 
@@ -325,6 +324,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	 * Bootstrap the model.
 	 *
 	 * Model booting is performed the first time a model is used in a request.
+	 *
+	 * @phpstan-ignore missingType.return
 	 */
 	protected static function boot() { }
 
@@ -386,7 +387,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	 *
 	 * @param string $offset Attribute to get.
 	 */
-	public function __get( string $offset ) {
+	public function __get( string $offset ): mixed {
 		return $this->get( $offset );
 	}
 
@@ -396,7 +397,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	 * @param string $offset Attribute to get.
 	 * @param mixed  $value Value to set.
 	 */
-	public function __set( string $offset, $value ) {
+	public function __set( string $offset, mixed $value ): void {
 		$this->set( $offset, $value );
 	}
 
@@ -451,10 +452,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	/**
 	 * Register the global scopes for this builder instance.
 	 *
-	 * @param Builder $builder Builder instance.
-	 * @return Builder
+	 * @param Builder<static> $builder Builder instance.
+	 * @return Builder<static>
 	 */
-	public function register_global_scopes( Builder $builder ) {
+	public function register_global_scopes( Builder $builder ): Builder {
 		foreach ( $this->get_global_scopes() as $identifier => $scope ) {
 			$builder->with_global_scope( $identifier, $scope );
 		}
@@ -465,22 +466,20 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	/**
 	 * Handle dynamic method calls into the model.
 	 *
-	 * @param string $method Method name.
-	 * @param array  $parameters Method parameters.
-	 * @return mixed
+	 * @param string       $method Method name.
+	 * @param array<mixed> $parameters Method parameters.
 	 */
-	public function __call( string $method, array $parameters ) {
+	public function __call( string $method, array $parameters ): mixed {
 		return $this->forward_call_to( $this->new_query(), $method, $parameters );
 	}
 
 	/**
 	 * Handle dynamic static method calls into the model.
 	 *
-	 * @param string $method Method name.
-	 * @param array  $parameters Method parameters.
-	 * @return mixed
+	 * @param string       $method Method name.
+	 * @param array<mixed> $parameters Method parameters.
 	 */
-	public static function __callStatic( string $method, array $parameters ) {
+	public static function __callStatic( string $method, array $parameters ): mixed {
 		return ( new static() )->$method( ...$parameters );
 	}
 
@@ -554,6 +553,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
 	/**
 	 * Get all the models from the database.
+	 *
+	 * @return Collection<int, static>
 	 */
 	public static function all(): Collection {
 		return static::query()->take( -1 )->get();
@@ -562,7 +563,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	/**
 	 * Create a new instance of a model and save it.
 	 *
-	 * @param array $args Model arguments.
+	 * @param array<string, mixed> $args Model arguments.
 	 * @return static<TModelObject>
 	 */
 	public static function create( array $args ): static {
@@ -579,8 +580,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	/**
 	 * Get the first record matching the attributes or instantiate it.
 	 *
-	 * @param array $attributes Attributes to match.
-	 * @param array $values Values to set.
+	 * @param array<string, mixed> $attributes Attributes to match.
+	 * @param array<string, mixed> $values Values to set.
 	 * @return static<TModelObject>
 	 */
 	public static function first_or_new( array $attributes, array $values = [] ): static {
@@ -596,8 +597,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	/**
 	 * Get the first record matching the attributes or creates it.
 	 *
-	 * @param array $attributes Attributes to match.
-	 * @param array $values Values to set.
+	 * @param array<string, mixed> $attributes Attributes to match.
+	 * @param array<string, mixed> $values Values to set.
 	 */
 	public static function first_or_create( array $attributes, array $values = [] ): static {
 		$instance = static::query()->where( $attributes )->first();
@@ -612,8 +613,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	/**
 	 * Create or update a record matching the attributes, and fill it with values.
 	 *
-	 * @param array $attributes Attributes to match.
-	 * @param array $values Values to set.
+	 * @param array<string, mixed> $attributes Attributes to match.
+	 * @param array<string, mixed> $values Values to set.
 	 */
 	public static function update_or_create( array $attributes, array $values = [] ): static {
 		return tap(
@@ -624,6 +625,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
 	/**
 	 * Convert the model instance to an array.
+	 *
+	 * @return array<string, mixed>
 	 */
 	public function to_array(): array {
 		return $this->attributes_to_array();
@@ -632,7 +635,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 	/**
 	 * Convert the object into something JSON serializable.
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public function jsonSerialize(): mixed {
 		return $this->to_array();

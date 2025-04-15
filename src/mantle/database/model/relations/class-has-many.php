@@ -11,12 +11,17 @@ use Mantle\Support\Collection;
 
 /**
  * Has Many Relationship
+ *
+ * @template TParent of \Mantle\Database\Model\Model = \Mantle\Database\Model\Model
+ * @template TModel of \Mantle\Database\Model\Model = \Mantle\Database\Model\Model
+ *
+ * @extends Has_One_Or_Many<TParent, TModel>
  */
 class Has_Many extends Has_One_Or_Many {
 	/**
 	 * Get the results of the relationship.
 	 *
-	 * @return \Mantle\Support\Collection
+	 * @return \Mantle\Support\Collection<int, TModel>|null
 	 */
 	public function get_results() {
 		$this->add_constraints();
@@ -27,8 +32,9 @@ class Has_Many extends Has_One_Or_Many {
 	/**
 	 * Match the eagerly loaded results to their parents.
 	 *
-	 * @param Collection $models Parent models.
-	 * @param Collection $results Eagerly loaded results to match.
+	 * @param Collection<int, TModel> $models Parent models.
+	 * @param Collection<int, TModel> $results Eagerly loaded results to match.
+	 * @return Collection<int, TModel>
 	 */
 	public function match( Collection $models, Collection $results ): Collection {
 		$dictionary = $this->build_dictionary( $results, $models );

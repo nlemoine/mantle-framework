@@ -20,8 +20,8 @@ use JsonSerializable;
 /**
  * Enumerable interface.
  *
- * @template TKey of array-key
- * @template TValue
+ * @template TKey of array-key = array-key
+ * @template TValue = mixed
  *
  * @extends \Mantle\Contracts\Support\Arrayable<TKey, TValue>
  * @extends \IteratorAggregate<TKey, TValue>
@@ -71,7 +71,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
 	/**
 	 * Get all items in the enumerable.
 	 *
-	 * @return array
+	 * @return array<mixed>
 	 */
 	public function all();
 
@@ -345,7 +345,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
 	 * @param  mixed  $value
 	 * @return static
 	 */
-	public function where( $key, $operator = null, $value = null );
+	public function where( string $key, $operator = null, $value = null );
 
 	/**
 	 * Filter items by the given key value pair using strict comparison.
@@ -354,73 +354,73 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
 	 * @param  mixed  $value
 	 * @return static
 	 */
-	public function where_strict( $key, $value );
+	public function where_strict( string $key, mixed $value );
 
 	/**
 	 * Filter items by the given key value pair.
 	 *
 	 * @param  string $key
-	 * @param  \Mantle\Contracts\Support\Arrayable|iterable  $values
+	 * @param  \Mantle\Contracts\Support\Arrayable<int, string>|iterable<int, string>  $values
 	 * @param  bool   $strict
 	 * @return static
 	 */
-	public function where_in( $key, $values, $strict = false );
+	public function where_in( string $key, Arrayable|iterable $values, bool $strict = false );
 
 	/**
 	 * Filter items by the given key value pair using strict comparison.
 	 *
 	 * @param  string $key
-	 * @param  \Mantle\Contracts\Support\Arrayable|iterable  $values
+	 * @param  \Mantle\Contracts\Support\Arrayable<int, string>|iterable<int, string>  $values
 	 * @return static
 	 */
-	public function where_in_strict( $key, $values );
+	public function where_in_strict( string $key, Arrayable|iterable $values );
 
 	/**
 	 * Filter items such that the value of the given key is between the given values.
 	 *
 	 * @param  string $key
-	 * @param  \Mantle\Contracts\Support\Arrayable|iterable  $values
+	 * @param  \Mantle\Contracts\Support\Arrayable<int, string>|iterable<int, string>  $values
 	 * @return static
 	 */
-	public function where_between( $key, $values );
+	public function where_between( string $key, Arrayable|iterable $values );
 
 	/**
 	 * Filter items such that the value of the given key is not between the given values.
 	 *
 	 * @param  string $key
-	 * @param  \Mantle\Contracts\Support\Arrayable|iterable  $values
+	 * @param  \Mantle\Contracts\Support\Arrayable<int, string>|iterable<int, string>  $values
 	 * @return static
 	 */
-	public function where_not_between( $key, $values );
+	public function where_not_between( string $key, Arrayable|iterable $values );
 
 	/**
 	 * Filter items by the given key value pair.
 	 *
 	 * @param  string $key
-	 * @param  \Mantle\Contracts\Support\Arrayable|iterable  $values
+	 * @param  \Mantle\Contracts\Support\Arrayable<int, string>|iterable<int, string>  $values
 	 * @param  bool   $strict
 	 * @return static
 	 */
-	public function where_not_in( $key, $values, $strict = false );
+	public function where_not_in( string $key, Arrayable|iterable $values, bool $strict = false );
 
 	/**
 	 * Filter items by the given key value pair using strict comparison.
 	 *
 	 * @param  string $key
-	 * @param  \Mantle\Contracts\Support\Arrayable|iterable  $values
+	 * @param  \Mantle\Contracts\Support\Arrayable<int, string>|iterable<int, string>  $values
 	 * @return static
 	 */
-	public function where_not_in_strict( $key, $values );
+	public function where_not_in_strict( string $key, Arrayable|iterable $values );
 
 	/**
 	 * Filter the items, removing any items that don't match the given type.
 	 *
 	 * @template TWhereInstanceOf
 	 *
-	 * @param  class-string<TWhereInstanceOf>|array<array-key, class-string<TWhereInstanceOf>>  $type
+	 * @param  class-string<TWhereInstanceOf>|array<class-string<TWhereInstanceOf>>  $type
 	 * @return static<TKey, TWhereInstanceOf>
 	 */
-	public function where_instance_of( $type );
+	public function where_instance_of( array|string $type );
 
 	/**
 	 * Get the first item from the enumerable passing the given truth test.
@@ -463,13 +463,17 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
 
 	/**
 	 * Group an associative array by a field or using a callback.
+	 *
+	 * @param  (callable(TValue, TKey): array-key)|array<mixed>|string $group_by The field or callback to group by.
+	 * @param  bool                                             $preserve_keys Whether to preserve the keys of the original array.
+	 * @return static<array-key, static<array-key, TValue>>
 	 */
 	public function group_by( $group_by, $preserve_keys = false );
 
 	/**
 	 * Key an associative array by a field or using a callback.
 	 *
-	 * @param  (callable(TValue, TKey): array-key)|array|string  $keyBy
+	 * @param  (callable(TValue, TKey): array-key)|string[]|string  $key_by
 	 * @return static<array-key, TValue>
 	 */
 	public function key_by( $key_by );
@@ -699,7 +703,7 @@ interface Enumerable extends Arrayable, Countable, IteratorAggregate, Jsonable, 
 	public function for_page( $page, $per_page );
 
 	/**
-	 * Partition the collection into two arrays using the given callback or key.\
+	 * Partition the collection into two arrays using the given callback or key.
 	 */
 	public function partition( $key, $operator = null, $value = null );
 

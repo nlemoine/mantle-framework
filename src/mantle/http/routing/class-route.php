@@ -41,6 +41,8 @@ class Route extends Symfony_Route {
 
 	/**
 	 * Route action.
+	 *
+	 * @var array<string, mixed>
 	 */
 	protected array $action;
 
@@ -57,7 +59,7 @@ class Route extends Symfony_Route {
 	/**
 	 * Get the route object from a Symfony route match.
 	 *
-	 * @param array $match Route match.
+	 * @param array<mixed> $match Route match.
 	 */
 	public static function get_route_from_match( array $match ): ?Route {
 		if ( ! empty( $match[ static::ROUTE_OBJECT_KEY ] ) && $match[ static::ROUTE_OBJECT_KEY ] instanceof Route ) {
@@ -70,9 +72,9 @@ class Route extends Symfony_Route {
 	/**
 	 * Constructor.
 	 *
-	 * @param array                 $methods HTTP methods the route responds to.
-	 * @param string                $path The path the route responds to.
-	 * @param \Closure|array|string $action The route callback or array of actions.
+	 * @param string[]                     $methods HTTP methods the route responds to.
+	 * @param string                       $path The path the route responds to.
+	 * @param \Closure|array<mixed>|string $action The route callback or array of actions.
 	 */
 	public function __construct( array $methods, string $path, $action ) {
 		parent::__construct( $path );
@@ -159,16 +161,15 @@ class Route extends Symfony_Route {
 	 * Get the action array or one of its properties for the route.
 	 *
 	 * @param string|null $key Key to get.
-	 * @return mixed
 	 */
-	public function get_action( ?string $key = null ) {
+	public function get_action( ?string $key = null ): mixed {
 		return Arr::get( $this->action, $key );
 	}
 
 	/**
 	 * Set the action array for the route.
 	 *
-	 * @param array $action Action for the route.
+	 * @param array<mixed> $action Action for the route.
 	 */
 	public function set_action( array $action ): static {
 		$this->action = $action;
@@ -178,10 +179,11 @@ class Route extends Symfony_Route {
 	/**
 	 * Get or set the middleware attached to the route.
 	 *
-	 * @param  array|string|null $middleware Middleware to set, optional.
-	 * @return static|array
+	 * @param  array<class-string>|string|callable|null $middleware Middleware to set, optional.
+	 * @return static|array<class-string|callable>
+	 * @phpstan-return ($middleware is null ? array<class-string> : static)
 	 */
-	public function middleware( $middleware = null ): array|self {
+	public function middleware( array|string|callable|null $middleware = null ): array|static {
 		if ( is_null( $middleware ) ) {
 			return (array) ( $this->action['middleware'] ?? [] );
 		}
@@ -196,6 +198,8 @@ class Route extends Symfony_Route {
 
 	/**
 	 * Retrieve the middleware that should be excluded from the route.
+	 *
+	 * @return array<class-string|string>
 	 */
 	public function excluded_middleware(): array {
 		return (array) ( $this->action['excluded_middleware'] ?? [] );
@@ -204,7 +208,7 @@ class Route extends Symfony_Route {
 	/**
 	 * Exclude middleware from the route.
 	 *
-	 * @param  array|string $middleware Middleware to exclude, optional.
+	 * @param  array<class-string>|class-string|string $middleware Middleware to exclude, optional.
 	 */
 	public function without_middleware( array|string $middleware = '*' ): static {
 		$this->action['excluded_middleware'] = array_merge(
@@ -329,7 +333,7 @@ class Route extends Symfony_Route {
 	/**
 	 * Parse the controller.
 	 *
-	 * @return array
+	 * @return array<mixed>
 	 */
 	protected function parse_controller_callback() {
 		if ( is_string( $this->action['callback'] ) ) {
@@ -415,6 +419,8 @@ class Route extends Symfony_Route {
 
 	/**
 	 * Get the route parameters.
+	 *
+	 * @return array<string, mixed>
 	 */
 	public function get_request_parameters(): array {
 		return $this->container['request']->get_route_parameters()->all();
@@ -424,9 +430,9 @@ class Route extends Symfony_Route {
 	 * Get the parameters that are listed in the route / controller signature.
 	 *
 	 * @param string|null $sub_class Subclass to verify the parameter is an instance of.
-	 * @return array
+	 * @return array<mixed>
 	 */
-	public function get_signature_parameters( ?string $sub_class = null ) {
+	public function get_signature_parameters( ?string $sub_class = null ): array {
 		return Route_Signature_Parameters::from_action( $this->action, $sub_class );
 	}
 

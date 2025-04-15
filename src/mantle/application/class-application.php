@@ -9,6 +9,7 @@ namespace Mantle\Application;
 
 use Mantle\Container\Container;
 use Mantle\Contracts\Bootstrapable;
+use Mantle\Contracts\Kernel;
 use Mantle\Framework\Manifest\Model_Manifest;
 use Mantle\Framework\Manifest\Package_Manifest;
 use Mantle\Support\Environment;
@@ -18,6 +19,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 use function Mantle\Support\Helpers\collect;
 use function Mantle\Support\Helpers\data_get;
+use function Mantle\Support\Helpers\mixed;
 use function Mantle\Support\Helpers\str;
 
 /**
@@ -99,8 +101,8 @@ class Application extends Container implements \Mantle\Contracts\Application {
 	public function __construct( ?string $base_path = null, ?string $root_url = null ) {
 		if ( empty( $base_path ) ) {
 			$base_path = match ( true ) {
-				isset( $_ENV['MANTLE_BASE_PATH'] ) => $_ENV['MANTLE_BASE_PATH'], // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-				defined( 'MANTLE_BASE_DIR' ) => MANTLE_BASE_DIR,
+				isset( $_ENV['MANTLE_BASE_PATH'] ) => mixed( $_ENV['MANTLE_BASE_PATH'] )->string(), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				defined( 'MANTLE_BASE_DIR' ) => mixed( MANTLE_BASE_DIR )->string(),
 				default => '',
 			};
 		}
@@ -301,7 +303,7 @@ class Application extends Container implements \Mantle\Contracts\Application {
 	 * Retrieve the cached configuration path.
 	 */
 	public function get_cached_config_path(): string {
-		return $this->get_bootstrap_path() . '/' . Environment::get( 'APP_CONFIG_CACHE', 'cache/config.php' );
+		return $this->get_bootstrap_path() . '/' . Environment::get_mixed( 'APP_CONFIG_CACHE', 'cache/config.php' )->string();
 	}
 
 	/**
@@ -315,7 +317,7 @@ class Application extends Container implements \Mantle\Contracts\Application {
 	 * Retrieve the cached configuration path.
 	 */
 	public function get_cached_events_path(): string {
-		return $this->get_bootstrap_path() . '/' . Environment::get( 'APP_EVENTS_CACHE', 'cache/events.php' );
+		return $this->get_bootstrap_path() . '/' . Environment::get_mixed( 'APP_EVENTS_CACHE', 'cache/events.php' )->string();
 	}
 
 	/**
@@ -359,7 +361,7 @@ class Application extends Container implements \Mantle\Contracts\Application {
 	/**
 	 * Register the core aliases.
 	 */
-	protected function register_core_aliases() {
+	protected function register_core_aliases(): void {
 		$core_aliases = [
 			'app'              => [ static::class, \Mantle\Contracts\Application::class ],
 			'config'           => [ \Mantle\Config\Repository::class, \Mantle\Contracts\Config\Repository::class ],
@@ -411,13 +413,13 @@ class Application extends Container implements \Mantle\Contracts\Application {
 	 * Bootstrap classes should implement {@see \Mantle\Contracts\Bootstrapable}.
 	 *
 	 * @param array<mixed, class-string<Bootstrapable>> $bootstrappers Class names of packages to boot.
-	 * @param \Mantle\Contracts\Kernel                  $kernel Kernel instance.
+	 * @param \Mantle\Contracts\Kernel|null             $kernel Kernel instance.
 	 */
-	public function bootstrap_with( array $bootstrappers, \Mantle\Contracts\Kernel $kernel ): void {
+	public function bootstrap_with( array $bootstrappers, ?Kernel $kernel ): void {
 		$this->has_been_bootstrapped = true;
 
 		foreach ( $bootstrappers as $bootstrapper ) {
-			$this->make( $bootstrapper )->bootstrap( $this, $kernel );
+			$this->class( $bootstrapper )->bootstrap( $this, $kernel );
 		}
 	}
 
@@ -486,7 +488,7 @@ class Application extends Container implements \Mantle\Contracts\Application {
 			return $this->environment;
 		}
 
-		return Environment::get( 'APP_ENV', function_exists( 'wp_get_environment_type' ) ? wp_get_environment_type() : '' );
+		return Environment::get_mixed( 'APP_ENV', function_exists( 'wp_get_environment_type' ) ? wp_get_environment_type() : '' )->string();
 	}
 
 	/**
@@ -517,17 +519,17 @@ class Application extends Container implements \Mantle\Contracts\Application {
 			return $this->namespace;
 		}
 
-		if ( isset( $this['config'] ) ) {
-			$this->namespace = (string) $this['config']->get( 'app.namespace' );
+		if ( isset( $this['config'] ) && $this['config'] instanceof \Mantle\Contracts\Config\Repository ) {
+			$this->namespace = $this['config']->get_mixed( 'app.namespace' )->string();
 		}
 
 		// If the namespace is not set, attempt to infer it from the composer.json file.
 		if ( empty( $this->namespace ) && file_exists( $this->get_base_path( 'composer.json' ) ) ) {
-			$composer = json_decode( file_get_contents( $this->get_base_path( 'composer.json' ) ), true );
+			$composer = json_decode( file_get_contents( $this->get_base_path( 'composer.json' ) ) ?: '', true );
 			$autoload = data_get( $composer, 'extra.wordpress-autoloader.autoload', [] );
 
-			if ( ! empty( $autoload ) ) {
-				$this->namespace = str( collect( $autoload )->keys()->first() )->rtrim( '\\' )->value();
+			if ( ! empty( $autoload ) && is_array( $autoload ) ) {
+				$this->namespace = str( (string) collect( $autoload )->keys()->first( default: '' ) )->rtrim( '\\' )->value();
 			}
 		}
 
@@ -572,9 +574,9 @@ class Application extends Container implements \Mantle\Contracts\Application {
 	/**
 	 * Throw an HttpException with the given data.
 	 *
-	 * @param int    $code HTTP status code.
-	 * @param string $message Response message.
-	 * @param array  $headers Response headers.
+	 * @param int                   $code HTTP status code.
+	 * @param string                $message Response message.
+	 * @param array<string, string> $headers Response headers.
 	 *
 	 * @throws NotFoundHttpException Thrown on 404 error.
 	 * @throws HttpException Thrown on other HTTP error.

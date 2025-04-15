@@ -21,6 +21,8 @@ use Mantle\Support\Environment;
 use Mantle\Support\Service_Provider;
 use RuntimeException;
 
+use function Mantle\Support\Helpers\mixed;
+
 /**
  * Testkit Application
  *
@@ -107,7 +109,7 @@ class Application extends Container implements Application_Contract {
 		static::$instance = $this;
 
 		if ( empty( $base_path ) && defined( 'MANTLE_BASE_DIR' ) ) {
-			$base_path = \MANTLE_BASE_DIR;
+			$base_path = mixed( \MANTLE_BASE_DIR )->string();
 		}
 
 		if ( ! $root_url ) {
@@ -288,12 +290,12 @@ class Application extends Container implements Application_Contract {
 	/**
 	 * Register the base service providers.
 	 */
-	protected function register_base_service_providers() {
+	protected function register_base_service_providers(): void {
 		$this->singleton( 'events', fn ( $app ) => new Dispatcher( $app ) );
 
 		$this->singleton(
 			Generator::class,
-			function () {
+			function (): Generator {
 				$factory = Factory::create();
 
 				$factory->unique( true );
@@ -397,13 +399,13 @@ class Application extends Container implements Application_Contract {
 			return $this->environment;
 		}
 
-		return Environment::get( 'ENV', wp_get_environment_type() );
+		return Environment::get_mixed( 'ENV', wp_get_environment_type() )->string();
 	}
 
 	/**
 	 * Check if the Application's Environment matches a list.
 	 *
-	 * @param string|array ...$environments Environments to check.
+	 * @param string|array<string> ...$environments Environments to check.
 	 */
 	public function is_environment( ...$environments ): bool {
 		return in_array( $this->environment(), $environments, true );
@@ -415,7 +417,7 @@ class Application extends Container implements Application_Contract {
 	 * @throws RuntimeException Thrown on error determining namespace.
 	 */
 	public function get_namespace(): string {
-		return Environment::get( 'APP_NAMESPACE', 'App' );
+		return Environment::get_mixed( 'APP_NAMESPACE', 'App' )->string();
 	}
 
 	/**

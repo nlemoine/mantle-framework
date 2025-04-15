@@ -7,6 +7,8 @@
 
 namespace Mantle\Contracts\Config;
 
+use Mantle\Support\Mixed_Data;
+
 /**
  * Config Repository Contract
  */
@@ -23,20 +25,29 @@ interface Repository {
 	 *
 	 * @param string $key Configuration key to get, period-delimited.
 	 * @param mixed  $default Default value, optional.
-	 * @return mixed
 	 */
-	public function get( string $key, $default = null );
+	public function get( string $key, mixed $default = null ): mixed;
+
+	/**
+	 * Retrieve a configuration value as Mixed_Data.
+	 *
+	 * @param string $key Configuration key to get, period-delimited.
+	 * @param mixed  $default Default value, optional.
+	 */
+	public function get_mixed( string $key, mixed $default = null ): Mixed_Data;
 
 	/**
 	 * Set a configuration value.
 	 *
-	 * @param array|string $key Key(s) to set.
-	 * @param mixed        $value Value to set.
+	 * @param array<string, mixed>|string $key Key(s) to set.
+	 * @param mixed                       $value Value to set.
 	 */
-	public function set( $key, $value );
+	public function set( array|string $key, mixed $value ): void;
 
 	/**
 	 * Get all configuration values.
+	 *
+	 * @return array<string, array<mixed>>
 	 */
 	public function all(): array;
 }

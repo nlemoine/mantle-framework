@@ -22,9 +22,10 @@ if ( ! function_exists( 'app' ) ) {
 	 * @param string|null $abstract Abstract to resolve.
 	 * @param array<mixed> $parameters Parameters.
 	 * @return mixed|Application
+	 * @phpstan-return ($abstract is null ? Application : mixed)
 	 */
 	function app( ?string $abstract = null, array $parameters = [] ) {
-		if ( empty( $abstract ) ) {
+		if ( is_null( $abstract ) ) {
 			return Application::get_instance();
 		}
 
@@ -40,9 +41,8 @@ if ( ! function_exists( 'environment' ) ) {
 	 *
 	 * @param  string $key Environment variable key.
 	 * @param  mixed  $default Default value.
-	 * @return mixed
 	 */
-	function environment( string $key, $default = null ) {
+	function environment( string $key, $default = null ): mixed {
 		return Environment::get( $key, $default );
 	}
 }

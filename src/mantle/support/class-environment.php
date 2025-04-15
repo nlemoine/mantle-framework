@@ -48,9 +48,8 @@ class Environment {
 	 *
 	 * @param string $key Variable to retrieve.
 	 * @param mixed  $default Default value. Supports a closure callback.
-	 * @return mixed
 	 */
-	public static function get( string $key, $default = null ) {
+	public static function get( string $key, mixed $default = null ): mixed {
 		$value = Option::fromValue( static::get_repository()->get( $key ) );
 
 		// Fallback to the VIP environment variable if the key is not found.
@@ -66,32 +65,40 @@ class Environment {
 		}
 
 		return $value
-			->map(
-				function ( $value ) {
-					switch ( strtolower( (string) $value ) ) {
-						case 'true':
-						case '(true)':
-							return true;
-						case 'false':
-						case '(false)':
-							return false;
-						case 'empty':
-						case '(empty)':
-							return '';
-						case 'null':
-						case '(null)':
-							return;
-					}
-
-					if ( preg_match( '/\A([\'"])(.*)\1\z/', (string) $value, $matches ) ) {
-						return $matches[2];
-					}
-
-					return $value;
+		->map(
+			function ( $value ) {
+				switch ( strtolower( (string) $value ) ) {
+					case 'true':
+					case '(true)':
+						return true;
+					case 'false':
+					case '(false)':
+						return false;
+					case 'empty':
+					case '(empty)':
+						return '';
+					case 'null':
+					case '(null)':
+						return;
 				}
-			)
-			->getOrCall(
-				fn () => value( $default )
-			);
+
+				if ( preg_match( '/\A([\'"])(.*)\1\z/', (string) $value, $matches ) ) {
+					return $matches[2];
+				}
+
+				return $value;
+			}
+		)
+		->getOrCall( fn () => value( $default ) );
+	}
+
+	/**
+	 * Get the value of an environment variable as a Mixed_Data object.
+	 *
+	 * @param string $key Variable to retrieve.
+	 * @param mixed  $default Default value. Supports a closure callback.
+	 */
+	public static function get_mixed( string $key, mixed $default = null ): Mixed_Data {
+		return Mixed_Data::of( static::get( $key, $default ) );
 	}
 }

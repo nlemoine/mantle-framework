@@ -34,9 +34,8 @@ class Wrap_Template {
 	 *
 	 * @param Request  $request Request instance.
 	 * @param \Closure $next Callback for the middleware.
-	 * @return mixed
 	 */
-	public function handle( Request $request, Closure $next ) {
+	public function handle( Request $request, Closure $next ): mixed {
 		if ( $request->is_json() ) {
 			return $next( $request );
 		}

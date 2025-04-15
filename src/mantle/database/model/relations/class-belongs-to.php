@@ -29,15 +29,20 @@ use function Mantle\Support\Helpers\collect;
  *
  * For relationships between posts and term models, the Belongs To relationship
  * is not supported for performance reasons.
+ *
+ * @template TParent of \Mantle\Database\Model\Model = \Mantle\Database\Model\Model
+ * @template TModel of \Mantle\Database\Model\Model = \Mantle\Database\Model\Model
+ *
+ * @extends Relation<TParent, TModel>
  */
 class Belongs_To extends Relation {
 	/**
 	 * Create a new has one or many relationship instance.
 	 *
-	 * @param Builder $query Query builder object.
-	 * @param Model   $parent Parent model.
-	 * @param string  $foreign_key Foreign key.
-	 * @param string  $local_key Local key.
+	 * @param Builder<TModel> $query Query builder object.
+	 * @param TParent         $parent Parent model.
+	 * @param string          $foreign_key Foreign key.
+	 * @param string          $local_key Local key.
 	 */
 	public function __construct( Builder $query, Model $parent, protected string $foreign_key, protected ?string $local_key = null ) {
 		parent::__construct( $query, $parent );
@@ -84,7 +89,7 @@ class Belongs_To extends Relation {
 	/**
 	 * Set the query constraints for an eager load of the relation.
 	 *
-	 * @param Collection $models Models to eager load for.
+	 * @param Collection<int, TParent> $models Models to eager load for.
 	 *
 	 * @throws RuntimeException Thrown on eager loading term relationships.
 	 */
@@ -107,6 +112,7 @@ class Belongs_To extends Relation {
 	 * Retrieve the results of the query.
 	 *
 	 * @return \Mantle\Database\Model\Model|null
+	 * @phpstan-return TParent|null
 	 */
 	public function get_results() {
 		$this->add_constraints();
@@ -317,8 +323,8 @@ class Belongs_To extends Relation {
 	/**
 	 * Match the eagerly loaded results to their parents.
 	 *
-	 * @param Collection $models Parent models.
-	 * @param Collection $results Eagerly loaded results to match.
+	 * @param Collection<int, TParent> $models Parent models.
+	 * @param Collection<int, TModel>  $results Eagerly loaded results to match.
 	 */
 	public function match( Collection $models, Collection $results ): Collection {
 		$dictionary = $this->build_dictionary( $results, $models );

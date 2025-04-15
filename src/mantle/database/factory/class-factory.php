@@ -24,9 +24,9 @@ use function Mantle\Support\Helpers\tap;
 /**
  * Base Factory
  *
- * @template TModel of \Mantle\Database\Model\Model
- * @template TObject
- * @template TReturnValue
+ * @template TModel of \Mantle\Database\Model\Model = \Mantle\Database\Model\Model
+ * @template TObject = object
+ * @template TReturnValue = mixed
  *
  * @method \Mantle\Database\Factory\Fluent_Factory<TModel, TObject, TReturnValue> count(int $count)
  */
@@ -273,8 +273,8 @@ abstract class Factory {
 	/**
 	 * Magic method to proxy calls to the fluent factory.
 	 *
-	 * @param string $method The method name.
-	 * @param array  $args   The arguments.
+	 * @param string       $method The method name.
+	 * @param array<mixed> $args   The arguments.
 	 */
 	public function __call( string $method, array $args ): mixed {
 		if ( static::has_macro( $method ) ) {
