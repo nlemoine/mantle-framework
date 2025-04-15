@@ -116,9 +116,8 @@ class Paginator implements Arrayable, ArrayAccess, Countable, Jsonable, JsonSeri
 	 * Set the path to use for the request.
 	 *
 	 * @param string $path Path to use.
-	 * @return static
 	 */
-	public function path( ?string $path = null ) {
+	public function path( ?string $path = null ): static {
 		if ( $path ) {
 			$this->path = $path;
 			return $this;
@@ -148,20 +147,16 @@ class Paginator implements Arrayable, ArrayAccess, Countable, Jsonable, JsonSeri
 
 	/**
 	 * Flag if query strings should be used for the pagination URLs.
-	 *
-	 * @return static
 	 */
-	public function use_query_string() {
+	public function use_query_string(): static {
 		$this->use_query_string = true;
 		return $this;
 	}
 
 	/**
 	 * Flag if query strings shouldn't be used for the pagination URLs.
-	 *
-	 * @return static
 	 */
-	public function use_path() {
+	public function use_path(): static {
 		$this->use_query_string = false;
 		return $this;
 	}
@@ -170,14 +165,9 @@ class Paginator implements Arrayable, ArrayAccess, Countable, Jsonable, JsonSeri
 	 * Set the current page for the paginator.
 	 *
 	 * @param int $current_page Current page to set, optional.
-	 * @return static
 	 */
-	public function set_current_page( ?int $current_page = null ) {
-		if ( $current_page && $current_page > 0 ) {
-			$this->current_page = $current_page;
-		} else {
-			$this->current_page = static::resolve_current_page();
-		}
+	public function set_current_page( ?int $current_page = null ): static {
+		$this->current_page = $current_page && $current_page > 0 ? $current_page : static::resolve_current_page();
 
 		$this->builder->page( $this->current_page );
 		return $this;
@@ -199,10 +189,8 @@ class Paginator implements Arrayable, ArrayAccess, Countable, Jsonable, JsonSeri
 
 	/**
 	 * Set the items for the paginator.
-	 *
-	 * @return static
 	 */
-	protected function set_items() {
+	protected function set_items(): static {
 		$this->items = $this->builder->where( 'no_found_rows', true )->get();
 		return $this;
 	}
@@ -234,6 +222,7 @@ class Paginator implements Arrayable, ArrayAccess, Countable, Jsonable, JsonSeri
 		if ( 1 !== $this->current_page() ) {
 						return true;
 		}
+
 								return $this->has_more();
 	}
 
@@ -249,9 +238,8 @@ class Paginator implements Arrayable, ArrayAccess, Countable, Jsonable, JsonSeri
 	 *
 	 * @param string|array $key Query string key or array of key value pairs.
 	 * @param mixed        $value Query string value.
-	 * @return static
 	 */
-	public function append( $key, $value = null ) {
+	public function append( $key, $value = null ): static {
 		if ( is_array( $key ) && null === $value ) {
 			foreach ( $key as $k => $v ) {
 				$this->append( $k, $v );
@@ -266,10 +254,8 @@ class Paginator implements Arrayable, ArrayAccess, Countable, Jsonable, JsonSeri
 
 	/**
 	 * Append the current query string parameters.
-	 *
-	 * @return static
 	 */
-	public function with_query_string() {
+	public function with_query_string(): static {
 		$this->append( static::request()->query() );
 		return $this;
 	}
@@ -320,6 +306,7 @@ class Paginator implements Arrayable, ArrayAccess, Countable, Jsonable, JsonSeri
 		if ( ! Str::is( 'page/*', $path ) ) {
 			return 1;
 		}
+
 		preg_match_all( '/page\/(\d*)\/?/', $path, $matches );
 		return (int) ( $matches[1][0] ?? 1 );
 	}
@@ -333,6 +320,7 @@ class Paginator implements Arrayable, ArrayAccess, Countable, Jsonable, JsonSeri
 		if ( ! Str::is( 'page/*', $path ) ) {
 			return $path;
 		}
+
 		preg_match_all( '/page\/(\d*)\/?/', $path, $matches );
 
 		if ( ! empty( $matches[0][0] ) ) {
@@ -486,9 +474,8 @@ class Paginator implements Arrayable, ArrayAccess, Countable, Jsonable, JsonSeri
 	 * View name to load.
 	 *
 	 * @param string $view View name.
-	 * @return static
 	 */
-	public function view( string $view ) {
+	public function view( string $view ): static {
 		$this->view = $view;
 
 		return $this;

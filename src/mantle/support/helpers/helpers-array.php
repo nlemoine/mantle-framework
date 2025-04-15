@@ -13,9 +13,8 @@ use Mantle\Support;
  * Return the default value of the given value.
  *
  * @param mixed $value Value to check.
- * @return mixed
  */
-function value( $value ) {
+function value( mixed $value ): mixed {
 	return $value instanceof \Closure ? $value() : $value;
 }
 
@@ -25,9 +24,8 @@ function value( $value ) {
  * @param  mixed                 $target Target to get from.
  * @param  string|array|int|null $key Key to retrieve.
  * @param  mixed                 $default Default value.
- * @return mixed
  */
-function data_get( $target, $key, $default = null ) {
+function data_get( mixed $target, string|array|int|null $key, mixed $default = null ): mixed {
 	if ( is_null( $key ) ) {
 		return $target;
 	}
@@ -76,9 +74,8 @@ function data_get( $target, $key, $default = null ) {
  * @param  string|array $key Key to set.
  * @param  mixed        $value Value to set.
  * @param  bool         $overwrite Flag to overwrite the existing value.
- * @return mixed
  */
-function data_set( &$target, $key, $value, $overwrite = true ) {
+function data_set( mixed &$target, string|array $key, mixed $value, bool $overwrite = true ): mixed {
 	$segments = is_array( $key ) ? $key : explode( '.', $key );
 	$segment  = array_shift( $segments );
 
@@ -87,7 +84,7 @@ function data_set( &$target, $key, $value, $overwrite = true ) {
 			$target = [];
 		}
 
-		if ( $segments ) {
+		if ( $segments !== [] ) {
 			foreach ( $target as &$inner ) {
 				data_set( $inner, $segments, $value, $overwrite );
 			}
@@ -97,7 +94,7 @@ function data_set( &$target, $key, $value, $overwrite = true ) {
 			}
 		}
 	} elseif ( Support\Arr::accessible( $target ) ) {
-		if ( $segments ) {
+		if ( $segments !== [] ) {
 			if ( ! Support\Arr::exists( $target, $segment ) ) {
 				$target[ $segment ] = [];
 			}
@@ -107,7 +104,7 @@ function data_set( &$target, $key, $value, $overwrite = true ) {
 			$target[ $segment ] = $value;
 		}
 	} elseif ( is_object( $target ) ) {
-		if ( $segments ) {
+		if ( $segments !== [] ) {
 			if ( ! isset( $target->{$segment} ) ) {
 				$target->{$segment} = [];
 			}
@@ -119,7 +116,7 @@ function data_set( &$target, $key, $value, $overwrite = true ) {
 	} else {
 		$target = [];
 
-		if ( $segments ) {
+		if ( $segments !== [] ) {
 			data_set( $target[ $segment ], $segments, $value, $overwrite );
 		} elseif ( $overwrite ) {
 			$target[ $segment ] = $value;
@@ -135,9 +132,8 @@ function data_set( &$target, $key, $value, $overwrite = true ) {
  * @param mixed        $target Subject to fill into.
  * @param string|array $key    Key(s) to fill.
  * @param mixed        $value  Value with which to fill.
- * @return mixed
  */
-function data_fill( &$target, $key, $value ) {
+function data_fill( mixed &$target, string|array $key, mixed $value ): mixed {
 	return data_set( $target, $key, $value, false );
 }
 
@@ -146,7 +142,7 @@ function data_fill( &$target, $key, $value ) {
  *
  * @param array $array Array from which to get first element.
  */
-function head( $array ): mixed {
+function head( array $array ): mixed {
 	return reset( $array );
 }
 
@@ -155,6 +151,6 @@ function head( $array ): mixed {
  *
  * @param array $array Array from which to get last element.
  */
-function last( $array ): mixed {
+function last( array $array ): mixed {
 	return end( $array );
 }

@@ -76,9 +76,8 @@ class View implements \Stringable {
 	 * Allows the global WordPress post object to be adjusted when rendering the view.
 	 *
 	 * @param Post|\WP_Post|int $post Post object.
-	 * @return static
 	 */
-	public function set_post( $post ) {
+	public function set_post( $post ): static {
 		$this->post = $post;
 		return $this;
 	}
@@ -88,9 +87,8 @@ class View implements \Stringable {
 	 *
 	 * @param string|array $key Key to set.
 	 * @param mixed        $value Value to set.
-	 * @return static
 	 */
-	public function with( $key, $value = null ) {
+	public function with( $key, $value = null ): static {
 		if ( is_array( $key ) ) {
 			$this->data = array_merge( $this->data, $key );
 		} else {
@@ -123,9 +121,8 @@ class View implements \Stringable {
 	 *
 	 * @param int|bool $cache_ttl Cache TTL or false to disable. Defaults to 15 minutes.
 	 * @param string   $cache_key Cache key to use, optional.
-	 * @return static
 	 */
-	public function cache( $cache_ttl = 900, ?string $cache_key = null ) {
+	public function cache( $cache_ttl = 900, ?string $cache_key = null ): static {
 		if ( false === $cache_ttl ) {
 			$cache_ttl = -1;
 		}
@@ -169,17 +166,13 @@ class View implements \Stringable {
 	protected function setup_post_object() {
 		global $post;
 
-		if ( ! isset( $this->post ) ) {
+		if ( $this->post === null ) {
 			return;
 		}
 
 		$this->preserve_post();
 
-		if ( $this->post instanceof Post ) {
-			$post = \get_post( $this->post->id() );
-		} else {
-			$post = \get_post( $this->post );
-		}
+		$post = $this->post instanceof Post ? \get_post( $this->post->id() ) : \get_post( $this->post );
 
 		\setup_postdata( $post );
 	}
@@ -213,7 +206,7 @@ class View implements \Stringable {
 	 */
 	public function render(): string {
 		// Check the cache for the view.
-		if ( isset( $this->cache_ttl ) ) {
+		if ( $this->cache_ttl !== null ) {
 			$cache_key = $this->get_cache_key();
 			$contents  = \get_transient( $cache_key );
 
@@ -223,7 +216,7 @@ class View implements \Stringable {
 		}
 
 		// Setup the post object if needed.
-		if ( isset( $this->post ) ) {
+		if ( $this->post !== null ) {
 			$this->setup_post_object();
 		}
 
@@ -234,11 +227,11 @@ class View implements \Stringable {
 
 		$this->factory->pop();
 
-		if ( isset( $this->post ) ) {
+		if ( $this->post !== null ) {
 			$this->restore_post();
 		}
 
-		if ( isset( $this->cache_ttl ) ) {
+		if ( $this->cache_ttl !== null ) {
 			\set_transient( $cache_key, $contents, $this->cache_ttl );
 		}
 

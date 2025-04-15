@@ -5,6 +5,11 @@
  * phpcs:disable
  */
 
+use Rector\CodeQuality\Rector\Empty_\SimplifyEmptyCheckOnEmptyArrayRector;
+use Rector\CodeQuality\Rector\If_\ExplicitBoolCompareRector;
+use Rector\CodingStyle\Rector\Catch_\CatchExceptionNameMatchingTypeRector;
+use Rector\CodingStyle\Rector\Encapsed\EncapsedStringsToSprintfRector;
+use Rector\CodingStyle\Rector\If_\NullableCompareToNullRector;
 use Rector\Config\RectorConfig;
 use Rector\DeadCode\Rector\ClassMethod\RemoveUselessParamTagRector;
 use Rector\DeadCode\Rector\ClassMethod\RemoveUselessReturnTagRector;
@@ -17,10 +22,12 @@ use Rector\Php80\Rector\Class_\ClassPropertyAssignToConstructorPromotionRector;
 use Rector\Php80\Rector\NotIdentical\StrContainsRector;
 use Rector\Php81\Rector\Array_\FirstClassCallableRector;
 use Rector\Php84\Rector\Param\ExplicitNullableParamTypeRector;
+use Rector\Strict\Rector\Empty_\DisallowedEmptyRuleFixerRector;
 use Rector\TypeDeclaration\Rector\ArrowFunction\AddArrowFunctionReturnTypeRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\AddVoidReturnTypeWhereNoReturnRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\ReturnNullableTypeRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\ReturnTypeFromReturnNewRector;
+use Rector\TypeDeclaration\Rector\ClassMethod\ReturnTypeFromStrictFluentReturnRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\ReturnTypeFromStrictTypedCallRector;
 use Rector\TypeDeclaration\Rector\ClassMethod\ReturnUnionTypeRector;
 use Rector\TypeDeclaration\Rector\Empty_\EmptyOnNullableObjectToInstanceOfRector;
@@ -43,15 +50,20 @@ return RectorConfig::configure()
 	->withIndent( "\t" )
 	->withPaths( [ __DIR__ . '/src' ] )
 	->withPreparedSets(
-		earlyReturn: true,
 		deadCode: true,
+		codingStyle: true,
+		codeQuality: true,
+		earlyReturn: true,
 		instanceOf: true,
+		typeDeclarations: true,
 	)
-	->withTypeCoverageLevel( 40 ) // Out of 49.
 	->withRules(
 		[
 			RenameForeachValueVariableToMatchExprVariableRector::class,
 			ExplicitNullableParamTypeRector::class,
+
+			// TODO:
+			// - AddParamTypeDeclarationRector
 		]
 	)
 	->withSkip( [
@@ -72,8 +84,8 @@ return RectorConfig::configure()
 		ReturnTypeFromStrictTypedCallRector::class => [
 			__DIR__ . '/src/mantle/database/model/relations',
 		],
-		RemoveUselessParamTagRector::class,
 		FirstClassCallableRector::class,
+		RemoveUselessParamTagRector::class,
 		StrContainsRector::class,
 		AddArrowFunctionReturnTypeRector::class,
 		ChangeOrIfContinueToMultiContinueRector::class,
@@ -91,4 +103,17 @@ return RectorConfig::configure()
 		ReturnUnionTypeRector::class => [
 			__DIR__ . '/src/mantle/framework/exceptions/class-handler.php',
 		],
+		ReturnTypeFromStrictFluentReturnRector::class => [
+			__DIR__ . '/src/mantle/database/query/class-collection.php',
+			__DIR__ . '/src/mantle/support/class-collection.php',
+			__DIR__ . '/src/mantle/support/traits/trait-enumerates-values.php',
+		],
+		ExplicitBoolCompareRector::class => [
+			__DIR__ . '/src/mantle/database/model/class-post.php',
+		],
+		SimplifyEmptyCheckOnEmptyArrayRector::class,
+		DisallowedEmptyRuleFixerRector::class,
+		NullableCompareToNullRector::class,
+		CatchExceptionNameMatchingTypeRector::class,
+		EncapsedStringsToSprintfRector::class,
 	] );

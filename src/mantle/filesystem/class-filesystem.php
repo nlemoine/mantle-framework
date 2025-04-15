@@ -183,7 +183,7 @@ class Filesystem {
 	 * @param  string $data
 	 * @return int
 	 */
-	public function prepend( $path, $data ): int|false {
+	public function prepend( $path, string $data ): int|false {
 		if ( $this->exists( $path ) ) {
 			return $this->put( $path, $data . $this->get( $path ) );
 		}
@@ -436,7 +436,7 @@ class Filesystem {
 	 * @param  bool   $hidden
 	 * @return \Symfony\Component\Finder\SplFileInfo[]
 	 */
-	public function files( $directory, $hidden = false ): array {
+	public function files( string|array $directory, $hidden = false ): array {
 		return iterator_to_array(
 			Finder::create()->files()->ignoreDotFiles( ! $hidden )->in( $directory )->depth( 0 )->sortByName(),
 			false
@@ -450,7 +450,7 @@ class Filesystem {
 	 * @param  bool   $hidden
 	 * @return \Symfony\Component\Finder\SplFileInfo[]
 	 */
-	public function all_files( $directory, $hidden = false ): array {
+	public function all_files( string|array $directory, $hidden = false ): array {
 		return iterator_to_array(
 			Finder::create()->files()->ignoreDotFiles( ! $hidden )->in( $directory )->sortByName(),
 			false
@@ -462,7 +462,7 @@ class Filesystem {
 	 *
 	 * @param  string $directory
 	 */
-	public function directories( $directory ): array {
+	public function directories( string|array $directory ): array {
 		$directories = [];
 
 		foreach ( Finder::create()->in( $directory )->directories()->depth( 0 )->sortByName() as $dir ) {
@@ -508,7 +508,7 @@ class Filesystem {
 			return false;
 		}
 
-		return @rename( $from, $to ) === true; // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, Generic.PHP.NoSilencedErrors.Forbidden
+		return @rename( $from, $to ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, Generic.PHP.NoSilencedErrors.Forbidden
 	}
 
 	/**
@@ -598,7 +598,7 @@ class Filesystem {
 	 *
 	 * @param  string $directory
 	 */
-	public function delete_directories( $directory ): bool {
+	public function delete_directories( string|array $directory ): bool {
 		$all_directories = $this->directories( $directory );
 
 		if ( ! empty( $all_directories ) ) {

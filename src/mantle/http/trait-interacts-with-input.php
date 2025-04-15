@@ -342,7 +342,7 @@ trait Interacts_With_Input {
 	protected function convert_uploaded_files( array $files ): array {
 		return array_map(
 			function ( $file ) {
-				if ( is_null( $file ) || ( is_array( $file ) && empty( array_filter( $file ) ) ) ) {
+				if ( is_null( $file ) || ( array_filter( $file ) === [] ) ) {
 					return $file;
 				}
 
@@ -390,7 +390,7 @@ trait Interacts_With_Input {
 	 * @param  mixed       $default
 	 * @return \Mantle\Http\Uploaded_File|\Mantle\Http\Uploaded_File[]|null
 	 */
-	public function file( ?string $key = null, mixed $default = null ) {
+	public function file( ?string $key = null, mixed $default = null ): mixed {
 		return data_get( $this->all_files(), $key, $default );
 	}
 }

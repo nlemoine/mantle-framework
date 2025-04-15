@@ -313,7 +313,7 @@ class Pending_Testable_Request {
 
 			$response = $kernel->send_request_through_router( $request );
 
-			if ( $response ) {
+			if ( $response instanceof \Symfony\Component\HttpFoundation\Response ) {
 				$response = new Test_Response(
 					$response->getContent(),
 					$response->getStatusCode(),
@@ -426,7 +426,7 @@ class Pending_Testable_Request {
 		$this->rest_api_response = null;
 
 		// Remove all HTTP_* headers from $_SERVER.
-		foreach ( $_SERVER as $key => $value ) {
+		foreach ( array_keys($_SERVER) as $key ) {
 			if ( str_starts_with( $key, 'HTTP_' ) && 'HTTP_HOST' !== $key ) {
 				unset( $_SERVER[ $key ] );
 			}
@@ -617,7 +617,7 @@ class Pending_Testable_Request {
 
 			$server->serve_request( $route );
 
-			if ( isset( $server->sent_body ) ) {
+			if ( $server->sent_body !== null ) {
 				$this->rest_api_response = [
 					'body'    => $server->sent_body,
 					'headers' => $server->sent_headers,
@@ -663,7 +663,7 @@ class Pending_Testable_Request {
 	 * @param array  $headers Request headers.
 	 * @param int    $options JSON encoding options.
 	 */
-	public function get_json( $uri, array $headers = [], int $options = 0 ): Test_Response {
+	public function get_json( string $uri, array $headers = [], int $options = 0 ): Test_Response {
 		return $this->json( 'GET', $uri, [], $headers, $options );
 	}
 
@@ -766,7 +766,7 @@ class Pending_Testable_Request {
 	 * @param array  $headers Request headers.
 	 * @param int    $options JSON encoding options.
 	 */
-	public function patch_json( $uri, array $data = [], array $headers = [], int $options = 0 ): Test_Response {
+	public function patch_json( string $uri, array $data = [], array $headers = [], int $options = 0 ): Test_Response {
 		return $this->json( 'PATCH', $uri, $data, $headers, $options );
 	}
 
@@ -791,7 +791,7 @@ class Pending_Testable_Request {
 	 * @param array  $headers Request headers.
 	 * @param int    $options JSON encoding options.
 	 */
-	public function delete_json( $uri, array $data = [], array $headers = [], int $options = 0 ): Test_Response {
+	public function delete_json( string $uri, array $data = [], array $headers = [], int $options = 0 ): Test_Response {
 		return $this->json( 'DELETE', $uri, $data, $headers, $options );
 	}
 
@@ -816,7 +816,7 @@ class Pending_Testable_Request {
 	 * @param array  $headers Request headers.
 	 * @param int    $options JSON encoding options.
 	 */
-	public function options_json( $uri, array $data = [], array $headers = [], int $options = 0 ): Test_Response {
+	public function options_json( string $uri, array $data = [], array $headers = [], int $options = 0 ): Test_Response {
 		return $this->json( 'OPTIONS', $uri, $data, $headers, $options );
 	}
 }

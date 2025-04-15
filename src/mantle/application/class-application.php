@@ -121,9 +121,8 @@ class Application extends Container implements \Mantle\Contracts\Application {
 	 * Set the base path of the application.
 	 *
 	 * @param string $path Path to set.
-	 * @return static
 	 */
-	public function set_base_path( string $path ) {
+	public function set_base_path( string $path ): static {
 		$this->base_path = str( $path )->untrailingSlash()->value();
 
 		$this->instance( 'path', $this->get_base_path() );
@@ -141,7 +140,7 @@ class Application extends Container implements \Mantle\Contracts\Application {
 	 * @param string $path Path to append.
 	 */
 	public function get_base_path( string $path = '' ): string {
-		if ( $path ) {
+		if ( $path !== '' && $path !== '0' ) {
 			// Ensure the path being appended has a leading slash.
 			if ( ! str_starts_with( $path, '/' ) ) {
 				$path = '/' . $path;
@@ -163,16 +162,15 @@ class Application extends Container implements \Mantle\Contracts\Application {
 			$this->app_path = $this->get_base_path( 'app' );
 		}
 
-		return $this->app_path . ( $path ? DIRECTORY_SEPARATOR . $path : $path );
+		return $this->app_path . ( $path !== '' && $path !== '0' ? DIRECTORY_SEPARATOR . $path : $path );
 	}
 
 	/**
 	 * Set the application directory.
 	 *
 	 * @param string $path Path to use.
-	 * @return static
 	 */
-	public function set_app_path( string $path ) {
+	public function set_app_path( string $path ): static {
 		$this->app_path = $path;
 
 		$this->instance( 'path', $path );
@@ -187,7 +185,7 @@ class Application extends Container implements \Mantle\Contracts\Application {
 	 */
 	public function get_bootstrap_path( string $path = '' ): string {
 		if ( $this->bootstrap_path ) {
-			return $path ? $this->bootstrap_path . DIRECTORY_SEPARATOR . $path : $this->bootstrap_path;
+			return $path !== '' && $path !== '0' ? $this->bootstrap_path . DIRECTORY_SEPARATOR . $path : $this->bootstrap_path;
 		}
 
 		if ( function_exists( 'apply_filters' ) ) {
@@ -250,7 +248,7 @@ class Application extends Container implements \Mantle\Contracts\Application {
 	 * @param string $path Path to append.
 	 */
 	public function get_root_url( string $path = '' ): string {
-		return $this->root_url . ( $path ? '/' . $path : '' );
+		return $this->root_url . ( $path !== '' && $path !== '0' ? '/' . $path : '' );
 	}
 
 	/**
@@ -432,10 +430,8 @@ class Application extends Container implements \Mantle\Contracts\Application {
 
 	/**
 	 * Boot the application's service providers.
-	 *
-	 * @return static
 	 */
-	public function boot() {
+	public function boot(): static {
 		if ( $this->is_booted() ) {
 			return $this;
 		}
@@ -506,9 +502,8 @@ class Application extends Container implements \Mantle\Contracts\Application {
 	 * Set the environment for the application.
 	 *
 	 * @param string $environment Environment to set.
-	 * @return static
 	 */
-	public function set_environment( string $environment ) {
+	public function set_environment( string $environment ): static {
 		$this->environment = $environment;
 
 		return $this;

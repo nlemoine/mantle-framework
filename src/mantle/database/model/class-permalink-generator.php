@@ -52,7 +52,7 @@ class Permalink_Generator implements \Stringable {
 
 		$route = preg_replace_callback(
 			'/({[A-Za-z0-9-_]*})/',
-			function ( $match ): string {
+			function ( array $match ): string {
 				$attribute = substr( $match[0], 1, strlen( $match[0] ) - 2 );
 
 				return $this->get_attribute( $attribute );
@@ -81,7 +81,7 @@ class Permalink_Generator implements \Stringable {
 	 * Set the attributes for the generator.
 	 */
 	protected function set_attributes(): void {
-		if ( $this->model ) {
+		if ( $this->model instanceof \Mantle\Database\Model\Model ) {
 			foreach ( $this->model->get_attributes() as $attribute => $value ) {
 				$this->set_attribute( $attribute, $value );
 			}
@@ -113,9 +113,8 @@ class Permalink_Generator implements \Stringable {
 	 *
 	 * @param string $attribute Attribute to set.
 	 * @param string $value Value to set.
-	 * @return static
 	 */
-	public function set_attribute( string $attribute, string $value ) {
+	public function set_attribute( string $attribute, string $value ): static {
 		$this->attributes[ $attribute ] = $value;
 		return $this;
 	}

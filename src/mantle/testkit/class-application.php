@@ -124,9 +124,8 @@ class Application extends Container implements Application_Contract {
 	 * Set the base path of the application.
 	 *
 	 * @param string $path Path to set.
-	 * @return static
 	 */
-	public function set_base_path( string $path ) {
+	public function set_base_path( string $path ): static {
 		$this->base_path = $path;
 
 		$this->instance( 'path', $this->get_base_path() );
@@ -142,7 +141,7 @@ class Application extends Container implements Application_Contract {
 	 * @param string $path Path to append.
 	 */
 	public function get_base_path( string $path = '' ): string {
-		return $this->base_path . ( $path ? DIRECTORY_SEPARATOR . $path : '' );
+		return $this->base_path . ( $path !== '' && $path !== '0' ? DIRECTORY_SEPARATOR . $path : '' );
 	}
 
 	/**
@@ -153,16 +152,15 @@ class Application extends Container implements Application_Contract {
 	public function get_app_path( string $path = '' ): string {
 		$app_path = $this->app_path ?: $this->get_base_path( 'app' );
 
-		return $app_path . ( $path ? DIRECTORY_SEPARATOR . $path : $path );
+		return $app_path . ( $path !== '' && $path !== '0' ? DIRECTORY_SEPARATOR . $path : $path );
 	}
 
 	/**
 	 * Set the application directory.
 	 *
 	 * @param string $path Path to use.
-	 * @return static
 	 */
-	public function set_app_path( string $path ) {
+	public function set_app_path( string $path ): static {
 		$this->app_path = $path;
 
 		$this->instance( 'path', $path );
@@ -203,7 +201,7 @@ class Application extends Container implements Application_Contract {
 	 * @param string $path Path to append.
 	 */
 	public function get_root_url( string $path = '' ): string {
-		return $this->root_url . ( $path ? DIRECTORY_SEPARATOR . $path : '' );
+		return $this->root_url . ( $path !== '' && $path !== '0' ? DIRECTORY_SEPARATOR . $path : '' );
 	}
 
 	/**
@@ -357,10 +355,8 @@ class Application extends Container implements Application_Contract {
 
 	/**
 	 * Boot the application's service providers.
-	 *
-	 * @return static
 	 */
-	public function boot() {
+	public function boot(): static {
 		$this->booted = true;
 
 		return $this;
@@ -449,9 +445,8 @@ class Application extends Container implements Application_Contract {
 	 * Set the environment for the application.
 	 *
 	 * @param string $environment Environment to set.
-	 * @return static
 	 */
-	public function set_environment( string $environment ) {
+	public function set_environment( string $environment ): static {
 		$this->environment = $environment;
 		return $this;
 	}

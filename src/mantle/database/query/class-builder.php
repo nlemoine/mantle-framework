@@ -641,7 +641,7 @@ abstract class Builder {
 	public function firstOrFail() {
 		$model = $this->first();
 
-		if ( ! $model ) {
+		if ( ! $model instanceof \Mantle\Database\Model\Model ) {
 			throw new Model_Not_Found_Exception( $this->model );
 		}
 
@@ -861,7 +861,7 @@ abstract class Builder {
 	 *
 	 * @throws Query_Exception Unknown query method called.
 	 */
-	public function __call( $method, $args ) {
+	public function __call( string $method, $args ) {
 		if ( Str::starts_with( $method, 'where' ) ) {
 			return $this->dynamicWhere( $method, $args );
 		}

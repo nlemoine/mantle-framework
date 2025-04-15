@@ -30,9 +30,8 @@ class Logger extends MonologLogger {
 	 * Set the dispatcher instance.
 	 *
 	 * @param Dispatcher $dispatcher Dispatcher instance.
-	 * @return static
 	 */
-	public function set_dispatcher( ?Dispatcher $dispatcher = null ) {
+	public function set_dispatcher( ?Dispatcher $dispatcher = null ): static {
 		$this->dispatcher = $dispatcher;
 		return $this;
 	}
@@ -62,7 +61,7 @@ class Logger extends MonologLogger {
 	 * @param array  $context Log context.
 	 */
 	protected function fire_log_event( string $level, string $message, array $context = [] ): void {
-		if ( isset( $this->dispatcher ) ) {
+		if ( $this->dispatcher !== null ) {
 			$this->dispatcher->dispatch( new Events\Message_Logged( $level, $message, $context ) );
 		}
 	}

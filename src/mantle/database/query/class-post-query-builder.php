@@ -141,11 +141,7 @@ class Post_Query_Builder extends Builder {
 			fn () => $query->query( $this->get_query_args() ),
 		);
 
-		if ( empty( $query->found_posts ) && count( $query->posts ) > 0 ) {
-			$this->found_rows = null;
-		} else {
-			$this->found_rows = $query->found_posts;
-		}
+		$this->found_rows = empty( $query->found_posts ) && count( $query->posts ) > 0 ? null : $query->found_posts;
 
 		$post_ids = $query->posts;
 
@@ -201,7 +197,7 @@ class Post_Query_Builder extends Builder {
 
 						if ( empty( $model_object_types[ $post_type ] ) ) {
 							throw new RuntimeException(
-								"Missing model for object type [{ $post_type }]."
+								"Missing model for object type [{ {$post_type} }]."
 							);
 						}
 
@@ -228,11 +224,10 @@ class Post_Query_Builder extends Builder {
 	 * @param string                         $taxonomy Taxonomy name.
 	 * @param string                         $operator Operator to use, defaults to 'IN'.
 	 * @param string                         $field Field to use for the query, defaults to term ID.
-	 * @return static
 	 *
 	 * @throws Query_Exception Unknown term to query against.
 	 */
-	public function whereTerm( $term, $taxonomy = null, string $operator = 'IN', string $field = 'term_id' ) {
+	public function whereTerm( $term, $taxonomy = null, string $operator = 'IN', string $field = 'term_id' ): static {
 		if ( $term instanceof Term ) {
 			$taxonomy = $term->taxonomy();
 			$term     = $term->id();
@@ -281,9 +276,8 @@ class Post_Query_Builder extends Builder {
 	 * @param array|string $term Term ID/array of IDs.
 	 * @param string       $taxonomy Taxonomy name.
 	 * @param string       $operator Operator to use, defaults to 'IN'.
-	 * @return static
 	 */
-	public function andWhereTerm( ...$args ) {
+	public function andWhereTerm( ...$args ): static {
 		$this->tax_query['relation'] = 'AND';
 		return $this->whereTerm( ...$args );
 	}
@@ -294,9 +288,8 @@ class Post_Query_Builder extends Builder {
 	 * @param array|string $term Term ID/array of IDs.
 	 * @param string       $taxonomy Taxonomy name.
 	 * @param string       $operator Operator to use, defaults to 'IN'.
-	 * @return static
 	 */
-	public function orWhereTerm( ...$args ) {
+	public function orWhereTerm( ...$args ): static {
 		$this->tax_query['relation'] = 'OR';
 		return $this->whereTerm( ...$args );
 	}

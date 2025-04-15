@@ -114,9 +114,8 @@ class Route extends Symfony_Route {
 	 * Set the route container.
 	 *
 	 * @param Router $router Router interface.
-	 * @return static
 	 */
-	public function set_router( Router $router ) {
+	public function set_router( Router $router ): static {
 		$this->router = $router;
 		return $this;
 	}
@@ -137,12 +136,11 @@ class Route extends Symfony_Route {
 	 * Set the name for a route.
 	 *
 	 * @param string $name Name for the route.
-	 * @return static
 	 */
-	public function name( string $name ) {
+	public function name( string $name ): static {
 		$previous_name = $this->get_name();
 
-		$this->action['as'] = ! empty( $this->action['as_prefix'] ) ? $this->action['as_prefix'] . $name : $name;
+		$this->action['as'] = empty( $this->action['as_prefix'] ) ? $name : $this->action['as_prefix'] . $name;
 
 		/**
 		 * Attempt to rename the route in the router.
@@ -150,7 +148,7 @@ class Route extends Symfony_Route {
 		 * The route object is stored in a route collection as a reference but the
 		 * route name is a static key for the collection.
 		 */
-		if ( isset( $this->router ) ) {
+		if ( $this->router instanceof \Mantle\Contracts\Http\Routing\Router ) {
 			$this->router->rename_route( $previous_name, $this->action['as'] );
 		}
 
@@ -171,9 +169,8 @@ class Route extends Symfony_Route {
 	 * Set the action array for the route.
 	 *
 	 * @param array $action Action for the route.
-	 * @return static
 	 */
-	public function set_action( array $action ) {
+	public function set_action( array $action ): static {
 		$this->action = $action;
 		return $this;
 	}

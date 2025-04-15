@@ -144,12 +144,12 @@ class Expectation {
 			}
 
 			// Compare the return value of the hook.
-			if ( isset( $this->return_value_callback ) ) {
+			if ( $this->return_value_callback !== null ) {
 				foreach ( $this->record_stop as $record ) {
 					PHPUnit::assertTrue(
 						call_user_func_array( $this->return_value_callback, $record ),
 						sprintf(
-							'Failed asserting that hook\'s [%s] return value %s matches the expected return value.',
+							"Failed asserting that hook's [%s] return value %s matches the expected return value.",
 							$this->hook,
 							$exporter->export( $record ),
 						)
@@ -173,10 +173,8 @@ class Expectation {
 
 	/**
 	 * Assert that the action was never applied.
-	 *
-	 * @return static
 	 */
-	public function never() {
+	public function never(): static {
 		$this->times = 0;
 
 		return $this;
@@ -184,10 +182,8 @@ class Expectation {
 
 	/**
 	 * Assert that the action was applied once.
-	 *
-	 * @return static
 	 */
-	public function once() {
+	public function once(): static {
 		$this->times = 1;
 
 		return $this;
@@ -195,10 +191,8 @@ class Expectation {
 
 	/**
 	 * Assert that the action was applied twice.
-	 *
-	 * @return static
 	 */
-	public function twice() {
+	public function twice(): static {
 		$this->times = 2;
 
 		return $this;

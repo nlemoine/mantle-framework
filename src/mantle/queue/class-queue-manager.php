@@ -57,13 +57,12 @@ class Queue_Manager implements Queue_Manager_Contract {
 	 *
 	 * @param string                          $name Provider name.
 	 * @param Provider|class-string<Provider> $provider Provider class name/instance.
-	 * @return static
 	 *
 	 * @throws InvalidArgumentException Thrown invalid provider.
 	 */
-	public function add_provider( string $name, string|Provider $provider ) {
+	public function add_provider( string $name, string|Provider $provider ): static {
 		if ( is_string( $provider ) && ( ! class_exists( $provider ) || ! in_array( Provider::class, class_implements( $provider ), true ) ) ) {
-			throw new InvalidArgumentException( "Provider does not implement Provider contract: [$provider]" );
+			throw new InvalidArgumentException( "Provider does not implement Provider contract: [{$provider}]" );
 		}
 
 		$this->providers[ $name ] = $provider;
@@ -92,7 +91,7 @@ class Queue_Manager implements Queue_Manager_Contract {
 	 */
 	protected function resolve( string $provider ): Provider {
 		if ( ! isset( $this->providers[ $provider ] ) ) {
-			throw new InvalidArgumentException( "No provider found for [$provider]." );
+			throw new InvalidArgumentException( "No provider found for [{$provider}]." );
 		}
 
 		if ( ! is_object( $this->providers[ $provider ] ) ) {
@@ -102,7 +101,7 @@ class Queue_Manager implements Queue_Manager_Contract {
 		}
 
 		if ( ! ( $this->connections[ $provider ] instanceof Provider ) ) {
-			throw new InvalidArgumentException( "Unknown provider instance resolved for [$provider]: " . $this->connections[ $provider ]::class );
+			throw new InvalidArgumentException( "Unknown provider instance resolved for [{$provider}]: " . $this->connections[ $provider ]::class );
 		}
 
 		return $this->connections[ $provider ];

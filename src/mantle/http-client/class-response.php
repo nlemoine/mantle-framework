@@ -55,9 +55,8 @@ class Response implements ArrayAccess {
 	 * Create a response object from a `wp_remote_request()` response.
 	 *
 	 * @param array|WP_Error $response Raw response from `wp_remote_request()`.
-	 * @return static
 	 */
-	public static function create( $response ) {
+	public static function create( $response ): static {
 		if ( $response instanceof WP_Error ) {
 			return static::create_from_wp_error( $response );
 		}
@@ -240,7 +239,7 @@ class Response implements ArrayAccess {
 	 * Retrieve the file contents of the downloaded file.
 	 */
 	public function file_contents(): ?string {
-		return ! empty( $this->response['filename'] ) ? file_get_contents( $this->file() ) : null; // phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
+		return empty( $this->response['filename'] ) ? null : file_get_contents( $this->file() ); // phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
 	}
 
 	/**
@@ -251,7 +250,7 @@ class Response implements ArrayAccess {
 	 * @return mixed
 	 */
 	public function json( $key = null, $default = null ) {
-		if ( ! isset( $this->decoded ) ) {
+		if ( $this->decoded === null ) {
 			$this->decoded = json_decode( $this->body(), true );
 		}
 
@@ -270,7 +269,7 @@ class Response implements ArrayAccess {
 	 * @return SimpleXMLElement|string|null Returns a specific SimpleXMLElement if path is specified, otherwise the entire document.
 	 */
 	public function xml( ?string $xpath = null, $default = null ) {
-		if ( ! isset( $this->element ) ) {
+		if ( ! $this->element instanceof \SimpleXMLElement ) {
 			$previous = libxml_use_internal_errors( true );
 
 			$this->element = new SimpleXMLElement( $this->body() );
@@ -327,10 +326,8 @@ class Response implements ArrayAccess {
 
 	/**
 	 * Dump the response to the screen.
-	 *
-	 * @return static
 	 */
-	public function dump() {
+	public function dump(): static {
 		dump( $this->response );
 		return $this;
 	}

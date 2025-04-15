@@ -25,6 +25,13 @@ class Dispatcher implements Dispatcher_Contract {
 	use WordPress_Action;
 
 	/**
+	 * The registered event listeners.
+	 *
+	 * @var array<string, mixed>
+	 */
+	protected array $listeners = [];
+
+	/**
 	 * The IoC container instance.
 	 */
 	protected \Mantle\Container\Container $container;
@@ -186,7 +193,7 @@ class Dispatcher implements Dispatcher_Contract {
 	 *
 	 * @param  string $listener
 	 */
-	public function create_class_listener( $listener ): Closure {
+	public function create_class_listener( string $listener ): Closure {
 		return function ( ...$payload ) use ( $listener ) {
 			$callable = $this->create_action_callback(
 				$this->create_class_callable( $listener ),

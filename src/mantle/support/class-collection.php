@@ -73,6 +73,7 @@ class Collection implements ArrayAccess, Enumerable {
 				$value->the_post();
 				$items[] = Model\Post::find( $post );
 			}
+
 			return new static( $items );
 		}
 
@@ -153,7 +154,7 @@ class Collection implements ArrayAccess, Enumerable {
 
 		$middle = (int) ( $count / 2 );
 
-		if ( $count % 2 ) {
+		if ( $count % 2 !== 0 ) {
 			return $values->get( $middle );
 		}
 
@@ -437,7 +438,7 @@ class Collection implements ArrayAccess, Enumerable {
 	 * @param  int|float $depth
 	 * @return static<int, mixed>
 	 */
-	public function flatten( $depth = INF ) {
+	public function flatten( int|float $depth = INF ) {
 		return new static( Arr::flatten( $this->items, $depth ) );
 	}
 
@@ -1138,7 +1139,7 @@ class Collection implements ArrayAccess, Enumerable {
 				$size++;
 			}
 
-			if ( $size ) {
+			if ( $size !== 0.0 ) {
 				$groups->push( new static( array_slice( $this->items, $start, (int) $size ) ) );
 
 				$start += $size;
@@ -1343,7 +1344,7 @@ class Collection implements ArrayAccess, Enumerable {
 			$arrayable_items
 		);
 
-		return new static( call_user_func_array( 'array_map', $params ) );
+		return new static( array_map( ...$params ) );
 	}
 
 	/**

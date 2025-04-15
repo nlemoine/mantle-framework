@@ -186,7 +186,7 @@ class Router implements Router_Contract {
 	 */
 	public function add_route( array $methods, string $uri, $action ): ?Route {
 		// Send the route to the REST Registrar if set.
-		if ( isset( $this->rest_registrar ) ) {
+		if ( $this->rest_registrar instanceof \Mantle\Http\Routing\Rest_Route_Registrar ) {
 			$this->create_rest_api_route( $methods, $uri, $action );
 
 			return null;
@@ -299,7 +299,7 @@ class Router implements Router_Contract {
 
 		$route = Route::get_route_from_match( $match );
 
-		if ( ! $route ) {
+		if ( ! $route instanceof \Mantle\Http\Routing\Route ) {
 			throw new HttpException( 500, 'Unknown route method: ' . \wp_json_encode( $match ) );
 		}
 
@@ -383,9 +383,8 @@ class Router implements Router_Contract {
 	 *
 	 * @param  string $group
 	 * @param  string $middleware
-	 * @return static
 	 */
-	public function prepend_middleware_to_group( $group, $middleware ) {
+	public function prepend_middleware_to_group( $group, $middleware ): static {
 		if ( isset( $this->middleware_groups[ $group ] ) && ! in_array( $middleware, $this->middleware_groups[ $group ], true ) ) {
 			array_unshift( $this->middleware_groups[ $group ], $middleware );
 		}
@@ -400,9 +399,8 @@ class Router implements Router_Contract {
 	 *
 	 * @param  string $group
 	 * @param  string $middleware
-	 * @return static
 	 */
-	public function push_middleware_to_group( $group, $middleware ) {
+	public function push_middleware_to_group( $group, $middleware ): static {
 		if ( ! array_key_exists( $group, $this->middleware_groups ) ) {
 				$this->middleware_groups[ $group ] = [];
 		}
@@ -411,7 +409,7 @@ class Router implements Router_Contract {
 				$this->middleware_groups[ $group ][] = $middleware;
 		}
 
-			return $this;
+		return $this;
 	}
 
 	/**
@@ -485,7 +483,7 @@ class Router implements Router_Contract {
 	 * @param string        $class
 	 * @param \Closure|null $callback
 	 */
-	public function bind_model( $key, $class, ?Closure $callback = null ): void {
+	public function bind_model( string $key, string $class, ?Closure $callback = null ): void {
 		$this->bind( $key, Route_Binding::for_model( $this->container, $class, $callback ) );
 	}
 
@@ -550,6 +548,7 @@ class Router implements Router_Contract {
 					'callback' => $args,
 				];
 			}
+
 			// Include the group attributes.
 			if ( $this->has_group_stack() ) {
 				$args = $this->merge_with_last_group( $args );
@@ -610,13 +609,13 @@ class Router implements Router_Contract {
 	public function rename_route( string $old_name, string $new_name ): static {
 		$old = $this->routes->get( $old_name );
 
-		if ( ! $old ) {
+		if ( ! $old instanceof \Symfony\Component\Routing\Route ) {
 			return $this;
 		}
 
 		$new = $this->routes->get( $new_name );
 
-		if ( $new ) {
+		if ( $new instanceof \Symfony\Component\Routing\Route ) {
 			throw new InvalidArgumentException( "Unable to rename route, name already taken. [{$old_name} => {$new_name}]" );
 		}
 
