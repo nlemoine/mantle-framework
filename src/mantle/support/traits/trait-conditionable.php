@@ -30,18 +30,18 @@ trait Conditionable {
 	 * @return static|TWhenReturnType
 	 */
 	public function when( $value, ?callable $callback = null, ?callable $default = null ) {
-			$value = $value instanceof Closure ? $value( $this ) : $value;
+		$value = $value instanceof Closure ? $value( $this ) : $value;
 
 		if ( func_num_args() === 1 ) {
-				return new Higher_Order_When_Proxy( $this, $value );
+			return new Higher_Order_When_Proxy( $this, $value );
 		}
 
 		if ( $value ) {
-						return $callback( $this, $value ) ?? $this;
+			return $callback( $this, $value ) ?? $this;
 		}
 
 		if ( $default ) {
-												return $default( $this, $value ) ?? $this;
+			return $default( $this, $value ) ?? $this;
 		}
 
 		return $this;
@@ -66,11 +66,11 @@ trait Conditionable {
 		}
 
 		if ( ! $value ) {
-						return $callback( $this, $value ) ?? $this;
+			return $callback( $this, $value ) ?? $this;
 		}
 
 		if ( $default ) {
-												return $default( $this, $value ) ?? $this;
+			return $default( $this, $value ) ?? $this;
 		}
 
 		return $this;
