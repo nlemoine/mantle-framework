@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `assertBlockExists()` and `assertBlockMissing()` to the response assertions.
 - Added `Environment` attribute to allow for environment-specific code to be run during tests.
 - Added support for user agent setting in tests via the `#[User_Agent]` attribute.
 
