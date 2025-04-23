@@ -23,8 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Various types added to the framework to support increasing PHPStan to level 6.
 - Remove the `WP_ENVIRONMENT_TYPE` environmental variable on tear down.
-- When using the `Hookable` trait, a incorrect usage notice will be fired (or a
-  runtime exception if on a local environment) if a method is attempting to be
+- When using the `Hookable` trait, an incorrect usage notice will be fired (or a
+  runtime exception if on a local environment) if a method attempts to be
   used as a hook callback that is not public.
 - `Interacts_With_Data::bool()` was changed to use `wp_validate_boolean()` to
   determine the boolean value of a value.
@@ -42,25 +42,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - When using the `Hookable` trait, any `action__{method}`/`on_{method}` will be
-  ignored when the method uses a `Action`/`Filter` attribute. To allow for
+  ignored when the method uses an `Action`/`Filter` attribute. To allow for
   legacy behavior, the
   `Mantle\Support\Attributes\Hookable\Allow_Legacy_Duplicate_Registration`
   attribute can be used on the class to allow for duplicate registration of the
   methods.
-- Additional typings added to internal framework class methods parameters and return types.
+- Additional typings added to internal framework class methods, parameters, and return types.
 
 ## v1.5.8
 
 ### Added
 
-- Added a `HTML` class to help with HTML querying, assertions, and manipulation.
+- Added an `HTML` class to help with HTML querying, assertions, and manipulation.
 - Added `factory()` method to database seeder.
 
 ### Changed
 
 - Renamed the base test cases for `mantle-framework/testing` and
   `mantle-framework/testkit` to `TestCase` (previously
-  was `Test_Case`). A shim is provided for backwards compatibility. The old
+  was `Test_Case`). A shim is provided for backward compatibility. The old
   class names are not yet deprecated.
 
 ## v1.5.7
