@@ -54,7 +54,7 @@ class InteractsWithDataTest extends TestCase {
 		$this->assertEquals( true, TestableInteractsWithData::create( 'true' )->bool() );
 		$this->assertEquals( false, TestableInteractsWithData::create( false )->bool() );
 		$this->assertEquals( false, TestableInteractsWithData::create( 'false' )->bool() );
-		$this->assertEquals( false, TestableInteractsWithData::create( 'random string' )->bool() );
+		$this->assertEquals( true, TestableInteractsWithData::create( 'random string' )->bool() );
 		$this->assertEquals( false, TestableInteractsWithData::create( '0' )->bool() );
 		$this->assertEquals( false, TestableInteractsWithData::create( null )->bool() );
 	}

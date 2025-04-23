@@ -107,7 +107,15 @@ trait Interacts_With_Data {
 			return $this->value;
 		}
 
-		return in_array( $this->value, [ '1', 1, 'true', true ], true );
+		if ( function_exists( 'wp_validate_boolean' ) ) {
+			return wp_validate_boolean( $this->value );
+		}
+
+		if ( is_string( $this->value ) && 'false' === strtolower( $this->value ) ) {
+			return false;
+		}
+
+		return (bool) $this->value;
 	}
 
 	/**
