@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added a `list()`, `ordered_list()`, `reusable()`, and `button()` method to the
+- Added a `list()`, `ordered_list()`, `reusable()`, and `button()` methods to the
   block factory to generate the corresponding blocks.
 - Add support for PHPUnit 12. Note: PHPUnit 12 drops all support for docblock
   annotations. To easily upgrade your project to use attributes, try
