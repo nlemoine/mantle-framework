@@ -56,11 +56,12 @@ class Attachment_Factory extends Post_Factory {
 	 * @param int    $height The height of the image.
 	 * @param bool   $recycle Whether to recycle the image file.
 	 */
-	public function with_image( ?string $file = null, int $parent = 0, int $width = 640, int $height = 480, bool $recycle = true ): static {
+	public function with_image( ?string $file = null, int $parent = 0, int $width = 1200, int $height = 800, bool $recycle = true ): static {
 		if ( ! $file ) {
 			static $generated_images = [
-				// Use the already generated default 600x480 image.
-				'6421c8050053a960a55c0e70f6006ca9' => __DIR__ . '/assets/factory/600x480.jpg',
+				// Use the already generated images for the default sizes.
+				'6fa8d935db90e52880de37db184f546a' => __DIR__ . '/assets/factory/600x480.jpg',
+				'c6308bc01634f8aae351f7187e0d1a03' => __DIR__ . '/assets/factory/1200x800.jpg',
 			];
 
 			$hash = md5( $width . $height );
