@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `Environment` attribute to allow environment-specific code to run during tests.
 - Added support for user agent setting in tests via the `#[UserAgent]` attribute.
 - Added `slash()` helper to factories to automatically slash content before storing.
+- Add wildcard event listener support to events.
+- Add support for more log drivers and channels.
+- Add `environment_mixed()` helper to return a `Mixed_Data` instance for an
+  environment variable.
 
 ### Changed
 
