@@ -348,6 +348,15 @@ trait Interacts_With_Data {
 	}
 
 	/**
+	 * Check if a property or a set of properties is missing in the value.
+	 *
+	 * @param string ...$property Property name. Supports dot notation.
+	 */
+	public function missing( string ...$property ): bool {
+		return ! $this->has( ...$property );
+	}
+
+	/**
 	 * Check if any of the properties exist in the value.
 	 *
 	 * @param string ...$property Property name. Supports dot notation.
