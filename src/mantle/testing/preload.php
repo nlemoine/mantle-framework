@@ -71,5 +71,5 @@ function _test_filter_build_unique_id( $tag, $function ): ?string {
 		return $function[0] . '::' . $function[1];
 	}
 
-				return null;
+	return null;
 }
