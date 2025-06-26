@@ -60,4 +60,4 @@ jobs:
           gh release create "$version" \
             --title "$version" \
             --notes-file RELEASE_NOTES.md \
-            --fail-on-no-commits
+            --fail-on-no-commits -d
