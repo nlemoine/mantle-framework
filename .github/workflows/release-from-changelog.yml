@@ -14,9 +14,9 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.ALLEY_CI_KEY }}
-      GITHUB_TOKEN: ${{ secrets.ALLEY_CI_KEY }}
+    # env:
+    #   GH_TOKEN: ${{ secrets.ALLEY_CI_KEY }}
+    #   GITHUB_TOKEN: ${{ secrets.ALLEY_CI_KEY }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -52,7 +52,6 @@ jobs:
             exit 1
           fi
           gh auth status
-          gh auth refresh -h github.com -s workflow
           gh release create "$version" \
             --title "$version" \
             --notes-file RELEASE_NOTES.md \
