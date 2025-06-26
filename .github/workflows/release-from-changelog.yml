@@ -56,5 +56,3 @@ jobs:
             --title "$version" \
             --notes-file RELEASE_NOTES.md \
             -d --fail-on-no-commits
-        env:
-          GH_TOKEN: ${{ secrets.ALLEY_CI_CHANGELOG_KEY }}
