@@ -2,6 +2,9 @@ name: Release from Changelog
 
 on:
   push:
+    paths:
+      - '.github/workflows/release-from-changelog.yml'
+      - 'CHANGELOG.md'
     branches:
       - '*.x'
 
@@ -11,6 +14,9 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.ALLEY_CI_KEY }}
+      GITHUB_TOKEN: ${{ secrets.ALLEY_CI_KEY }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,8 +34,6 @@ jobs:
           LATEST_RELEASE=$(gh release list --limit 1 --exclude-drafts --json tagName --jq '.[0].tagName' || echo "")
           echo "Latest GitHub release: $LATEST_RELEASE"
           echo "latest_release=$LATEST_RELEASE" >> $GITHUB_ENV
-        env:
-          GH_TOKEN: ${{ secrets.ALLEY_CI_CHANGELOG_KEY }}
 
       - name: Extract release notes
         id: extract_notes
