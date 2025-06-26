@@ -28,3 +28,4 @@ Thumbs.db
 *.code-workspace
 .idea
 .vscode
+RELEASE_NOTES.md
