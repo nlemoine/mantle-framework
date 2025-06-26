@@ -56,3 +56,6 @@ jobs:
             --title "$version" \
             --notes-file RELEASE_NOTES.md \
             -d --fail-on-no-commits
+        env:
+          GH_TOKEN: ${{ secrets.ALLEY_CI_KEY }}
+          GITHUB_TOKEN: ${{ secrets.ALLEY_CI_KEY }}
