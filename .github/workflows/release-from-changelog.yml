@@ -52,10 +52,8 @@ jobs:
             exit 1
           fi
           gh auth status
+          gh auth refresh -h github.com -s workflow
           gh release create "$version" \
             --title "$version" \
             --notes-file RELEASE_NOTES.md \
             -d --fail-on-no-commits
-        env:
-          GH_TOKEN: ${{ secrets.ALLEY_CI_KEY }}
-          GITHUB_TOKEN: ${{ secrets.ALLEY_CI_KEY }}
