@@ -17,6 +17,8 @@ use Mantle\Framework\Bootstrap\Register_Providers;
 use Mantle\Http\Request;
 use Mantle\Support\Str;
 use Mantle\Support\Traits\Conditionable;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 use function Mantle\Support\Helpers\collect;
 use function Mantle\Support\Helpers\mixed;
@@ -110,7 +112,7 @@ class Bootloader implements Contract {
 			->with_application( $app ?? new Application( $base_path ) )
 			->with_kernels()
 			->with_exception_handler()
-			->with_wp_cli_options( Command::PREFIX, fn () => __( 'Mantle Framework Command Line Interface', 'mantle' ) );
+			->with_wp_cli_options( description: fn () => __( 'Mantle Framework Command Line Interface', 'mantle' ) );
 	}
 
 	/**
@@ -263,6 +265,13 @@ class Bootloader implements Contract {
 	}
 
 	/**
+	 * Retrieve the WP-CLI command prefix.
+	 */
+	public function get_wp_cli_command_prefix(): string {
+		return $this->wp_cli_command_prefix;
+	}
+
+	/**
 	 * Bind to the container before booting.
 	 *
 	 * @param string              $abstract Abstract to bind.
@@ -329,10 +338,7 @@ class Bootloader implements Contract {
 
 		$kernel->bootstrap();
 
-		$status    = $kernel->handle(
-			$input = new \Symfony\Component\Console\Input\ArgvInput(),
-			new \Symfony\Component\Console\Output\ConsoleOutput(),
-		);
+		$status = $kernel->handle( $input = new ArgvInput(), new ConsoleOutput() );
 
 		$kernel->terminate( $input, $status );
 
@@ -350,14 +356,21 @@ class Bootloader implements Contract {
 		\WP_CLI::add_command(
 			$this->wp_cli_command_prefix,
 			function () use ( $kernel ): void {
+				$argv = collect( (array) ( $_SERVER['argv'] ?? [] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
+				$index = $argv->search( $this->wp_cli_command_prefix );
+
+				// Remove anything before the wp-cli command name.
+				if ( false !== $index ) {
+					$argv = $argv->slice( $index )->values();
+				}
+
+				// Remove the `--url=` option as it shouldn't be passed down to the console command.
+				$argv = $argv->filter( fn ( $value ) => ! Str::starts_with( $value, '--url=' ) );
+
 				$status    = $kernel->handle(
-					$input = new \Symfony\Component\Console\Input\ArgvInput(
-						collect( (array) ( $_SERVER['argv'] ?? [] ) ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-							// Remove the `wp` prefix from argv and any invalid arguments (such as --url).
-							->filter( fn ( $value, $index ) => 0 !== $index && ! Str::starts_with( $value, '--url=' ) )
-							->all()
-					),
-					new \Symfony\Component\Console\Output\ConsoleOutput(),
+					$input = new ArgvInput( $argv->values()->to_array() ),
+					new ConsoleOutput(),
 				);
 
 				$kernel->terminate( $input, $status );
