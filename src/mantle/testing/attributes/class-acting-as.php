@@ -21,7 +21,7 @@ class Acting_As {
 	/**
 	 * Constructor.
 	 *
-	 * @param string|int|null $user User to act as.
+	 * @param string|int $user User to act as.
 	 */
-	public function __construct( public string|int|null $user ) {}
+	public function __construct( public string|int $user ) {}
 }
