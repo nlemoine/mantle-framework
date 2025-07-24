@@ -142,7 +142,7 @@ class Reflector {
 	 * @param string|null   $attribute The attribute name to filter by, or null for all attributes.
 	 * @param int           $flags Flags to pass to getAttributes().
 	 * @param bool          $inherit Whether to include attributes from parent classes.
-	 * @return array<\ReflectionAttribute>
+	 * @return array<\ReflectionAttribute> Returned in inheritance order (parent -> child).
 	 */
 	public static function get_attributes_for_class( object|string $class, ?string $attribute = null, int $flags = 0, bool $inherit = true ): array {
 		$reflection = new ReflectionClass( $class );
@@ -157,6 +157,7 @@ class Reflector {
 			$attributes = array_merge( $attributes, $reflection->getAttributes( $attribute, $flags ) );
 		}
 
-		return $attributes;
+		// Reverse the order of attributes to maintain inheritance order (parent -> child).
+		return array_reverse( $attributes );
 	}
 }
