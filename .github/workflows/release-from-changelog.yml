@@ -56,7 +56,12 @@ jobs:
             echo "Invalid version: $version"
             exit 1
           fi
-          gh auth status
+
+          if gh release view "$version" > /dev/null 2>&1; then
+            echo "Release $version already exists. Skipping release creation."
+            exit 0
+          fi
+
           gh release create "$version" \
             --title "$version" \
             --notes-file RELEASE_NOTES.md \
