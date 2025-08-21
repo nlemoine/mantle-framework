@@ -7,8 +7,6 @@
 
 namespace Mantle\Testing\Concerns;
 
-use Mantle\Testing\Mock_Http_Response;
-
 /**
  * Warn if remote requests are being made. Does not provide a default response.
  *
