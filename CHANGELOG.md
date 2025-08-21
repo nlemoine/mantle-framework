@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `create_many_and_get()` method to factories.
 
+### Changed
+
+- Adjusted `Mantle\Http_Client\Request` to return `mixed` for the `body()` method.
+
 ### Fixed
 
 - Clear the `the_post` hook after each request to prevent side effects.
