@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `subdomain()` method to the blog factory.
 - Added `create_many_and_get()` method to factories.
 
 ### Changed
