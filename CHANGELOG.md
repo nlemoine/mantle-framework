@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added support for casting database attributes as enums.
 - Added `subdomain()` method to the blog factory.
 - Added `create_many_and_get()` method to factories.
 
@@ -16,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Adjusted the scheduled event system to use a recurring scheduled event instead of a single event.
 - Adjusted `Mantle\Http_Client\Request` to return `mixed` for the `body()` method.
+- Dump query conditionals with `dump()` on a HTTP test.
 
 ### Fixed
 
@@ -30,10 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Ensure that all autoloaded PHP files are properly checked for existence before being included.
 
 ## v1.8.7
-
-### Added
-
-- Added support for casting database attributes as enums.
 
 ### Changed
 
