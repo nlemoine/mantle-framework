@@ -607,19 +607,25 @@ class Arr {
 	/**
 	 * Filter the array using the given callback.
 	 *
-	 * @param  array<mixed> $array Array to process.
-	 * @param  callable     $callback Callback to filter by.
-	 * @return array<mixed>
+	 * @template TData of array
+	 *
+	 * @param  TData    $array Array to process.
+	 * @param  callable $callback Callback to filter by.
+	 * @return TData
+	 *
+	 * @phpstan-param (callable(value-of<TData>, key-of<TData>): bool) $callback
 	 */
-	public static function where( $array, callable $callback ): array {
+	public static function where( array $array, callable $callback ): array {
 		return array_filter( $array, $callback, ARRAY_FILTER_USE_BOTH );
 	}
 
 	/**
 	 * If the given value is not an array and not null, wrap it in one.
 	 *
-	 * @param  mixed $value Value to wrap by.
-	 * @return array<mixed>
+	 * @template T
+	 *
+	 * @param  T $value Value to wrap by.
+	 * @phpstan-return (T is array ? T : array<T>)
 	 */
 	public static function wrap( mixed $value ): array {
 		if ( is_null( $value ) ) {
