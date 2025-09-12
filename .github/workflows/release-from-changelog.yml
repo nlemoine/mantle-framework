@@ -72,9 +72,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "A new release *${{ env.version }}* has been created for mantle-framework. :tada:\n\n<${{ env.release_url }}|View Release on GitHub>",
-              "username": "GitHub Actions",
-              "icon_emoji": ":rocket:"
+              "text": "A new release *${{ env.version }}* has been drafted for mantle-framework: <${{ env.release_url }}|View Release on GitHub>"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
