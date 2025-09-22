@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added array support to the `with_byline_manager_authors()` and `with_cap_authors()` methods on post factories.
 - Added `assertJsonPathEmpty()`, `assertJsonPathNotEmpty()`,
   `assertJsonPathContains()`, `assertJsonPathNotContains()`, and
   `assertJsonPathCallback()` methods to the test response class.
