@@ -7,11 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Added `assertJsonPathEmpty()`, `assertJsonPathNotEmpty()`,
+  `assertJsonPathContains()`, `assertJsonPathNotContains()`, and
+  `assertJsonPathCallback()` methods to the test response class.
+
 ### Changed
 
 - Changed the `theme()` method of the installation manager to set the
   `WP_DEFAULT_THEME` environment variable to ensure that the theme is properly
   set during installation.
+
+### Fixed
+
+- Fixed issue with empty JSON not being parsed properly with `Assertable_Json_String`.
 
 ## v1.9.2
 
