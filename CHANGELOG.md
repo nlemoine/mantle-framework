@@ -5,20 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## v1.9.3
 
 ### Added
 
-- Added array support to the `with_byline_manager_authors()` and `with_cap_authors()` methods on post factories.
+- Added array support to the `with_byline_manager_authors()` and
+  `with_cap_authors()` methods on post factories.
 - Added `assertJsonPathEmpty()`, `assertJsonPathNotEmpty()`,
   `assertJsonPathContains()`, `assertJsonPathNotContains()`, and
   `assertJsonPathCallback()` methods to the test response class.
+- Added `dump_backtrace()`/`dd_backtrace()` methods.
 
 ### Changed
 
 - Changed the `theme()` method of the installation manager to set the
   `WP_DEFAULT_THEME` environment variable to ensure that the theme is properly
   set during installation.
+- Throw an exception if the user attempts to make a testing request to a path
+  that is not supported by the testing framework (e.g. `/wp-login.php`,
+  `/wp-admin/*`, etc.).
 
 ### Fixed
 

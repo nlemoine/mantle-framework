@@ -254,6 +254,7 @@ class Pending_Testable_Request {
 	 * Call the given URI and return the Response.
 	 *
 	 * @throws \Exception Exceptions thrown while setting up the WordPress query are re-thrown to the caller.
+	 * @throws InvalidArgumentException If the request is to an unsupported path.
 	 *
 	 * @param string      $method     Request method.
 	 * @param mixed       $uri        Request URI.
@@ -279,6 +280,14 @@ class Pending_Testable_Request {
 			$url = "{$scheme}://{$host}/{$uri}";
 		} else {
 			$url = $uri;
+		}
+
+		$path = wp_parse_url( $url, PHP_URL_PATH );
+
+		// Check if the user is requesting a call to a path that the testing
+		// framework does not support.
+		if ( Str::is( [ '/wp-login.php', '/wp-*.php', '/wp-admin/*', '/xmlrpc.php' ], $path ) ) {
+			throw new InvalidArgumentException( "Requests to [{$path}] are not supported." );
 		}
 
 		$this->set_server_state(
@@ -637,6 +646,8 @@ class Pending_Testable_Request {
 	 * If the request is being overridden to use HTTPS via {@see with_https()},
 	 * this will return 'https'. Otherwise, it will return the scheme of the home
 	 * URL of the WordPress installation.
+	 *
+	 * @return 'http'|'https'
 	 */
 	protected function get_default_url_scheme(): string {
 		if ( $this->forced_https ) {
