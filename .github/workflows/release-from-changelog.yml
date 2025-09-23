@@ -63,6 +63,7 @@ jobs:
           fi
 
           RELEASE_URL=$(gh release create "$version" --title "$version" --notes-file RELEASE_NOTES.md --fail-on-no-commits -d)
+          RELEASE_URL="${RELEASE_URL//\/tag\//\/edit\/}"
           echo "Release created: $RELEASE_URL"
           echo "release_url=$RELEASE_URL" >> $GITHUB_ENV
 
