@@ -546,9 +546,16 @@ EOF
 
 		$this->assertTrue( $request->is_feed() );
 
-		$feed = $request->feed();
+		$options_callback = false;
+
+		$feed = $request->feed( function ( \SimplePie $feed ) use ( & $options_callback ) {
+			$options_callback = true;
+
+			$this->assertEmpty( $feed->data );
+		} );
 
 		$this->assertInstanceOf( \SimplePie::class, $feed );
+		$this->assertTrue( $options_callback );
 		$this->assertEquals( 'Alley', $feed->get_title() );
 		$this->assertNotEmpty( $feed->get_items() );
 		$this->assertEquals( 'https://alley.com/', $feed->get_link() );
