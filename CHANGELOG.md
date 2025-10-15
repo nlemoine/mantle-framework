@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+
+- Multiple properties in `Makes_Http_Requests` are now private to prevent
+  unintended side effects from tests that modify these properties directly.
+
 ### Fixed
 
 - Disable rewrite for internal queue post type.
