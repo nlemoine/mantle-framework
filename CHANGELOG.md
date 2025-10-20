@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `mixed_query_var()` helper to retrieve a query variable as mixed data type.
 - Added `Exit_Simulation_Exception` exception to simulate `exit` calls during testing.
 - Added `terminate_request()` helper to be used instead of `exit()` for safer
   termination during testing.
