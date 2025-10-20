@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `mixed_json()` method to `Mantle\Http_Client\Response` to parse the body
+  as JSON and return a mixed data helper.
+- Added `with_base_url()` method to the HTTP client.
 - Added closure support for the cache TTL in the HTTP client.
 
 ### Changed
