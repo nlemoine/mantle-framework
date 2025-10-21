@@ -77,7 +77,7 @@ class Response implements ArrayAccess {
 	/**
 	 * The request URL.
 	 */
-	protected readonly ?string $url;
+	protected ?string $url = null;
 
 	/**
 	 * Determine if the response was created from the cache.
