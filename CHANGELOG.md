@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `laravel/serializable-closure` as a dependency to `mantle-framework/support` to
   support serialization of closures.
 
+### Changed
+
+- The framework is now compatible with PHPStan level 8. Many types have been added
+  throughout the framework to support this.
+
 ## v1.13.3
 
 No changes, re-released to fix a bad tag.
