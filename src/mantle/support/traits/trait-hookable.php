@@ -74,11 +74,17 @@ trait Hookable {
 			->unique()
 			->each(
 				function ( array $item ): void {
+					$callback = [ $this, $item['method'] ];
+
+					if ( ! is_callable( $callback ) ) {
+						return;
+					}
+
 					if ( $this->use_event_dispatcher() ) {
 						if ( 'action' === $item['type'] ) {
-							\Mantle\Support\Helpers\add_action( $item['hook'], [ $this, $item['method'] ], $item['priority'] );
+							\Mantle\Support\Helpers\add_action( $item['hook'], $callback, $item['priority'] );
 						} else {
-							\Mantle\Support\Helpers\add_filter( $item['hook'], [ $this, $item['method'] ], $item['priority'] );
+							\Mantle\Support\Helpers\add_filter( $item['hook'], $callback, $item['priority'] );
 						}
 
 						return;
@@ -86,9 +92,9 @@ trait Hookable {
 
 					// Use the default WordPress action/filter methods.
 					if ( 'action' === $item['type'] ) {
-						\add_action( $item['hook'], [ $this, $item['method'] ], $item['priority'], 999 );
+						\add_action( $item['hook'], $callback, $item['priority'], 999 );
 					} else {
-						\add_filter( $item['hook'], [ $this, $item['method'] ], $item['priority'], 999 );
+						\add_filter( $item['hook'], $callback, $item['priority'], 999 );
 					}
 				},
 			);
@@ -108,7 +114,7 @@ trait Hookable {
 			( $this->reflection )->getAttributes( Allow_Legacy_Duplicate_Registration::class ),
 		)->is_not_empty();
 
-		return collect( get_class_methods( static::class ) )
+		return collect( get_class_methods( static::class ) ) // @phpstan-ignore-line return.type
 			->filter(
 				static fn ( string $method ) => Str::starts_with( $method, [ 'on_', 'action__', 'filter__' ] )
 			)

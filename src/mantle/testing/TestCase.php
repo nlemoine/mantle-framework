@@ -115,10 +115,10 @@ abstract class TestCase extends BaseTestCase {
 		if ( ! empty( static::$test_uses ) ) {
 			static::get_test_case_traits()->each(
 				function ( string|object $trait ): void {
-					$method = strtolower( class_basename( $trait ) ) . '_set_up_before_class';
+					$callback = [ static::class, strtolower( class_basename( $trait ) ) . '_set_up_before_class' ];
 
-					if ( method_exists( static::class, $method ) ) {
-						call_user_func( [ static::class, $method ] );
+					if ( is_callable( $callback ) ) {
+						call_user_func( $callback );
 					}
 				}
 			);
@@ -136,10 +136,10 @@ abstract class TestCase extends BaseTestCase {
 		if ( ! empty( static::$test_uses ) ) {
 			static::get_test_case_traits()->each(
 				function ( string|object $trait ): void {
-					$method = strtolower( class_basename( $trait ) ) . '_tear_down_after_class';
+					$callback = [ static::class, strtolower( class_basename( $trait ) ) . '_tear_down_after_class' ];
 
-					if ( method_exists( static::class, $method ) ) {
-						call_user_func( [ static::class, $method ] );
+					if ( is_callable( $callback ) ) {
+						call_user_func( $callback );
 					}
 				}
 			);
@@ -358,6 +358,8 @@ abstract class TestCase extends BaseTestCase {
 		if ( ! isset( static::$factory ) ) {
 			static::$factory = Container::get_instance()->make( Factory_Container::class );
 		}
+
+		assert( static::$factory instanceof Factory_Container );
 
 		return static::$factory;
 	}

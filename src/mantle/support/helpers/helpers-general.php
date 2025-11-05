@@ -12,12 +12,17 @@
 
 namespace Mantle\Support\Helpers;
 
+use ArrayAccess;
 use Carbon\Carbon;
 use Countable;
 use Exception;
+use JsonSerializable;
+use Mantle\Contracts\Support\Arrayable;
+use Mantle\Contracts\Support\Jsonable;
 use Mantle\Container\Container;
 use Mantle\Events\Dispatcher;
 use Mantle\Support\Collection;
+use Mantle\Support\Enumerable;
 use Mantle\Support\Higher_Order_Tap_Proxy;
 use Mantle\Support\HTML;
 use Mantle\Support\Str;
@@ -66,8 +71,8 @@ function class_basename( string|object $class ): string {
 /**
  * Returns all traits used by a class, its parent classes and trait of their traits.
  *
- * @param object|string $class Class or object to analyze.
- * @return array<string>
+ * @param object|class-string $class Class or object to analyze.
+ * @return array<class-string>
  */
 function class_uses_recursive( string|object $class ): array {
 	if ( is_object( $class ) ) {
@@ -76,7 +81,7 @@ function class_uses_recursive( string|object $class ): array {
 
 	$results = [];
 
-	foreach ( array_reverse( class_parents( $class ) ) + [ $class => $class ] as $class ) {
+	foreach ( array_reverse( class_parents( $class ) ?: [] ) + [ $class => $class ] as $class ) {
 		$results += trait_uses_recursive( $class );
 	}
 
@@ -143,13 +148,13 @@ function get_callable_fqn( mixed $callable ): string {
 /**
  * Create a collection from the given value.
  *
- * @template TKey of array-key = string|int
+ * @template TKey of array-key = array-key
  * @template TValue of mixed = mixed
  *
- * @param  \Mantle\Contracts\Support\Arrayable<TKey, TValue>|iterable<TKey, TValue>|null $value Value to convert to a collection.
- * @return \Mantle\Support\Collection<TKey, TValue>
+ * @param iterable<TKey, TValue>|Arrayable<TKey, TValue>|Jsonable|JsonSerializable $value The value to create the collection from.
+ * @return Collection<TKey, TValue>
  */
-function collect( $value = [] ): Collection {
+function collect( mixed $value = [] ): Collection {
 	return new Collection( $value );
 }
 
