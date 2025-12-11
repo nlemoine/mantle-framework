@@ -7,9 +7,6 @@
 
 namespace Mantle\Testing\Concerns;
 
-use ErrorException;
-
-use function Mantle\Support\Helpers\collect;
 use function Termwind\render;
 
 /**
@@ -91,48 +88,5 @@ trait Output_Messages {
 		}
 
 		render( "<div class=\"my-1\"><code>{$code}</code></div>" );
-	}
-
-	/**
-	 * Outputs a trace message to the PHPUnit printer.
-	 *
-	 * @throws ErrorException With the trace found to trigger a trace.
-	 *
-	 * @param string $message Message to output.
-	 * @param array  $trace Trace to output.
-	 */
-	public static function trace( string $message, array $trace ): void {
-		$frames = collect( $trace );
-
-		// Attempt to find the trace with the '_doing_it_wrong' function call.
-		$function_call_index = $frames
-			->filter(
-				fn ( array $item ) => $item['function'] === '_doing_it_wrong'
-			)
-			->keys()
-			->first();
-
-		if ( null !== $function_call_index ) {
-			$frame = $frames->get( $function_call_index );
-		} else {
-			// Attempt to find the first trace that is not apart of the testing
-			// frameworks or packages.
-			$frame = $frames
-				->filter(
-					fn ( array $item ) => false === strpos(
-						(string) $item['file'],
-						'phpunit/phpunit',
-					)
-				)
-				->first();
-		}
-
-		throw new ErrorException(
-			$message,
-			E_USER_ERROR,
-			E_USER_ERROR,
-			$frame['file'],
-			$frame['line'],
-		);
 	}
 }

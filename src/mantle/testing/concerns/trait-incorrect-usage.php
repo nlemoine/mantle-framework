@@ -12,6 +12,10 @@ namespace Mantle\Testing\Concerns;
 use Mantle\Support\Str;
 use Mantle\Testing\Attributes\Expected_Incorrect_Usage;
 use Mantle\Testing\Attributes\Ignore_Incorrect_Usage;
+use Mantle\Testing\EarlyIncorrectUsageHandler;
+use Mantle\Testing\Exceptions\UnexpectedIncorrectUsageException;
+use Spatie\Backtrace\Backtrace;
+use Spatie\Backtrace\Frame;
 
 use function Mantle\Support\Helpers\collect;
 
@@ -20,6 +24,8 @@ use function Mantle\Support\Helpers\collect;
  *
  * If a _doing_it_wrong() call is made, the test will fail unless it is marked
  * as expected or ignored.
+ *
+ * @internal
  */
 trait Incorrect_Usage {
 	use Output_Messages;
@@ -49,7 +55,7 @@ trait Incorrect_Usage {
 	/**
 	 * Trace storage for "doing it wrong" calls.
 	 *
-	 * @var array<mixed>
+	 * @var array<array<Frame>>
 	 */
 	private $caught_doing_it_wrong_traces = [];
 
@@ -57,6 +63,8 @@ trait Incorrect_Usage {
 	 * Sets up the expectations for testing a deprecated call.
 	 */
 	public function incorrect_usage_set_up(): void {
+		EarlyIncorrectUsageHandler::unregister();
+
 		$annotations = $this->get_annotations_for_method();
 
 		foreach ( [ 'class', 'method' ] as $depth ) {
@@ -80,8 +88,15 @@ trait Incorrect_Usage {
 
 	/**
 	 * Set up handling a _doing_it_wrong() call.
+	 *
+	 * @throws \RuntimeException If a trace for a caught _doing_it_wrong() call is missing.
+	 * @throws UnexpectedIncorrectUsageException If an unexpected _doing_it_wrong() call is found.
 	 */
 	public function incorrect_usage_tear_down(): void {
+		if ( empty( $this->expected_doing_it_wrong ) && empty( $this->caught_doing_it_wrong ) ) {
+			return;
+		}
+
 		$errors = [];
 
 		$not_caught_doing_it_wrong = array_diff( $this->expected_doing_it_wrong, $this->caught_doing_it_wrong );
@@ -89,48 +104,45 @@ trait Incorrect_Usage {
 			$errors[] = "Failed to assert that {$not_caught} triggered an incorrect usage notice";
 		}
 
-		$unexpected_doing_it_wrong = collect( $this->caught_doing_it_wrong )
-			->filter(
-				function ( string $caught ): bool {
-					$ignored_and_expected = array_merge( $this->expected_doing_it_wrong, $this->ignored_doing_it_wrong );
+		$unexpected_doing_it_wrong = collect( $this->caught_doing_it_wrong )->filter(
+			function ( string $caught ): bool {
+				$ignored_and_expected = array_merge( $this->expected_doing_it_wrong, $this->ignored_doing_it_wrong );
 
-					if ( in_array( $caught, $ignored_and_expected, true ) ) {
+				if ( in_array( $caught, $ignored_and_expected, true ) ) {
+					return false;
+				}
+
+				// Allow partial matches when ignoring a _doing_it_wrong() call.
+				foreach ( $this->ignored_doing_it_wrong as $ignored ) {
+					if ( Str::is( $ignored, $caught ) ) {
 						return false;
 					}
-
-					// Allow partial matches when ignoring a _doing_it_wrong() call.
-					foreach ( $this->ignored_doing_it_wrong as $ignored ) {
-						if ( Str::is( $ignored, $caught ) ) {
-							return false;
-						}
-					}
-
-					return true;
 				}
-			)
-			->all();
+
+				return true;
+			}
+		)->all();
 
 		foreach ( $unexpected_doing_it_wrong as $index => $unexpected ) {
-			$errors[] = $unexpected;
-
-			if ( ! empty( $this->caught_doing_it_wrong_traces[ $index ] ) ) {
-				static::trace(
-					message: "Unexpected incorrect usage notice for {$unexpected}",
-					trace: $this->caught_doing_it_wrong_traces[ $index ],
-				);
+			if ( ! isset( $this->caught_doing_it_wrong_traces[ $index ] ) ) {
+				throw new \RuntimeException( 'Trace for caught _doing_it_wrong() call is missing.' );
 			}
+
+			throw UnexpectedIncorrectUsageException::create(
+				message: "Unexpected incorrect usage notice for {$unexpected}",
+				frame: collect( $this->caught_doing_it_wrong_traces[ $index ] )
+					->skip_until( fn ( Frame $frame ): bool => $frame->method === '_doing_it_wrong' )
+					->slice( 1 )
+					->first_or_fail(),
+			);
 		}
 
-		// Perform an assertion, but only if there are expected or unexpected
-		// deprecated calls or wrongdoings.
-		if (
-			! empty( $this->expected_doing_it_wrong ) || ! empty( $this->caught_doing_it_wrong )
-		) {
-			if ( ! empty( $errors ) ) {
-				$this->fail( 'Unexpected incorrect usage notice(s) triggered: ' . implode( ', ', $errors ) );
-			} else {
-				$this->assertTrue( true ); // @phpstan-ignore-line alreadyNarrowedType
-			}
+		if ( ! empty( $errors ) ) {
+			$this->fail( 'Unexpected incorrect usage notice(s) triggered: ' . implode( ', ', $errors ) );
+		}
+
+		if ( ! empty( $this->expected_doing_it_wrong ) ) {
+			$this->addToAssertionCount( count( $this->expected_doing_it_wrong ) );
 		}
 	}
 
@@ -172,7 +184,7 @@ trait Incorrect_Usage {
 		if ( ! in_array( $function, $this->caught_doing_it_wrong, true ) ) {
 			$this->caught_doing_it_wrong[] = $function;
 
-			$this->caught_doing_it_wrong_traces[] = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 10 ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
+			$this->caught_doing_it_wrong_traces[] = Backtrace::create()->frames();
 		}
 	}
 }
