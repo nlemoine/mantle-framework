@@ -9,6 +9,7 @@ namespace Mantle\Http_Client;
 
 use Closure;
 use DateTimeInterface;
+use Mantle\Cache\SWR_Storage;
 
 use function Mantle\Support\Helpers\normalize_cache_ttl;
 
@@ -42,13 +43,37 @@ class Cache_Middleware {
 		$cache_key = $this->get_cache_key( $request );
 		$cache     = wp_cache_get( $cache_key, self::CACHE_GROUP );
 
+		// If the cache is a SWR_Storage instance, get the response value.
+		if ( $cache && $cache instanceof SWR_Storage && $cache->value instanceof Response ) {
+			$cache = $cache->value;
+		}
+
 		if ( $cache && $cache instanceof Response ) {
-			$cache->cached = true;
+			$cache->cached = Cache_Status::CACHED;
+
+			/**
+			 * Fires when a cached HTTP response is retrieved.
+			 *
+			 * @param Pending_Request $request The HTTP request.
+			 * @param Response        $cache   The cached response.
+			 * @param string          $cache_key The cache key used.
+			 */
+			do_action( 'mantle_http_client_cache_hit', $request, $cache, $cache_key );
 
 			return $cache;
 		}
 
 		$response = $next( $request );
+
+		$response->cached = Cache_Status::MISSED;
+
+		/**
+		 * Fires when a HTTP response is cached.
+		 *
+		 * @param Pending_Request $request The HTTP request.
+		 * @param Response        $response The cached response.
+		 */
+		do_action( 'mantle_http_client_cached', $request, $response );
 
 		wp_cache_set( $cache_key, $response, self::CACHE_GROUP, $this->calculate_ttl( $request, $response ) ); // phpcs:ignore WordPressVIPMinimum.Performance.LowExpiryCacheTime.CacheTimeUndetermined
 
