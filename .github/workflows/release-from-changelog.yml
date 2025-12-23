@@ -57,13 +57,17 @@ jobs:
       - name: Extract release notes
         id: extract_notes
         run: |
-          sed -n '/^## '"$version"'/,/^## /p' CHANGELOG.md | sed '1d;$d' > RELEASE_NOTES.md
-          # Remove line wrapping.
-          sed -i ':a;N;$!ba;s/\n  / /g' RELEASE_NOTES.md
-          # Trim leading and trailing whitespace.
-          sed -i 's/^[ \t]*//;s/[ \t]*$//' RELEASE_NOTES.md
-          echo "Release notes:"
+          echo "Extracting release notes for version: $version"
+          echo "${{ fromJson(steps.parse-changelog.outputs.result)[0].contents }}" > RELEASE_NOTES.md
+          # echo ""
+          # sed -n '/^## '"$version"'/,/^## /p' CHANGELOG.md | sed '1d;$d' > RELEASE_NOTES.md
+          # # Remove line wrapping.
+          # sed -i ':a;N;$!ba;s/\n  / /g' RELEASE_NOTES.md
+          # # Trim leading and trailing whitespace.
+          # sed -i 's/^[ \t]*//;s/[ \t]*$//' RELEASE_NOTES.md
+          # echo "Release notes:"
           cat RELEASE_NOTES.md
+          exit 1
         shell: bash
 
       - name: Create new GitHub release if version is new
