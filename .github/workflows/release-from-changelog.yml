@@ -37,16 +37,6 @@ jobs:
           echo "Latest version from changelog extractor: $LATEST_VERSION"
           echo "version=v$LATEST_VERSION" >> $GITHUB_ENV
 
-          exit 1
-
-
-      # - name: Extract latest version from CHANGELOG.md
-      #   id: get_version
-      #   run: |
-      #     VERSION=$(grep -oP '(?<=## v)\d+\.\d+\.\d+' CHANGELOG.md | head -1)
-      #     echo "Latest version found: $VERSION"
-      #     echo "version=v$VERSION" >> $GITHUB_ENV
-
       - name: Get latest GitHub release
         id: latest_release
         run: |
