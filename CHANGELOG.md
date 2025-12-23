@@ -5,13 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## v1.16.0
 
 ### Added
 
 - Added a Query Monitor panel for HTTP client requests made during the request.
   Includes both Mantle and non-Mantle HTTP requests that use `wp_remote_*()`
   functions.
+- Added `install_plugins()` helper to the testing installation manager to install
+  plugins during testing.
+
+### Changed
+
+- Added `pest` command support to the installation manager's
+  `get_phpunit_command()` method to properly detect a Pest testing environment.
 
 ## v1.15.0
 
