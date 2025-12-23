@@ -20,22 +20,12 @@ jobs:
         with:
           token: ${{ secrets.ALLEY_CI_KEY }}
 
-      - name: Parse the changelog
-        id: parse-changelog
-        uses: alleyinteractive/action-changelog-extractor@develop
-
       - name: Extract latest version from CHANGELOG.md
+        id: get_version
         run: |
-          echo "Changelog Output:"
-          LATEST_VERSION="${{ fromJson(steps.parse-changelog.outputs.result)[0].name }}"
-
-          if [ -z "$LATEST_VERSION" ]; then
-            echo "No version found in changelog extractor output."
-            exit 1
-          fi
-
-          echo "Latest version from changelog extractor: $LATEST_VERSION"
-          echo "version=v$LATEST_VERSION" >> $GITHUB_ENV
+          VERSION=$(grep -oP '(?<=## v)\d+\.\d+\.\d+' CHANGELOG.md | head -1)
+          echo "Latest version found: $VERSION"
+          echo "version=v$VERSION" >> $GITHUB_ENV
 
       - name: Get latest GitHub release
         id: latest_release
@@ -47,32 +37,13 @@ jobs:
       - name: Extract release notes
         id: extract_notes
         run: |
-          echo "Extracting release notes for version: $version"
-
-          # Save the raw JSON to a file to avoid GitHub Actions template processing that strips backticks
-          echo '${{ steps.parse-changelog.outputs.result }}' > /tmp/changelog_raw.json
-
-          CHANGELOG_CONTENTS=$(cat /tmp/changelog_raw.json | jq -r '.[0].contents // empty')
-          echo "Changelog contents: (content length: ${#CHANGELOG_CONTENTS} characters)"
-
-          if [[ -z "$CHANGELOG_CONTENTS" ]]; then
-            echo "🚨 No changelog contents found. Exiting."
-            exit 1
-          fi
-
-          # Save the extracted content to a file to preserve special characters
-          echo "$CHANGELOG_CONTENTS" > RELEASE_NOTES.md
-
-          # echo "${{ fromJson(steps.parse-changelog.outputs.result)[0].contents }}" > RELEASE_NOTES.md
-          # echo ""
-          # sed -n '/^## '"$version"'/,/^## /p' CHANGELOG.md | sed '1d;$d' > RELEASE_NOTES.md
-          # # Remove line wrapping.
-          # sed -i ':a;N;$!ba;s/\n  / /g' RELEASE_NOTES.md
-          # # Trim leading and trailing whitespace.
-          # sed -i 's/^[ \t]*//;s/[ \t]*$//' RELEASE_NOTES.md
-          # echo "Release notes:"
+          sed -n '/^## '"$version"'/,/^## /p' CHANGELOG.md | sed '1d;$d' > RELEASE_NOTES.md
+          # Remove line wrapping.
+          sed -i ':a;N;$!ba;s/\n  / /g' RELEASE_NOTES.md
+          # Trim leading and trailing whitespace.
+          sed -i 's/^[ \t]*//;s/[ \t]*$//' RELEASE_NOTES.md
+          echo "Release notes:"
           cat RELEASE_NOTES.md
-          exit 1
         shell: bash
 
       - name: Create new GitHub release if version is new
