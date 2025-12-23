@@ -24,18 +24,28 @@ jobs:
         id: parse-changelog
         uses: alleyinteractive/action-changelog-extractor@develop
 
-      - name: Dump changelog output
+      - name: Extract latest version from CHANGELOG.md
         run: |
           echo "Changelog Output:"
-          echo "parse-changelog: ${{ fromJson(steps.parse-changelog.outputs.result)[0].name }}"
+          LATEST_VERSION="${{ fromJson(steps.parse-changelog.outputs.result)[0].name }}"
+
+          if [ -z "$LATEST_VERSION" ]; then
+            echo "No version found in changelog extractor output."
+            exit 1
+          fi
+
+          echo "Latest version from changelog extractor: $LATEST_VERSION"
+          echo "version=v$LATEST_VERSION" >> $GITHUB_ENV
+
           exit 1
 
-      - name: Extract latest version from CHANGELOG.md
-        id: get_version
-        run: |
-          VERSION=$(grep -oP '(?<=## v)\d+\.\d+\.\d+' CHANGELOG.md | head -1)
-          echo "Latest version found: $VERSION"
-          echo "version=v$VERSION" >> $GITHUB_ENV
+
+      # - name: Extract latest version from CHANGELOG.md
+      #   id: get_version
+      #   run: |
+      #     VERSION=$(grep -oP '(?<=## v)\d+\.\d+\.\d+' CHANGELOG.md | head -1)
+      #     echo "Latest version found: $VERSION"
+      #     echo "version=v$VERSION" >> $GITHUB_ENV
 
       - name: Get latest GitHub release
         id: latest_release
