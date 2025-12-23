@@ -20,6 +20,16 @@ jobs:
         with:
           token: ${{ secrets.ALLEY_CI_KEY }}
 
+      - name: Parse the changelog
+        id: parse-changelog
+        uses: alleyinteractive/action-changelog-extractor@develop
+
+      - name: Dump changelog output
+        run: |
+          echo "Changelog Output:"
+          echo "parse-changelog: ${{ steps.parse-changelog.outputs }}"
+          exit 1
+
       - name: Extract latest version from CHANGELOG.md
         id: get_version
         run: |
