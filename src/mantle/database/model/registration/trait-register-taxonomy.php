@@ -15,6 +15,7 @@ use Mantle\Database\Model\Model_Exception;
  * Model Trait to allow a taxonomy to be registered for a model.
  *
  * @mixin \Mantle\Database\Model\Term
+ * @mixin \Mantle\Contracts\Database\Registrable
  */
 trait Register_Taxonomy {
 	use Custom_Term_Link;
@@ -34,6 +35,10 @@ trait Register_Taxonomy {
 	public static function register_object(): void {
 		$taxonomy = static::get_object_name();
 
+		if ( ! $taxonomy ) {
+			throw new Model_Exception( 'Unable to register taxonomy (no taxonomy name provided).' );
+		}
+
 		if ( \taxonomy_exists( $taxonomy ) ) {
 			throw new Model_Exception( 'Unable to register taxonomy (taxonomy already exists): ' . $taxonomy );
 		}
@@ -49,7 +54,7 @@ trait Register_Taxonomy {
 	 * @throws Model_Exception Thrown on invalid class name being passed to object types.
 	 */
 	protected static function get_taxonomy_object_types(): array {
-		if ( empty( static::$object_types ) || ! is_array( static::$object_types ) ) {
+		if ( empty( static::$object_types ) || ! is_array( static::$object_types ) ) { // @phpstan-ignore-line
 			return [];
 		}
 
@@ -72,9 +77,19 @@ trait Register_Taxonomy {
 	/**
 	 * Add taxonomy to object type.
 	 *
+	 * @throws Model_Exception Thrown when unable to add taxonomy to object type.
+	 *
 	 * @param string $object_type Object type to add.
 	 */
 	public function add_to_object_type( string $object_type ): void {
-		\register_taxonomy_for_object_type( static::get_registration_name(), $object_type );
+		$name = method_exists( $this, 'get_registration_name' )
+			? $this->get_registration_name()
+			: static::get_object_name();
+
+		if ( empty( $name ) ) {
+			throw new Model_Exception( 'Unable to add taxonomy to object type (no taxonomy name provided).' );
+		}
+
+		\register_taxonomy_for_object_type( $name, $object_type );
 	}
 }

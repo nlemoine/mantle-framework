@@ -11,12 +11,12 @@ use PHPUnit\Framework\Attributes\Before;
 
 /**
  * Trait to ensure the request is made in single site mode and skipped otherwise.
+ *
+ * @mixin \PHPUnit\Framework\Assert
  */
 trait Single_Site_Test {
 	/**
 	 * Setup the trait.
-	 *
-	 * @before
 	 */
 	#[Before]
 	public function single_site_test_set_up(): void {
