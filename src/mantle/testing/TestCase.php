@@ -270,9 +270,6 @@ abstract class TestCase extends BaseTestCase {
 			'comment_depth',
 			'comment_thread_alt',
 
-			// Sitemap globals.
-			'wp_sitemaps',
-
 			// Template globals.
 			'wp_stylesheet_path',
 			'wp_template_path',
@@ -289,6 +286,7 @@ abstract class TestCase extends BaseTestCase {
 		remove_filter( 'wp_die_handler', [ WP_Die::class, 'get_handler' ] );
 		static::restore_hooks();
 		wp_set_current_user( 0 );
+		$this->reset_lazyload_queue();
 		// phpcs:enable
 
 		parent::tearDown();
@@ -412,5 +410,15 @@ abstract class TestCase extends BaseTestCase {
 	 */
 	public static function usesTrait( string $trait ): bool {
 		return isset( static::$test_uses[ $trait ] );
+	}
+
+	/**
+	 * Reset the lazy load meta queue.
+	 */
+	protected function reset_lazyload_queue(): void {
+		$lazyloader = wp_metadata_lazyloader();
+		$lazyloader->reset_queue( 'term' );
+		$lazyloader->reset_queue( 'comment' );
+		$lazyloader->reset_queue( 'blog' ); // @phpstan-ignore-line argument.type
 	}
 }
