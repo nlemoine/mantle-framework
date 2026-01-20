@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added a `Carbon` class and `travel()` helper in tests to make time mocking easier during testing.
 - Added proper support for testing `robots.txt`, feeds, and sitemaps via the testing
   framework's HTTP request methods.
 - Added a `Spy_Sitemaps_Renderer` class to replace the sitemap renderer during testing
