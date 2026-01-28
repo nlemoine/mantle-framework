@@ -92,7 +92,7 @@ class Service_Provider extends Base_Service_Provider {
 	 *
 	 * @param Events\Job_Queued $event Job Queued event.
 	 */
-	#[Action( Events\Job_Queued::class ) ]
+	#[Action( Events\Job_Queued::class )]
 	public function handle_job_queued_event( Events\Job_Queued $event ): Events\Job_Queued {
 		if ( $event->provider instanceof Provider ) {
 			Scheduler::on_job_queued( $event->queue ?? 'default' );
@@ -106,7 +106,7 @@ class Service_Provider extends Base_Service_Provider {
 	 *
 	 * @param Events\Run_Complete $event Run complete event.
 	 */
-	#[Action( Events\Run_Complete::class ) ]
+	#[Action( Events\Run_Complete::class )]
 	public function handle_run_complete( Events\Run_Complete $event ): Events\Run_Complete {
 		if ( $event->provider instanceof Provider ) {
 			Scheduler::schedule_next_run( $event->queue ?? 'default' );
