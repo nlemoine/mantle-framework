@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v1.19.0
+
+- Fix issue introduced in v1.18.1 with packages being moved to `require-dev`.
+
+  New projects that depend on `alleyinteractive/mantle-framework` should
+  require on the newly created `mantle-framework/testing-dependencies` package. Projects
+  that depend on `mantle-framework/testkit` are not affected. Because
+  `mantle-framework/testing-dependencies` also requires PHPUnit, you can also drop
+  that as a dependency if you were requiring it directly.
+
+  To upgrade your project, run the following commands:
+
+  ```bash
+  # If you were requiring PHPUnit directly.
+  composer remove phpunit/phpunit --dev
+
+  # Require the new testing dependencies package.
+  composer require alleyinteractive/mantle-framework/testing-dependencies --dev
+  ```
+
+  Projects that depend only on Mantle Testkit (`mantle-framework/testkit`) are not affected.
+
 ## v1.18.2
 
 ### Fixed
