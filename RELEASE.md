@@ -52,11 +52,7 @@ A team member opens the draft release linked in the Slack notification, reviews 
 
 ### 5. Post-Publication Automation
 
-Publishing the release triggers two additional workflows:
-
-#### Update Changelog ([`update-changelog.yml`](.github/workflows/update-changelog.yml))
-
-Uses [`stefanzweifel/changelog-updater-action`](https://github.com/stefanzweifel/changelog-updater-action) to update `CHANGELOG.md` with the final release name and notes (in case the release body was edited in the GitHub UI), then commits the result back to the `1.x` branch.
+Publishing the release triggers:
 
 #### Split Monorepo ([`split_monorepo.yml`](.github/workflows/split_monorepo.yml))
 
